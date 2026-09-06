@@ -17,7 +17,9 @@ Le regole di lettura sono quelle collaudate dal vecchio leggi_modulo.py:
     calendario di quella giornata. Se non coincidono non si importa niente
   - formati liberi: "1 (2-1)", "1 2-1", "X", "2 0 a 3". Solo segno o solo gol
     vanno bene entrambi; cella vuota o incomprensibile si ignora
-  - invii multipli per la stessa giornata: vale il piu' recente
+  - invii multipli per la stessa giornata: vale il piu' recente (regola del
+    vecchio modulo Google; dal modulo dentro il sito vale invece il PRIMO,
+    vedi leggi_sito)
   - invii dopo il calcio d'inizio: la deduzione li sposta alla giornata dopo,
     dove le intestazioni non combaciano, quindi vengono scartati da soli
 
@@ -318,7 +320,10 @@ def leggi_sito(testo_csv, stagione, adesso=None):
             scarti.append(f"{nome} giornata {g}: arrivato dopo il calcio d'inizio, non vale")
             continue
         chiave = (nome, g)
-        if chiave not in migliori or ts > migliori[chiave][0]:
+        # vale il PRIMO invio: una volta mandata, la schedina non si cambia piu'.
+        # Se qualcuno rimanda (cancellando la memoria del telefono, o chiamando
+        # l'indirizzo a mano), il secondo invio finisce nel foglio ma non conta.
+        if chiave not in migliori or ts < migliori[chiave][0]:
             migliori[chiave] = (ts, r)
 
     consegne, pronostici = {}, {}

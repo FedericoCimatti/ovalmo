@@ -90,9 +90,10 @@ def blocco(dati, adesso=None, endpoint=None, modulo_google=None):
 
     return f"""<section id="modulo">
     <h2>Manda i tuoi pronostici &mdash; giornata {g}</h2>
-    <p class="lede">Si chiude al primo calcio d&rsquo;inizio, {E(quando)}. Puoi correggere quello
-    che hai mandato fino a quel momento: vale sempre l&rsquo;ultimo invio. Basta il segno, il
-    risultato esatto vale di piu&rsquo;.</p>
+    <p class="lede">Si chiude al primo calcio d&rsquo;inizio, {E(quando)}. Basta il segno, il
+    risultato esatto vale di piu&rsquo;. <strong>Una volta inviata la schedina non si pu&ograve;
+    pi&ugrave; cambiare</strong>, quindi controllala prima di mandarla. Gli altri vedono che hai
+    mandato, non che cosa hai scritto.</p>
     <p class="lede">{_chi(consegnato, mancano)}</p>
     <div class="mod">
       <div id="chisei">
@@ -105,12 +106,20 @@ def blocco(dati, adesso=None, endpoint=None, modulo_google=None):
         <p class="esito" id="esito1"></p>
       </div>
       <form id="schedina" hidden>
-        <p class="lede" style="margin-top:0">Ciao <b id="ciao"></b> &mdash;
-          <button type="button" class="cambia" id="cambia">non sei tu?</button></p>
+        <p class="lede" style="margin-top:0">Ciao <b id="ciao"></b></p>
         {"".join(righe)}
-        <p style="margin:14px 0 0"><button type="submit" class="go" id="invia">Invia i pronostici</button></p>
+        <p style="margin:14px 0 0">
+          <button type="submit" class="go" id="invia">Invia i pronostici</button>
+          <button type="button" class="no" id="annulla">Annulla</button>
+        </p>
         <p class="esito" id="esito2"></p>
       </form>
+      <div id="fatto" hidden>
+        <p class="lede" style="margin-top:0"><b id="ciao2"></b>, la tua schedina della giornata
+        {g} &egrave; arrivata. Non si pu&ograve; pi&ugrave; cambiare: si svela a tutti al primo
+        calcio d&rsquo;inizio, {E(quando)}.</p>
+        <button type="button" class="no" id="esci" style="margin-left:0">Esci</button>
+      </div>
     </div>
     </section>
     <script>{_script(cfg, json.dumps(partite, ensure_ascii=False))}</script>"""
@@ -137,7 +146,8 @@ def _script(cfg, partite):
   var CFG = %s, PARTITE = %s;
   var IO = 'ovalmo-io', BOZZA = 'ovalmo-g' + CFG.giornata;
   var $ = function(id){ return document.getElementById(id) };
-  var chisei = $('chisei'), schedina = $('schedina');
+  var chisei = $('chisei'), schedina = $('schedina'), fatto = $('fatto');
+  function chiaveInviato(nome){ return 'ovalmo-inviato-g' + CFG.giornata + '-' + nome }
   var scelto = null;
 
   function leggi(chiave){ try { return JSON.parse(localStorage.getItem(chiave)) } catch(e){ return null } }
@@ -157,16 +167,29 @@ def _script(cfg, partite):
     scrivi(IO, {nome: scelto, codice: codice});
     entra();
   };
-  $('cambia').onclick = function(){
+  // Annulla / Esci: si torna indietro e per rientrare serve di nuovo il codice.
+  // Serve su un telefono che passa di mano, e perche' la schedina non resti
+  // aperta per giorni.
+  function esci(){
     try { localStorage.removeItem(IO) } catch(e){}
-    schedina.hidden = true; chisei.hidden = false;
-  };
+    schedina.hidden = true; fatto.hidden = true; chisei.hidden = false;
+    $('codice').value = ''; scelto = null;
+    chisei.querySelectorAll('.chi button').forEach(function(x){ x.setAttribute('aria-pressed','false') });
+    messaggio('esito1',''); messaggio('esito2','');
+  }
+  $('annulla').onclick = esci;
+  $('esci').onclick = esci;
 
   function entra(){
     var io = leggi(IO);
     if(!io || !io.nome) return;
     $('ciao').textContent = io.nome;
-    chisei.hidden = true; schedina.hidden = false;
+    $('ciao2').textContent = io.nome;
+    chisei.hidden = true;
+    if(leggi(chiaveInviato(io.nome))){      // ha gia' mandato: niente da cambiare
+      schedina.hidden = true; fatto.hidden = false; return;
+    }
+    fatto.hidden = true; schedina.hidden = false;
     var bozza = leggi(BOZZA) || {};
     PARTITE.forEach(function(p){
       var testo = bozza[p.k]; if(!testo) return;
@@ -231,8 +254,8 @@ def _script(cfg, partite):
     }).then(function(r){ return r.json() }).then(function(esito){
       invia.disabled = false;
       if(esito && esito.ok){
-        messaggio('esito2','Ricevuto: ' + raccolto.quanti + ' partite su ' + PARTITE.length +
-          '. Puoi correggere fino al calcio d inizio.','ok');
+        scrivi(chiaveInviato(io.nome), true);
+        schedina.hidden = true; fatto.hidden = false;
       } else if(esito && esito.errore === 'codice sbagliato'){
         messaggio('esito2','Codice sbagliato. Tocca "non sei tu?" e riprova.','ko');
       } else {

@@ -47,11 +47,16 @@ def test_prima_del_fischio_solo_la_consegna():
     assert pronostici == {}
 
 
-def test_vale_l_ultimo_invio():
+def test_vale_il_primo_invio_non_si_puo_correggere():
+    """Una volta mandata la schedina non si cambia piu'. Un secondo invio
+    finisce nel foglio ma non conta: e' il vincolo vero, quello che regge
+    anche se uno aggira la pagina."""
     testo = csv("2026-10-09T16:00:00.000Z,Berta,7,1 2-1,X,2 0-3",
-                "2026-10-10T10:00:00.000Z,Berta,7,2 0-1,X,2 0-3")
-    _, pronostici, _, _ = modulo.leggi_sito(testo, STAGIONE, DOPO)
-    assert pronostici["G07-01"]["Berta"] == ["2", 0, 1]
+                "2026-10-10T10:00:00.000Z,Berta,7,2 0-1,1 5-0,1 9-0")
+    consegne, pronostici, _, _ = modulo.leggi_sito(testo, STAGIONE, DOPO)
+    assert pronostici["G07-01"]["Berta"] == ["1", 2, 1]      # il primo
+    assert pronostici["G07-02"]["Berta"] == ["X", None, None]
+    assert consegne["7"]["Berta"] == "09/10/2026 18:00"      # l'ora del primo
 
 
 def test_arrivato_dopo_il_calcio_dinizio_scartato():

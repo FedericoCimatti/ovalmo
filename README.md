@@ -162,7 +162,13 @@ la pagina  ->  google/ricevi_pronostici.gs  ->  foglio "Pronostici"
 ```
 
 Ognuno la prima volta sceglie il suo nome e scrive un codice di quattro cifre;
-il telefono se lo ricorda e non lo chiede piu'. I codici stanno **solo** dentro
+il telefono se lo ricorda e non lo chiede piu'. Il pulsante **Annulla** esce e
+obbliga a rimettere il codice, cosi' la schedina non resta aperta sul telefono.
+
+**Si manda una volta sola.** Una schedina inviata non si puo' piu' correggere:
+la pagina la blocca e, se qualcuno rimandasse aggirandola, il lettore tiene
+comunque il PRIMO invio e ignora gli altri. Gli altri giocatori vedono che hai
+mandato, mai che cosa hai scritto. I codici stanno **solo** dentro
 lo script in Google, mai nella pagina: c'e' un test che lo verifica.
 
 L'indirizzo dello script va scritto in `dati/stagione.json`, campo

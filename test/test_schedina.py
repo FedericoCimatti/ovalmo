@@ -101,3 +101,24 @@ def test_quando_ci_sono_tutti_lo_dice():
     dati = dict(DATI, calendario={"8": DATI["calendario"]["8"]},
                 consegne={"8": {p: "x" for p in DATI["players"]}})
     assert "tutti e cinque" in schedina.blocco(dati, adesso=PRIMA, endpoint=ENDPOINT)
+
+
+def test_il_modulo_dice_che_non_si_puo_correggere():
+    html = re.sub(r"\s+", " ", schedina.blocco(DATI, adesso=PRIMA, endpoint=ENDPOINT))
+    assert "non si pu&ograve; pi&ugrave; cambiare" in html
+    assert "vedono che hai mandato, non che cosa hai scritto" in html
+
+
+def test_c_e_il_pulsante_annulla_accanto_a_invia():
+    """Annulla riporta alla schermata iniziale e obbliga a rimettere il codice:
+    senza, la schedina resterebbe aperta sul telefono per giorni."""
+    html = schedina.blocco(DATI, adesso=PRIMA, endpoint=ENDPOINT)
+    assert 'id="annulla"' in html and 'id="invia"' in html
+    assert "localStorage.removeItem(IO)" in html      # esce davvero
+    assert "$('codice').value = ''" in html           # e ripulisce il codice
+
+
+def test_c_e_il_pannello_di_schedina_gia_inviata():
+    html = schedina.blocco(DATI, adesso=PRIMA, endpoint=ENDPOINT)
+    assert 'id="fatto"' in html
+    assert "chiaveInviato" in html                    # se l'ha gia' mandata, resta bloccata
