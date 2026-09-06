@@ -128,3 +128,35 @@ def test_le_giornate_in_archivio_sono_tutte_chiuse():
     html = genera(dati, orari.quando("15/10/2026", "12:00"))
     assert "<details class=\"g\">" in html
     assert "<details class=\"g\" open>" not in html and " open>" not in html
+
+
+def test_una_partita_di_oggi_si_legge_oggi():
+    adesso = orari.quando("10/10/2026", "09:00")
+    assert pagina.quando_si_gioca("10/10/2026", "20:45", adesso) == "oggi 20:45"
+
+
+def test_una_partita_di_domani_si_legge_domani():
+    adesso = orari.quando("10/10/2026", "09:00")
+    assert pagina.quando_si_gioca("11/10/2026", "15:00", adesso) == "domani 15:00"
+
+
+def test_piu_in_la_si_legge_giorno_e_mese():
+    adesso = orari.quando("10/10/2026", "09:00")
+    assert pagina.quando_si_gioca("14/10/2026", "18:30", adesso) == "14/10 18:30"
+    assert "2026" not in pagina.quando_si_gioca("14/10/2026", "18:30", adesso)
+
+
+def test_una_partita_rinviata_mostra_la_sua_data():
+    adesso = orari.quando("12/10/2026", "09:00")
+    assert pagina.quando_si_gioca("10/10/2026", "20:45", adesso) == "10/10 20:45"
+
+
+def test_orario_non_ancora_deciso():
+    adesso = orari.quando("10/10/2026", "09:00")
+    assert pagina.quando_si_gioca("17/10/2026", "da definire", adesso) == "17/10 &middot; orario da definire"
+
+
+def test_la_schedina_mostra_il_giorno_delle_partite_da_giocare():
+    html = genera(DATI, orari.quando("09/10/2026", "12:00"))
+    assert "domani 20:45" in html          # Inter-Milan, 10/10
+    assert "11/10 15:00" in html           # Roma-Lazio, dopodomani

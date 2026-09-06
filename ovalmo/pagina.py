@@ -32,6 +32,26 @@ def _giorn(n):
     return "1 giornata conclusa" if n == 1 else f"{n} giornate concluse"
 
 
+def quando_si_gioca(data, ora, adesso):
+    """Come si scrive l'orario di una partita non ancora giocata.
+
+    "oggi 18:30", "domani 20:45", "12/09 15:00". L'anno non serve: nessuno
+    pronostica una partita dell'anno prossimo.
+    """
+    giorno = orari.quando(data, ora).date()
+    mancano = (giorno - adesso.date()).days
+    if mancano == 0:
+        etichetta = "oggi"
+    elif mancano == 1:
+        etichetta = "domani"
+    else:
+        etichetta = f"{giorno:%d/%m}"
+    testo = str(ora).strip()
+    if not testo or ":" not in testo:
+        return f"{etichetta} &middot; orario da definire"
+    return f"{etichetta} {testo}"
+
+
 def _elenco(xs):
     xs = list(xs)
     return xs[0] if len(xs) == 1 else ", ".join(xs[:-1]) + " e " + xs[-1]
@@ -92,7 +112,7 @@ def genera(dati, template, adesso=None, aggiornato=None):
             unanime = (not nascosta) and all(sgs) and len(set(sgs)) == 1
             ris = risultati.get(mid)
             esito = (f'<span class="ris">{ris[0]}&ndash;{ris[1]} {chip(segno(*ris))}</span>' if ris
-                     else f'<span class="ora">{E(str(ora))}</span>')
+                     else f'<span class="ora">{quando_si_gioca(data, ora, adesso)}</span>')
             celle = []
             for p_ in giocatori:
                 pr = picks.get(p_)
