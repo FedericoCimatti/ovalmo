@@ -286,6 +286,11 @@ details.g[open] > summary{border-bottom:1px solid var(--line)}
   font:600 15px/1 var(--ff-s); padding:12px 18px; border-radius:10px; cursor:pointer;
   border:1px solid var(--line); background:var(--paper); color:var(--mute); margin-left:8px}
 .mod .no:hover{color:var(--ink2); border-color:var(--line)}
+/* codice sbagliato: il campo si scuote e diventa rosso */
+.mod input.sbagliato{border-color:#c5372c; color:#c5372c; animation:scuoti .45s}
+@keyframes scuoti{
+  15%,85%{transform:translateX(-3px)} 30%,70%{transform:translateX(5px)}
+  45%{transform:translateX(-7px)} 60%{transform:translateX(7px)} 100%{transform:translateX(0)}}
 
 /* diretta: il pallino che dice che i numeri si stanno muovendo adesso */
 .live{

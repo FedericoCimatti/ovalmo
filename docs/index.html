@@ -286,6 +286,11 @@ details.g[open] > summary{border-bottom:1px solid var(--line)}
   font:600 15px/1 var(--ff-s); padding:12px 18px; border-radius:10px; cursor:pointer;
   border:1px solid var(--line); background:var(--paper); color:var(--mute); margin-left:8px}
 .mod .no:hover{color:var(--ink2); border-color:var(--line)}
+/* codice sbagliato: il campo si scuote e diventa rosso */
+.mod input.sbagliato{border-color:#c5372c; color:#c5372c; animation:scuoti .45s}
+@keyframes scuoti{
+  15%,85%{transform:translateX(-3px)} 30%,70%{transform:translateX(5px)}
+  45%{transform:translateX(-7px)} 60%{transform:translateX(7px)} 100%{transform:translateX(0)}}
 
 /* diretta: il pallino che dice che i numeri si stanno muovendo adesso */
 .live{
@@ -383,12 +388,43 @@ details.g[open] > summary{border-bottom:1px solid var(--line)}
       b.setAttribute('aria-pressed','true'); scelto = b.dataset.nome;
     };
   });
+  // Il codice si verifica QUI, non al momento dell'invio: altrimenti chiunque
+  // potrebbe aprire la schedina di chiunque, e scoprirebbe di aver sbagliato
+  // solo dopo aver compilato tutto.
+  function sbagliato(testo){
+    var campo = $('codice');
+    campo.classList.remove('sbagliato');
+    void campo.offsetWidth;                 // riavvia l'animazione
+    campo.classList.add('sbagliato');
+    campo.select();
+    messaggio('esito1', testo, 'ko');
+  }
+
   $('entra').onclick = function(){
     var codice = $('codice').value.trim();
     if(!scelto){ return messaggio('esito1','Scegli il tuo nome.','ko') }
-    if(!/^[0-9]{4}$/.test(codice)){ return messaggio('esito1','Il codice e di quattro cifre.','ko') }
-    scrivi(IO, {nome: scelto, codice: codice});
-    entra();
+    if(!/^[0-9]{4}$/.test(codice)){ return sbagliato('Il codice e di quattro cifre.') }
+    var bottone = $('entra');
+    bottone.disabled = true;
+    messaggio('esito1','Controllo...','');
+    fetch(CFG.endpoint, {
+      method: 'POST', redirect: 'follow',
+      headers: {'Content-Type': 'text/plain;charset=utf-8'},
+      body: JSON.stringify({azione: 'controlla', giocatore: scelto, codice: codice})
+    }).then(function(r){ return r.json() }).then(function(esito){
+      bottone.disabled = false;
+      if(esito && esito.ok){
+        messaggio('esito1','');
+        $('codice').classList.remove('sbagliato');
+        scrivi(IO, {nome: scelto, codice: codice});
+        entra();
+      } else {
+        sbagliato('Codice sbagliato: quello e il codice di un altro.');
+      }
+    }).catch(function(){
+      bottone.disabled = false;
+      sbagliato('Non riesco a verificare il codice: controlla la connessione e riprova.');
+    });
   };
   // Annulla / Esci: si torna indietro e per rientrare serve di nuovo il codice.
   // Serve su un telefono che passa di mano, e perche' la schedina non resti
@@ -520,7 +556,7 @@ details.g[open] > summary{border-bottom:1px solid var(--line)}
         <article class="match" data-mid="G02-09"><header><div class="meta"><span class="num">09</span><span class="ris">0&ndash;4 <span class="sg sg-2">2</span></span></div><h3>Lecce <span class="v">&ndash;</span> Roma</h3></header><div class="picks"><div class="pick pk2" data-chi="Berta"><span class="who">Berta</span><span class="sg sg-2">2</span><span class="sc">0&ndash;3</span><span class="pts">1</span></div><div class="pick pk2" data-chi="Super Gulp"><span class="who">Super Gulp</span><span class="sg sg-2">2</span><span class="sc">0&ndash;3</span><span class="pts">1</span></div><div class="pick" data-chi="Lenzuolo"><span class="who">Lenzuolo</span><span class="sg sg-x">X</span><span class="sc">2&ndash;2</span><span class="pts">0</span></div><div class="pick pk2" data-chi="Just Lele"><span class="who">Just Lele</span><span class="sg sg-2">2</span><span class="sc">1&ndash;4</span><span class="pts">1</span></div><div class="pick pk2" data-chi="Lippi"><span class="who">Lippi</span><span class="sg sg-2">2</span><span class="sc">0&ndash;2</span><span class="pts">1</span></div></div></article>
         <article class="match" data-mid="G02-10"><header><div class="meta"><span class="num">10</span><span class="ris">1&ndash;0 <span class="sg sg-1">1</span></span></div><h3>Atalanta <span class="v">&ndash;</span> Bologna</h3></header><p class="unan">tutti e cinque sullo stesso segno</p><div class="picks"><div class="pick pk2" data-chi="Berta"><span class="who">Berta</span><span class="sg sg-1">1</span><span class="sc">2&ndash;1</span><span class="pts">1</span></div><div class="pick pk2" data-chi="Super Gulp"><span class="who">Super Gulp</span><span class="sg sg-1">1</span><span class="sc">2&ndash;1</span><span class="pts">1</span></div><div class="pick pk2" data-chi="Lenzuolo"><span class="who">Lenzuolo</span><span class="sg sg-1">1</span><span class="sc">3&ndash;0</span><span class="pts">1</span></div><div class="pick pk2" data-chi="Just Lele"><span class="who">Just Lele</span><span class="sg sg-1">1</span><span class="sc">2&ndash;1</span><span class="pts">1</span></div><div class="pick pk2" data-chi="Lippi"><span class="who">Lippi</span><span class="sg sg-1">1</span><span class="sc">2&ndash;1</span><span class="pts">1</span></div></div></article></div></details></div></section>
 
-  <p class="fine">Dati aggiornati il 07/09/2026 alle 01:04</p>
+  <p class="fine">Dati aggiornati il 07/09/2026 alle 01:11</p>
 </div>
 
 <script>(function(){

@@ -160,12 +160,43 @@ def _script(cfg, partite):
       b.setAttribute('aria-pressed','true'); scelto = b.dataset.nome;
     };
   });
+  // Il codice si verifica QUI, non al momento dell'invio: altrimenti chiunque
+  // potrebbe aprire la schedina di chiunque, e scoprirebbe di aver sbagliato
+  // solo dopo aver compilato tutto.
+  function sbagliato(testo){
+    var campo = $('codice');
+    campo.classList.remove('sbagliato');
+    void campo.offsetWidth;                 // riavvia l'animazione
+    campo.classList.add('sbagliato');
+    campo.select();
+    messaggio('esito1', testo, 'ko');
+  }
+
   $('entra').onclick = function(){
     var codice = $('codice').value.trim();
     if(!scelto){ return messaggio('esito1','Scegli il tuo nome.','ko') }
-    if(!/^[0-9]{4}$/.test(codice)){ return messaggio('esito1','Il codice e di quattro cifre.','ko') }
-    scrivi(IO, {nome: scelto, codice: codice});
-    entra();
+    if(!/^[0-9]{4}$/.test(codice)){ return sbagliato('Il codice e di quattro cifre.') }
+    var bottone = $('entra');
+    bottone.disabled = true;
+    messaggio('esito1','Controllo...','');
+    fetch(CFG.endpoint, {
+      method: 'POST', redirect: 'follow',
+      headers: {'Content-Type': 'text/plain;charset=utf-8'},
+      body: JSON.stringify({azione: 'controlla', giocatore: scelto, codice: codice})
+    }).then(function(r){ return r.json() }).then(function(esito){
+      bottone.disabled = false;
+      if(esito && esito.ok){
+        messaggio('esito1','');
+        $('codice').classList.remove('sbagliato');
+        scrivi(IO, {nome: scelto, codice: codice});
+        entra();
+      } else {
+        sbagliato('Codice sbagliato: quello e il codice di un altro.');
+      }
+    }).catch(function(){
+      bottone.disabled = false;
+      sbagliato('Non riesco a verificare il codice: controlla la connessione e riprova.');
+    });
   };
   // Annulla / Esci: si torna indietro e per rientrare serve di nuovo il codice.
   // Serve su un telefono che passa di mano, e perche' la schedina non resti

@@ -122,3 +122,15 @@ def test_c_e_il_pannello_di_schedina_gia_inviata():
     html = schedina.blocco(DATI, adesso=PRIMA, endpoint=ENDPOINT)
     assert 'id="fatto"' in html
     assert "chiaveInviato" in html                    # se l'ha gia' mandata, resta bloccata
+
+
+def test_il_codice_si_verifica_prima_di_aprire_la_schedina():
+    """Il buco che c'era: bastavano quattro cifre qualsiasi per aprire la
+    schedina di chiunque. Ora il codice viene chiesto allo script in Google
+    prima di far entrare."""
+    html = schedina.blocco(DATI, adesso=PRIMA, endpoint=ENDPOINT)
+    assert "azione: 'controlla'" in html
+    assert "sbagliato('Codice sbagliato" in html
+    # e non si entra piu' solo perche' sono quattro cifre
+    fra = html[html.index("$('entra').onclick"):html.index("$('annulla').onclick")]
+    assert fra.index("fetch(CFG.endpoint") < fra.index("scrivi(IO,")

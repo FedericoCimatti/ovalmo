@@ -71,6 +71,13 @@ function doPost(e) {
     var giornata = parseInt(dati.giornata, 10);
     var pronostici = dati.pronostici || {};
 
+    // La pagina chiede qui se il codice e' giusto, prima di aprire la schedina.
+    // Senza questo, chiunque potrebbe aprire la schedina di chiunque: il codice
+    // verrebbe controllato solo all'invio, cioe' troppo tardi.
+    if (dati.azione === 'controlla') {
+      return risposta({ok: !!CODICI[nome] && CODICI[nome] === codice});
+    }
+
     if (!CODICI[nome]) return risposta({ok: false, errore: 'nome sconosciuto'});
     if (CODICI[nome] !== codice) return risposta({ok: false, errore: 'codice sbagliato'});
     if (!(giornata >= 1 && giornata <= 38)) return risposta({ok: false, errore: 'giornata non valida'});
