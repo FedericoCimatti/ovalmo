@@ -116,3 +116,15 @@ def test_classifica_in_cima_alla_pagina():
     html = genera(dati, DOPO)
     # Berta: 3 + 3 = 6 punti, in testa
     assert "in testa Berta con 6 punti" in html
+
+
+def test_le_giornate_in_archivio_sono_tutte_chiuse():
+    """Nessuna giornata precedente si apre da sola: la pagina si apre sulla
+    classifica e sulla giornata in corso, il resto lo si apre se si vuole."""
+    dati = dict(DATI, risultati={"G07-01": [2, 1], "G07-02": [0, 0]},
+                calendario={**DATI["calendario"],
+                            "8": [["17/10/2026", "20:45", "Napoli", "Como"],
+                                  ["18/10/2026", "15:00", "Genoa", "Parma"]]})
+    html = genera(dati, orari.quando("15/10/2026", "12:00"))
+    assert "<details class=\"g\">" in html
+    assert "<details class=\"g\" open>" not in html and " open>" not in html

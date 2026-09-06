@@ -186,11 +186,12 @@ def genera(dati, template, adesso=None, aggiornato=None):
     # ---------- archivio giornate concluse ----------
     if archivio:
         blocchi = []
-        for i, g in enumerate(archivio):
+        for g in archivio:
             re_g, mx = re_della_giornata(conti, giocatori, g)
             etichetta = (f'{E(_elenco(re_g))}<br>re della giornata &middot; {mx} punti' if re_g else 'nessun punto')
             blocchi.append(
-                f'<details class="g"{" open" if i == 0 else ""}>'
+                # tutte chiuse: chi vuole rivedere una giornata la apre
+                '<details class="g">'
                 f'<summary><span class="gname">Giornata {g}</span>'
                 f'<span class="gre">{etichetta}</span><span class="caret">&rsaquo;</span></summary>'
                 f'<div class="gbody">' + "\n        ".join(carte(g)) + '</div></details>')
