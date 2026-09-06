@@ -47,19 +47,20 @@ def test_il_modulo_non_lascia_trapelare_i_pronostici_degli_altri():
     assert '"1", 3, 0' not in html and "3-0" not in html
 
 
-def test_i_codici_dei_giocatori_non_finiscono_nella_pagina():
-    """I codici vivono solo dentro lo script in Google. Se uno finisse nella
-    pagina sarebbe pubblico su internet, e chiunque potrebbe mandare pronostici
-    fingendosi qualcun altro."""
+def test_nel_repository_non_ci_sono_codici_veri():
+    """I codici vivono solo dentro lo script in Google. Questo repository e'
+    pubblico: se un codice finisse qui, chiunque potrebbe mandare pronostici
+    fingendosi qualcun altro. E' l'errore che abbiamo gia' fatto una volta."""
     import os
     qui = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
     with open(os.path.join(qui, "google", "ricevi_pronostici.gs"), encoding="utf-8") as f:
         script = f.read()
-    codici = re.findall(r"':\s*'(\d{4})'", script) + re.findall(r"'(\d{4})'", script)
-    assert codici, "non ho trovato nessun codice nello script: il test non sta controllando niente"
+    codici = re.findall(r"'(\d{4})'", script)
+    assert not codici, (
+        f"nel file su GitHub ci sono dei codici veri: {codici}. Il repository e' pubblico: "
+        f"i codici vanno solo nella copia dentro Google, qui devono restare i segnaposto XXXX")
     html = schedina.blocco(DATI, adesso=PRIMA, endpoint=ENDPOINT)
-    trovati = [c for c in set(codici) if c in html]
-    assert not trovati, f"codici finiti nella pagina: {trovati}"
+    assert "codice" not in html or "io.codice" in html
 
 
 def test_senza_endpoint_si_ripiega_sul_modulo_google():

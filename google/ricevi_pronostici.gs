@@ -27,13 +27,18 @@
  */
 
 // nome del giocatore -> il suo codice personale a quattro cifre.
-// Questi codici NON sono pubblici: stanno solo qui dentro.
+//
+// ATTENZIONE: questo file sta su GitHub, che e' pubblico. I codici veri NON
+// vanno scritti qui: si mettono solo nella copia che vive dentro Google, dove
+// li vede soltanto chi ha accesso all'account. Qui restano i segnaposto.
+// Se un codice finisse in questo file, chiunque potrebbe mandare pronostici
+// fingendosi qualcun altro.
 var CODICI = {
-  'Berta': '2308',
-  'Super Gulp': '6684',
-  'Lenzuolo': '2815',
-  'Just Lele': '6398',
-  'Lippi': '6583'
+  'Berta': 'XXXX',
+  'Super Gulp': 'XXXX',
+  'Lenzuolo': 'XXXX',
+  'Just Lele': 'XXXX',
+  'Lippi': 'XXXX'
 };
 
 // id del foglio dove finiscono i pronostici (nell'indirizzo, fra /d/ e /edit)
