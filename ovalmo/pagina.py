@@ -216,9 +216,9 @@ def genera(dati, template, adesso=None, aggiornato=None):
 
     modulo = schedina.blocco(dati, adesso=adesso, endpoint=endpoint, modulo_google=MODULO)
     avviso = _script_avviso(calendario, risultati, giornate)
-    fine = (f"Dati aggiornati il {aggiornato:%d/%m/%Y} alle {aggiornato:%H:%M} &middot; "
-            "aggiornamento automatico ogni ora &middot; "
-            "i punti li calcola il foglio, non la memoria di nessuno")
+    # solo la data: e' l'unica cosa che dice se il sistema e' vivo. Il resto
+    # del vecchio piede di pagina era spiegazione che non serve piu' a nessuno.
+    fine = f"Dati aggiornati il {aggiornato:%d/%m/%Y} alle {aggiornato:%H:%M}"
 
     page = template
     for k, v in [("__OG__", E(og)), ("__URL__", E(SITO)), ("__AVVISO__", avviso),
