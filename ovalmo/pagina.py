@@ -35,20 +35,20 @@ def _giorn(n):
 def quando_si_gioca(data, ora, adesso):
     """Come si scrive l'orario di una partita non ancora giocata.
 
-    "oggi 18:30", "domani 20:45", "12/09 15:00". L'anno non serve: nessuno
+    "Oggi 18:30", "Domani 20:45", "12/09 15:00". L'anno non serve: nessuno
     pronostica una partita dell'anno prossimo.
     """
     giorno = orari.quando(data, ora).date()
     mancano = (giorno - adesso.date()).days
     if mancano == 0:
-        etichetta = "oggi"
+        etichetta = "Oggi"
     elif mancano == 1:
-        etichetta = "domani"
+        etichetta = "Domani"
     else:
         etichetta = f"{giorno:%d/%m}"
     testo = str(ora).strip()
     if not testo or ":" not in testo:
-        return f"{etichetta} &middot; orario da definire"
+        return f"{etichetta} &middot; orario ancora da definire"
     return f"{etichetta} {testo}"
 
 
