@@ -11,13 +11,16 @@
  * chiamando questo indirizzo, che sulla pagina e' pubblico.
  *
  * COME SI INSTALLA (una volta sola):
- *   1. apri il foglio "Trofeo Ovalmo - pronostici (Responses)"
- *   2. menu Estensioni > Apps Script
- *   3. cancella quello che c'e' e incolla questo file
+ *   1. vai su script.google.com e crea un progetto nuovo
+ *   2. incolla questo file al posto di quello che c'e'
+ *   3. metti l'id del foglio in ID_FOGLIO qui sotto (si legge nell'indirizzo
+ *      del foglio, fra /d/ e /edit). Nel file su GitHub resta il segnaposto:
+ *      l'id non e' un segreto, ma non ha motivo di stare su una pagina pubblica
  *   4. Salva, poi Distribuisci > Nuova distribuzione > tipo "App web"
  *      - Esegui come: me stesso
  *      - Chi ha accesso: Chiunque
- *   5. copia l'indirizzo che compare: e' quello che va messo nel sito
+ *   5. copia l'indirizzo che compare: va scritto in dati/stagione.json,
+ *      campo endpoint_pronostici
  *
  * Se un giorno cambiano i giocatori o i codici, si modifica la tabella qui
  * sotto e si rifa' Distribuisci > Gestisci distribuzioni.
@@ -33,6 +36,8 @@ var CODICI = {
   'Lippi': '6583'
 };
 
+// id del foglio dove finiscono i pronostici (nell'indirizzo, fra /d/ e /edit)
+var ID_FOGLIO = 'INCOLLA_QUI_L_ID_DEL_FOGLIO';
 var FOGLIO = 'Pronostici';
 var PARTITE_PER_GIORNATA = 10;
 
@@ -63,7 +68,7 @@ function doPost(e) {
 
 /** Il foglio dove finiscono i pronostici, creato al primo invio. */
 function preparaFoglio() {
-  var libro = SpreadsheetApp.getActiveSpreadsheet();
+  var libro = SpreadsheetApp.openById(ID_FOGLIO);
   var foglio = libro.getSheetByName(FOGLIO);
   if (!foglio) {
     foglio = libro.insertSheet(FOGLIO);

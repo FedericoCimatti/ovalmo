@@ -323,10 +323,150 @@ details.g[open] > summary{border-bottom:1px solid var(--line)}
     <div class="gtab"><div class="tw"><table><thead><tr><th>G.</th><th class="num">Berta</th><th class="num">Super Gulp</th><th class="num">Lenzuolo</th><th class="num">Just Lele</th><th class="num">Lippi</th><th>Re</th></tr></thead><tbody><tr><td class="g">2</td><td class="">9</td><td class="">8</td><td class="">8</td><td class="">7</td><td class="best">12</td><td class="re">Lippi</td></tr><tr><td class="g">3</td><td class="best">10</td><td class="">7</td><td class="">5</td><td class="">7</td><td class="">7</td><td class="re">Berta</td></tr></tbody></table></div></div>
   </section>
 
-  <section><h2>Manda i tuoi pronostici</h2><p class="lede">Giornata 4, si chiude il 11/09 alle 20:45.</p><a class="cta" href="https://forms.gle/vuZK5rm6N8b8Z2Zc7" target="_blank" rel="noopener">Vai al modulo</a></section>
+  <section id="modulo">
+    <h2>Manda i tuoi pronostici &mdash; giornata 4</h2>
+    <p class="lede">Si chiude al primo calcio d&rsquo;inizio, 11/09 alle 20:45. Puoi correggere quello
+    che hai mandato fino a quel momento: vale sempre l&rsquo;ultimo invio. Basta il segno, il
+    risultato esatto vale di piu&rsquo;.</p>
+    <div class="mod">
+      <div id="chisei">
+        <p class="lede" style="margin-top:0">Chi sei?</p>
+        <div class="chi"><button type="button" data-nome="Berta" aria-pressed="false">Berta</button><button type="button" data-nome="Super Gulp" aria-pressed="false">Super Gulp</button><button type="button" data-nome="Lenzuolo" aria-pressed="false">Lenzuolo</button><button type="button" data-nome="Just Lele" aria-pressed="false">Just Lele</button><button type="button" data-nome="Lippi" aria-pressed="false">Lippi</button></div>
+        <div class="cod">
+          <input type="tel" id="codice" inputmode="numeric" maxlength="4" placeholder="codice">
+          <button type="button" class="go" id="entra">Entra</button>
+        </div>
+        <p class="esito" id="esito1"></p>
+      </div>
+      <form id="schedina" hidden>
+        <p class="lede" style="margin-top:0">Ciao <b id="ciao"></b> &mdash;
+          <button type="button" class="cambia" id="cambia">non sei tu?</button></p>
+        <div class="riga" data-p="P01"><div><b>Venezia &ndash; Fiorentina</b><small>11/09/2026 &middot; 20:45</small></div><div class="tre"><button type="button" data-s="1" aria-pressed="false">1</button><button type="button" data-s="X" aria-pressed="false">X</button><button type="button" data-s="2" aria-pressed="false">2</button></div><div><input class="gol" type="number" min="0" max="19" inputmode="numeric" aria-label="gol Venezia"> <input class="gol" type="number" min="0" max="19" inputmode="numeric" aria-label="gol Fiorentina"></div></div><div class="riga" data-p="P02"><div><b>Genoa &ndash; Frosinone</b><small>12/09/2026 &middot; 15:00</small></div><div class="tre"><button type="button" data-s="1" aria-pressed="false">1</button><button type="button" data-s="X" aria-pressed="false">X</button><button type="button" data-s="2" aria-pressed="false">2</button></div><div><input class="gol" type="number" min="0" max="19" inputmode="numeric" aria-label="gol Genoa"> <input class="gol" type="number" min="0" max="19" inputmode="numeric" aria-label="gol Frosinone"></div></div><div class="riga" data-p="P03"><div><b>Lazio &ndash; Milan</b><small>12/09/2026 &middot; 18:00</small></div><div class="tre"><button type="button" data-s="1" aria-pressed="false">1</button><button type="button" data-s="X" aria-pressed="false">X</button><button type="button" data-s="2" aria-pressed="false">2</button></div><div><input class="gol" type="number" min="0" max="19" inputmode="numeric" aria-label="gol Lazio"> <input class="gol" type="number" min="0" max="19" inputmode="numeric" aria-label="gol Milan"></div></div><div class="riga" data-p="P04"><div><b>Sassuolo &ndash; Juventus</b><small>13/09/2026 &middot; 20:45</small></div><div class="tre"><button type="button" data-s="1" aria-pressed="false">1</button><button type="button" data-s="X" aria-pressed="false">X</button><button type="button" data-s="2" aria-pressed="false">2</button></div><div><input class="gol" type="number" min="0" max="19" inputmode="numeric" aria-label="gol Sassuolo"> <input class="gol" type="number" min="0" max="19" inputmode="numeric" aria-label="gol Juventus"></div></div><div class="riga" data-p="P05"><div><b>Atalanta &ndash; Cagliari</b><small>12/09/2026 &middot; 20:45</small></div><div class="tre"><button type="button" data-s="1" aria-pressed="false">1</button><button type="button" data-s="X" aria-pressed="false">X</button><button type="button" data-s="2" aria-pressed="false">2</button></div><div><input class="gol" type="number" min="0" max="19" inputmode="numeric" aria-label="gol Atalanta"> <input class="gol" type="number" min="0" max="19" inputmode="numeric" aria-label="gol Cagliari"></div></div><div class="riga" data-p="P06"><div><b>Torino &ndash; Roma</b><small>14/09/2026 &middot; 18:30</small></div><div class="tre"><button type="button" data-s="1" aria-pressed="false">1</button><button type="button" data-s="X" aria-pressed="false">X</button><button type="button" data-s="2" aria-pressed="false">2</button></div><div><input class="gol" type="number" min="0" max="19" inputmode="numeric" aria-label="gol Torino"> <input class="gol" type="number" min="0" max="19" inputmode="numeric" aria-label="gol Roma"></div></div><div class="riga" data-p="P07"><div><b>Como &ndash; Parma</b><small>14/09/2026 &middot; 18:30</small></div><div class="tre"><button type="button" data-s="1" aria-pressed="false">1</button><button type="button" data-s="X" aria-pressed="false">X</button><button type="button" data-s="2" aria-pressed="false">2</button></div><div><input class="gol" type="number" min="0" max="19" inputmode="numeric" aria-label="gol Como"> <input class="gol" type="number" min="0" max="19" inputmode="numeric" aria-label="gol Parma"></div></div><div class="riga" data-p="P08"><div><b>Lecce &ndash; Monza</b><small>13/09/2026 &middot; 15:00</small></div><div class="tre"><button type="button" data-s="1" aria-pressed="false">1</button><button type="button" data-s="X" aria-pressed="false">X</button><button type="button" data-s="2" aria-pressed="false">2</button></div><div><input class="gol" type="number" min="0" max="19" inputmode="numeric" aria-label="gol Lecce"> <input class="gol" type="number" min="0" max="19" inputmode="numeric" aria-label="gol Monza"></div></div><div class="riga" data-p="P09"><div><b>Napoli &ndash; Bologna</b><small>13/09/2026 &middot; 18:00</small></div><div class="tre"><button type="button" data-s="1" aria-pressed="false">1</button><button type="button" data-s="X" aria-pressed="false">X</button><button type="button" data-s="2" aria-pressed="false">2</button></div><div><input class="gol" type="number" min="0" max="19" inputmode="numeric" aria-label="gol Napoli"> <input class="gol" type="number" min="0" max="19" inputmode="numeric" aria-label="gol Bologna"></div></div><div class="riga" data-p="P10"><div><b>Inter &ndash; Udinese</b><small>14/09/2026 &middot; 20:45</small></div><div class="tre"><button type="button" data-s="1" aria-pressed="false">1</button><button type="button" data-s="X" aria-pressed="false">X</button><button type="button" data-s="2" aria-pressed="false">2</button></div><div><input class="gol" type="number" min="0" max="19" inputmode="numeric" aria-label="gol Inter"> <input class="gol" type="number" min="0" max="19" inputmode="numeric" aria-label="gol Udinese"></div></div>
+        <p style="margin:14px 0 0"><button type="submit" class="go" id="invia">Invia i pronostici</button></p>
+        <p class="esito" id="esito2"></p>
+      </form>
+    </div>
+    </section>
+    <script>
+(function(){
+  var CFG = {"endpoint": "https://script.google.com/macros/s/AKfycbw_IHxapFTGiaAkzCtNIE2ewb0VvJnl5TXRuNI2QUA2hZeF3Sy2gjVpRDPyxKk0FUBm/exec", "giornata": 4, "giocatori": ["Berta", "Super Gulp", "Lenzuolo", "Just Lele", "Lippi"], "scadenza": "2026-09-11T20:45:00+02:00"}, PARTITE = [{"k": "P01", "n": "Venezia - Fiorentina"}, {"k": "P02", "n": "Genoa - Frosinone"}, {"k": "P03", "n": "Lazio - Milan"}, {"k": "P04", "n": "Sassuolo - Juventus"}, {"k": "P05", "n": "Atalanta - Cagliari"}, {"k": "P06", "n": "Torino - Roma"}, {"k": "P07", "n": "Como - Parma"}, {"k": "P08", "n": "Lecce - Monza"}, {"k": "P09", "n": "Napoli - Bologna"}, {"k": "P10", "n": "Inter - Udinese"}];
+  var IO = 'ovalmo-io', BOZZA = 'ovalmo-g' + CFG.giornata;
+  var $ = function(id){ return document.getElementById(id) };
+  var chisei = $('chisei'), schedina = $('schedina');
+  var scelto = null;
+
+  function leggi(chiave){ try { return JSON.parse(localStorage.getItem(chiave)) } catch(e){ return null } }
+  function scrivi(chiave, v){ try { localStorage.setItem(chiave, JSON.stringify(v)) } catch(e){} }
+
+  // ---- chi sei ----
+  chisei.querySelectorAll('.chi button').forEach(function(b){
+    b.onclick = function(){
+      chisei.querySelectorAll('.chi button').forEach(function(x){ x.setAttribute('aria-pressed','false') });
+      b.setAttribute('aria-pressed','true'); scelto = b.dataset.nome;
+    };
+  });
+  $('entra').onclick = function(){
+    var codice = $('codice').value.trim();
+    if(!scelto){ return messaggio('esito1','Scegli il tuo nome.','ko') }
+    if(!/^[0-9]{4}$/.test(codice)){ return messaggio('esito1','Il codice e di quattro cifre.','ko') }
+    scrivi(IO, {nome: scelto, codice: codice});
+    entra();
+  };
+  $('cambia').onclick = function(){
+    try { localStorage.removeItem(IO) } catch(e){}
+    schedina.hidden = true; chisei.hidden = false;
+  };
+
+  function entra(){
+    var io = leggi(IO);
+    if(!io || !io.nome) return;
+    $('ciao').textContent = io.nome;
+    chisei.hidden = true; schedina.hidden = false;
+    var bozza = leggi(BOZZA) || {};
+    PARTITE.forEach(function(p){
+      var testo = bozza[p.k]; if(!testo) return;
+      var riga = schedina.querySelector('[data-p="' + p.k + '"]');
+      var seg = (testo.match(/^([12X])/) || [])[1];
+      if(seg){ riga.querySelectorAll('.tre button').forEach(function(b){
+        b.setAttribute('aria-pressed', b.dataset.s === seg ? 'true' : 'false') }) }
+      var gol = testo.match(/(\d+)-(\d+)/);
+      if(gol){ var caselle = riga.querySelectorAll('.gol');
+        caselle[0].value = gol[1]; caselle[1].value = gol[2] }
+    });
+  }
+
+  // ---- segni ----
+  schedina.querySelectorAll('.riga').forEach(function(riga){
+    riga.querySelectorAll('.tre button').forEach(function(b){
+      b.onclick = function(){
+        var gia = b.getAttribute('aria-pressed') === 'true';
+        riga.querySelectorAll('.tre button').forEach(function(x){ x.setAttribute('aria-pressed','false') });
+        b.setAttribute('aria-pressed', gia ? 'false' : 'true');
+      };
+    });
+  });
+
+  function raccogli(){
+    var fuori = {}, quanti = 0;
+    PARTITE.forEach(function(p){
+      var riga = schedina.querySelector('[data-p="' + p.k + '"]');
+      var premuto = riga.querySelector('.tre button[aria-pressed="true"]');
+      var caselle = riga.querySelectorAll('.gol');
+      var casa = caselle[0].value.trim(), osp = caselle[1].value.trim();
+      var testo = '';
+      if(premuto) testo = premuto.dataset.s;
+      if(casa !== '' && osp !== '') testo = (testo ? testo + ' ' : '') + casa + '-' + osp;
+      if(testo){ fuori[p.k] = testo; quanti++ }
+    });
+    return {pronostici: fuori, quanti: quanti};
+  }
+
+  function messaggio(id, testo, classe){
+    var e = $(id); e.textContent = testo; e.className = 'esito ' + (classe || '');
+  }
+
+  schedina.onsubmit = function(ev){
+    ev.preventDefault();
+    var io = leggi(IO); if(!io) return;
+    if(new Date() >= new Date(CFG.scadenza)){
+      return messaggio('esito2','I pronostici di questa giornata sono chiusi: si e gia cominciato.','ko');
+    }
+    var raccolto = raccogli();
+    if(!raccolto.quanti){ return messaggio('esito2','Non hai messo nessun pronostico.','ko') }
+    scrivi(BOZZA, raccolto.pronostici);
+    var invia = $('invia'); invia.disabled = true;
+    messaggio('esito2','Sto mandando...','');
+    fetch(CFG.endpoint, {
+      method: 'POST', redirect: 'follow',
+      headers: {'Content-Type': 'text/plain;charset=utf-8'},
+      body: JSON.stringify({
+        giocatore: io.nome, codice: io.codice,
+        giornata: CFG.giornata, pronostici: raccolto.pronostici
+      })
+    }).then(function(r){ return r.json() }).then(function(esito){
+      invia.disabled = false;
+      if(esito && esito.ok){
+        messaggio('esito2','Ricevuto: ' + raccolto.quanti + ' partite su ' + PARTITE.length +
+          '. Puoi correggere fino al calcio d inizio.','ok');
+      } else if(esito && esito.errore === 'codice sbagliato'){
+        messaggio('esito2','Codice sbagliato. Tocca "non sei tu?" e riprova.','ko');
+      } else {
+        messaggio('esito2','Non ha funzionato: ' + ((esito && esito.errore) || 'errore') +
+          '. Riprova fra un minuto.','ko');
+      }
+    }).catch(function(){
+      invia.disabled = false;
+      messaggio('esito2','Non sono riuscito a mandarli: controlla la connessione e riprova. ' +
+        'Quello che hai scritto resta qui.','ko');
+    });
+  };
+
+  if(leggi(IO)) entra();
+})();
+</script>
 
   <section>
-    <h2>La schedina &mdash; giornata 3</h2><p class="lede">Tutti e cinque hanno mandato. Il segno grande &egrave; l&rsquo;esito, sotto il risultato esatto.</p><a class="cta" href="https://forms.gle/vuZK5rm6N8b8Z2Zc7" target="_blank" rel="noopener">Manda i tuoi pronostici</a><p class="cta-note">Nel modulo trovi le stesse dieci partite, nello stesso ordine. Si risponde cos&igrave;: <strong>1 (2-1)</strong>.</p><div class="matches"><article class="match"><header><div class="meta"><span class="num">01</span><span class="ris">1&ndash;4 <span class="sg sg-2">2</span></span></div><h3>Genoa <span class="v">&ndash;</span> Como</h3></header><p class="unan">tutti e cinque sullo stesso segno</p><div class="picks"><div class="pick pk2"><span class="who">Berta</span><span class="sg sg-2">2</span><span class="sc">0&ndash;2</span><span class="pts">1</span></div><div class="pick pk2"><span class="who">Super Gulp</span><span class="sg sg-2">2</span><span class="sc">1&ndash;2</span><span class="pts">1</span></div><div class="pick pk2"><span class="who">Lenzuolo</span><span class="sg sg-2">2</span><span class="sc">0&ndash;2</span><span class="pts">1</span></div><div class="pick pk2"><span class="who">Just Lele</span><span class="sg sg-2">2</span><span class="sc">0&ndash;3</span><span class="pts">1</span></div><div class="pick pk2"><span class="who">Lippi</span><span class="sg sg-2">2</span><span class="sc">1&ndash;2</span><span class="pts">1</span></div></div></article>
+    <h2>La schedina &mdash; giornata 3</h2><p class="lede">Tutti e cinque hanno mandato. Il segno grande &egrave; l&rsquo;esito, sotto il risultato esatto.</p><a class="cta" href="#modulo">Manda i tuoi pronostici</a><p class="cta-note">Si compila qui sotto, direttamente in questa pagina.</p><div class="matches"><article class="match"><header><div class="meta"><span class="num">01</span><span class="ris">1&ndash;4 <span class="sg sg-2">2</span></span></div><h3>Genoa <span class="v">&ndash;</span> Como</h3></header><p class="unan">tutti e cinque sullo stesso segno</p><div class="picks"><div class="pick pk2"><span class="who">Berta</span><span class="sg sg-2">2</span><span class="sc">0&ndash;2</span><span class="pts">1</span></div><div class="pick pk2"><span class="who">Super Gulp</span><span class="sg sg-2">2</span><span class="sc">1&ndash;2</span><span class="pts">1</span></div><div class="pick pk2"><span class="who">Lenzuolo</span><span class="sg sg-2">2</span><span class="sc">0&ndash;2</span><span class="pts">1</span></div><div class="pick pk2"><span class="who">Just Lele</span><span class="sg sg-2">2</span><span class="sc">0&ndash;3</span><span class="pts">1</span></div><div class="pick pk2"><span class="who">Lippi</span><span class="sg sg-2">2</span><span class="sc">1&ndash;2</span><span class="pts">1</span></div></div></article>
       <article class="match"><header><div class="meta"><span class="num">02</span><span class="ris">1&ndash;2 <span class="sg sg-2">2</span></span></div><h3>Fiorentina <span class="v">&ndash;</span> Torino</h3></header><div class="picks"><div class="pick"><span class="who">Berta</span><span class="sg sg-1">1</span><span class="sc">1&ndash;0</span><span class="pts">0</span></div><div class="pick"><span class="who">Super Gulp</span><span class="sg sg-1">1</span><span class="sc">2&ndash;1</span><span class="pts">0</span></div><div class="pick"><span class="who">Lenzuolo</span><span class="sg sg-x">X</span><span class="sc">1&ndash;1</span><span class="pts">0</span></div><div class="pick"><span class="who">Just Lele</span><span class="sg sg-1">1</span><span class="sc">2&ndash;1</span><span class="pts">0</span></div><div class="pick"><span class="who">Lippi</span><span class="sg sg-1">1</span><span class="sc">2&ndash;1</span><span class="pts">0</span></div></div></article>
       <article class="match"><header><div class="meta"><span class="num">03</span><span class="ris">3&ndash;2 <span class="sg sg-1">1</span></span></div><h3>Inter <span class="v">&ndash;</span> Napoli</h3></header><div class="picks"><div class="pick pk2"><span class="who">Berta</span><span class="sg sg-1">1</span><span class="sc">4&ndash;1</span><span class="pts">1</span></div><div class="pick pk2"><span class="who">Super Gulp</span><span class="sg sg-1">1</span><span class="sc">2&ndash;0</span><span class="pts">1</span></div><div class="pick"><span class="who">Lenzuolo</span><span class="sg sg-2">2</span><span class="sc">0&ndash;1</span><span class="pts">0</span></div><div class="pick pk2"><span class="who">Just Lele</span><span class="sg sg-1">1</span><span class="sc">1&ndash;0</span><span class="pts">1</span></div><div class="pick pk2"><span class="who">Lippi</span><span class="sg sg-1">1</span><span class="sc">2&ndash;0</span><span class="pts">1</span></div></div></article>
       <article class="match"><header><div class="meta"><span class="num">04</span><span class="ris">2&ndash;1 <span class="sg sg-1">1</span></span></div><h3>Roma <span class="v">&ndash;</span> Atalanta</h3></header><p class="unan">tutti e cinque sullo stesso segno</p><div class="picks"><div class="pick pk3"><span class="who">Berta</span><span class="sg sg-1">1</span><span class="sc">2&ndash;1</span><span class="pts">3</span></div><div class="pick pk2"><span class="who">Super Gulp</span><span class="sg sg-1">1</span><span class="sc">2&ndash;0</span><span class="pts">1</span></div><div class="pick pk3"><span class="who">Lenzuolo</span><span class="sg sg-1">1</span><span class="sc">2&ndash;1</span><span class="pts">3</span></div><div class="pick pk2"><span class="who">Just Lele</span><span class="sg sg-1">1</span><span class="sc">3&ndash;1</span><span class="pts">1</span></div><div class="pick pk2"><span class="who">Lippi</span><span class="sg sg-1">1</span><span class="sc">2&ndash;0</span><span class="pts">1</span></div></div></article>
@@ -359,7 +499,7 @@ details.g[open] > summary{border-bottom:1px solid var(--line)}
     <p class="lede" style="margin-top:16px">I punti non si sommano: chi prende il risultato esatto fa 3, non 3+1. Pronostici entro il primo fischio della giornata. A pari punti passa avanti chi ha pi&ugrave; risultati esatti.</p>
   </section>
 
-  <p class="fine">Dati aggiornati il 06/09/2026 alle 23:41 &middot; aggiornamento automatico ogni ora &middot; i punti li calcola il foglio, non la memoria di nessuno</p>
+  <p class="fine">Dati aggiornati il 07/09/2026 alle 00:04 &middot; aggiornamento automatico ogni ora &middot; i punti li calcola il foglio, non la memoria di nessuno</p>
   <p><a class="scarica" href="Trofeo_Ovalmo.xlsx" download>Scarica il foglio Excel con tutti i dettagli</a></p>
 </div>
 

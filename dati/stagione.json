@@ -312,7 +312,7 @@
   ]
  },
  "competizione": "SA",
- "endpoint_pronostici": "",
+ "endpoint_pronostici": "https://script.google.com/macros/s/AKfycbw_IHxapFTGiaAkzCtNIE2ewb0VvJnl5TXRuNI2QUA2hZeF3Sy2gjVpRDPyxKk0FUBm/exec",
  "id_partite": {
   "G02-01": 558625,
   "G02-02": 558627,
