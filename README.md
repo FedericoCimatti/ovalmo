@@ -1,7 +1,7 @@
 # Trofeo Ovalmo
 
 Gioco di pronostici sulla Serie A fra cinque amici, con un sito che si aggiorna
-da solo: **https://FedericoCimatti.github.io/ovalmo/**
+da solo: **https://federicocimatti.github.io/ovalmo/**
 
 Nessuno deve lanciare niente. Un'automazione di GitHub gira ogni ora, prende i
 risultati e i pronostici, ricalcola e ripubblica la pagina solo se e' cambiato

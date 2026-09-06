@@ -21,7 +21,7 @@ from .punteggio import calcola, re_della_giornata, segno, segno_pronosticato
 MODULO = "https://forms.gle/vuZK5rm6N8b8Z2Zc7"
 # indirizzo pubblico della pagina: serve all'anteprima del link su WhatsApp.
 # Se e' sbagliato la pagina funziona lo stesso, si presenta solo peggio.
-SITO = "https://FedericoCimatti.github.io/ovalmo/"
+SITO = "https://federicocimatti.github.io/ovalmo/"
 # dopo quante ore dal calcio d'inizio una partita senza risultato diventa sospetta
 ORE_PRIMA_DI_INSOSPETTIRSI = 4
 
