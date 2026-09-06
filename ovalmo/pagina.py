@@ -201,25 +201,6 @@ def genera(dati, template, adesso=None, aggiornato=None):
     else:
         archivio_html = ''
 
-    # ---------- tabella punti per giornata ----------
-    con_punti = [g for g in giornate if giocate_g[g] > 0]
-    if con_punti:
-        intest = "".join(f'<th class="num">{E(p_)}</th>' for p_ in giocatori)
-        righe_g = []
-        for g in con_punti:
-            mx = max(per_g[g].values())
-            re_g, _ = re_della_giornata(conti, giocatori, g)
-            celle = "".join(
-                f'<td class="{"best" if per_g[g][p_] == mx and mx > 0 else ""}">{per_g[g][p_]}</td>'
-                for p_ in giocatori)
-            righe_g.append(f'<tr><td class="g">{g}</td>{celle}'
-                           f'<td class="re">{E(_elenco(re_g)) if re_g else "&mdash;"}</td></tr>')
-        tabella_g = ('<div class="gtab"><div class="tw"><table><thead><tr><th>G.</th>' + intest
-                     + '<th>Re</th></tr></thead><tbody>'
-                     + "".join(righe_g) + '</tbody></table></div></div>')
-    else:
-        tabella_g = ''
-
     tag = f"Giornata {g_show}" + (" &middot; in attesa dei risultati" if giocate_g.get(g_show, 0) == 0 else "")
     sub = "Serie A 2026/27 &middot; " + (_giorn(len(concluse)) if concluse else "si comincia dalla seconda")
 
@@ -243,11 +224,11 @@ def genera(dati, template, adesso=None, aggiornato=None):
     for k, v in [("__OG__", E(og)), ("__URL__", E(SITO)), ("__AVVISO__", avviso),
                  ("__MODULO__", modulo),
                  ("__TAG__", tag), ("__SUB__", sub), ("__LEDE__", lede), ("__TABELLA__", tabella),
-                 ("__TABELLA_G__", tabella_g), ("__FEATURED__", featured), ("__ARCHIVIO__", archivio_html),
+                 ("__FEATURED__", featured), ("__ARCHIVIO__", archivio_html),
                  ("__FINE__", fine)]:
         page = page.replace(k, v)
     resti = [k for k in ("__OG__", "__URL__", "__AVVISO__", "__MODULO__", "__TAG__", "__SUB__", "__LEDE__",
-                         "__TABELLA__", "__TABELLA_G__", "__FEATURED__", "__ARCHIVIO__", "__FINE__")
+                         "__TABELLA__", "__FEATURED__", "__ARCHIVIO__", "__FINE__")
              if k in page]
     assert not resti, f"segnaposto non sostituiti: {resti}"
     return page
