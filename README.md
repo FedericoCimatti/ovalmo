@@ -41,6 +41,7 @@ I file, uno per mestiere:
 | `ovalmo/risultati.py` | calendario e risultati da football-data.org |
 | `ovalmo/modulo.py` | legge i pronostici dal foglio Google |
 | `ovalmo/schedina.py` | il modulo per mandare i pronostici, dentro la pagina |
+| `ovalmo/diretta.py` | i gol e i punti che si muovono mentre si gioca |
 | `google/ricevi_pronostici.gs` | lo script dentro Google che riceve i pronostici |
 | `ovalmo/punteggio.py` | punti e classifica |
 | `ovalmo/pagina.py` | riempie `template.html` e produce la pagina |
@@ -177,6 +178,22 @@ Google invece di mostrare una schedina che non saprebbe dove mandare niente.
 
 Il lettore riconosce da solo quale dei due fogli sta leggendo (vecchio modulo o
 nuovo), quindi il passaggio dall'uno all'altro non richiede di cambiare codice.
+
+## La diretta
+
+Mentre si gioca, la pagina non aspetta il giro orario: ogni 45 secondi chiede
+allo script dentro Google come vanno le partite e aggiorna punteggi, punti e
+classifica sotto gli occhi di chi guarda. Si ferma da sola quando la scheda del
+browser non e' in primo piano, e quando non c'e' nessuna partita in corso non
+chiama nessuno.
+
+I conti veri restano in `punteggio.py`: la diretta parte dai totali gia'
+calcolati e somma soltanto le partite ancora aperte. E' quello che impedisce
+alla classifica in diretta di divergere da quella vera - c'e' un test apposta.
+
+Serve il token di football-data anche dentro Google: **Impostazioni progetto >
+Proprieta' script > FD_TOKEN**. Se manca, la diretta semplicemente non si
+attiva e la pagina resta quella del giro orario.
 
 ### Cancellare un pronostico mandato per sbaglio
 

@@ -94,7 +94,7 @@ def blocco(dati, adesso=None, endpoint=None, modulo_google=None):
     risultato esatto vale di piu&rsquo;. <strong>Una volta inviata la schedina non si pu&ograve;
     pi&ugrave; cambiare</strong>, quindi controllala prima di mandarla. Gli altri vedono che hai
     mandato, non che cosa hai scritto.</p>
-    <p class="lede">{_chi(consegnato, mancano)}</p>
+    <p class="lede" id="chiHaMandato" data-giornata="{g}">{_chi(consegnato, mancano)}</p>
     <div class="mod">
       <div id="chisei">
         <p class="lede" style="margin-top:0">Chi sei?</p>

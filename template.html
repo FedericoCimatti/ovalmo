@@ -286,6 +286,14 @@ details.g[open] > summary{border-bottom:1px solid var(--line)}
   font:600 15px/1 var(--ff-s); padding:12px 18px; border-radius:10px; cursor:pointer;
   border:1px solid var(--line); background:var(--paper); color:var(--mute); margin-left:8px}
 .mod .no:hover{color:var(--ink2); border-color:var(--line)}
+
+/* diretta: il pallino che dice che i numeri si stanno muovendo adesso */
+.live{
+  display:inline-block; font-family:var(--ff-m); font-size:11px; letter-spacing:.04em;
+  color:var(--accent); margin:0 0 6px}
+.live::before{content:"\25CF"; margin-right:5px; animation:pulsa 2s infinite}
+@keyframes pulsa{0%,100%{opacity:1}50%{opacity:.25}}
+.ris .live{margin:0}
 .mod .riga{
   display:grid; grid-template-columns:1fr auto auto; gap:8px; align-items:center;
   padding:9px 0; border-bottom:1px solid var(--line2)}
@@ -334,6 +342,7 @@ details.g[open] > summary{border-bottom:1px solid var(--line)}
 </div>
 
 <script>__AVVISO__</script>
+__DIRETTA__
 
 </body>
 </html>

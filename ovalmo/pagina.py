@@ -14,7 +14,7 @@ import datetime
 import html
 import json
 
-from . import orari, schedina
+from . import diretta, orari, schedina
 from .dati import id_partita
 from .punteggio import calcola, re_della_giornata, segno, segno_pronosticato
 
@@ -112,15 +112,16 @@ def genera(dati, template, adesso=None, aggiornato=None):
                     segnino = ('<span class="sg sg-lock">&#10003;</span>' if mandato
                                else '<span class="sg sg-tbd">TBD</span>')
                     celle.append(
-                        f'<div class="pick{"" if mandato else " attesa-p"}"><span class="who">{E(p_)}</span>'
+                        f'<div class="pick{"" if mandato else " attesa-p"}" data-chi="{E(p_)}">'
+                        f'<span class="who">{E(p_)}</span>'
                         f'{segnino}<span class="sc">&nbsp;</span></div>')
                     continue
                 celle.append(
-                    f'<div class="pick{klass}"><span class="who">{E(p_)}</span>{chip(s)}'
+                    f'<div class="pick{klass}" data-chi="{E(p_)}"><span class="who">{E(p_)}</span>{chip(s)}'
                     f'<span class="sc">{"&nbsp;" if ph is None else f"{ph}&ndash;{pa}"}</span>'
                     + (f'<span class="pts">{pts}</span>' if pts is not None else '') + '</div>')
             out.append(
-                '<article class="match"><header>'
+                f'<article class="match" data-mid="{mid}"><header>'
                 f'<div class="meta"><span class="num">{m:02d}</span>{esito}</div>'
                 f'<h3>{E(casa)} <span class="v">&ndash;</span> {E(osp)}</h3></header>'
                 + ('<p class="unan">tutti e cinque sullo stesso segno</p>' if unanime else '')
@@ -146,10 +147,11 @@ def genera(dati, template, adesso=None, aggiornato=None):
         for p in ordine:
             s = stats[p]
             lead = ' class="leader"' if pos[p] == 1 else ''
-            righe.append(f'<tr{lead}><td class="pos">{pos[p]}</td><td class="nome">{E(p)}</td>'
+            righe.append(f'<tr{lead} data-chi="{E(p)}"><td class="pos">{pos[p]}</td><td class="nome">{E(p)}</td>'
                          f'<td class="num-pt">{s["pt"]}</td><td class="num">{s["segni"]}</td>'
                          f'<td class="num">{s["esatti"]}</td></tr>')
-        tabella = ('<div class="tw"><table><thead><tr><th></th><th>Giocatore</th>'
+        tabella = ('<p class="live" id="inGioco" hidden></p>'
+                   '<div class="tw"><table id="classifica"><thead><tr><th></th><th>Giocatore</th>'
                    '<th class="num-pt">Punti</th><th class="num">Segni</th>'
                    '<th class="num">Esatti</th></tr></thead><tbody>'
                    + "".join(righe) + '</tbody></table></div>')
@@ -215,6 +217,7 @@ def genera(dati, template, adesso=None, aggiornato=None):
                  if len(primi) > 1 else f"in testa {primi[0]} con {pt1} punti."))
 
     modulo = schedina.blocco(dati, adesso=adesso, endpoint=endpoint, modulo_google=MODULO)
+    in_diretta = diretta.blocco(dati, conti=conti, adesso=adesso, endpoint=endpoint)
     avviso = _script_avviso(calendario, risultati, giornate)
     # solo la data: e' l'unica cosa che dice se il sistema e' vivo. Il resto
     # del vecchio piede di pagina era spiegazione che non serve piu' a nessuno.
@@ -222,12 +225,12 @@ def genera(dati, template, adesso=None, aggiornato=None):
 
     page = template
     for k, v in [("__OG__", E(og)), ("__URL__", E(SITO)), ("__AVVISO__", avviso),
-                 ("__MODULO__", modulo),
+                 ("__MODULO__", modulo), ("__DIRETTA__", in_diretta),
                  ("__TAG__", tag), ("__SUB__", sub), ("__LEDE__", lede), ("__TABELLA__", tabella),
                  ("__FEATURED__", featured), ("__ARCHIVIO__", archivio_html),
                  ("__FINE__", fine)]:
         page = page.replace(k, v)
-    resti = [k for k in ("__OG__", "__URL__", "__AVVISO__", "__MODULO__", "__TAG__", "__SUB__", "__LEDE__",
+    resti = [k for k in ("__OG__", "__URL__", "__AVVISO__", "__MODULO__", "__DIRETTA__", "__TAG__", "__SUB__", "__LEDE__",
                          "__TABELLA__", "__FEATURED__", "__ARCHIVIO__", "__FINE__")
              if k in page]
     assert not resti, f"segnaposto non sostituiti: {resti}"
