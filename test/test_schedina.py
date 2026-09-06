@@ -130,7 +130,7 @@ def test_il_codice_si_verifica_prima_di_aprire_la_schedina():
     prima di far entrare."""
     html = schedina.blocco(DATI, adesso=PRIMA, endpoint=ENDPOINT)
     assert "azione: 'controlla'" in html
-    assert "sbagliato('Codice sbagliato" in html
+    assert "sbagliato('Codice sbagliato.')" in html
     # e non si entra piu' solo perche' sono quattro cifre
     fra = html[html.index("$('entra').onclick"):html.index("$('annulla').onclick")]
     assert fra.index("verifica(scelto, codice)") < fra.index("scrivi(IO,")

@@ -183,7 +183,7 @@ def _script(cfg, partite):
   $('entra').onclick = function(){
     var codice = $('codice').value.trim();
     if(!scelto){ return messaggio('esito1','Scegli il tuo nome.','ko') }
-    if(!/^[0-9]{4}$/.test(codice)){ return sbagliato('Il codice e di quattro cifre.') }
+    if(!/^[0-9]{4}$/.test(codice)){ return sbagliato('Il codice è di quattro cifre.') }
     var bottone = $('entra');
     bottone.disabled = true;
     messaggio('esito1','Controllo...','');
@@ -195,7 +195,7 @@ def _script(cfg, partite):
         scrivi(IO, {nome: scelto, codice: codice});
         entra();
       } else {
-        sbagliato('Codice sbagliato: quello e il codice di un altro.');
+        sbagliato('Codice sbagliato.');
       }
     }).catch(function(){
       bottone.disabled = false;
@@ -272,7 +272,7 @@ def _script(cfg, partite):
     ev.preventDefault();
     var io = leggi(IO); if(!io) return;
     if(new Date() >= new Date(CFG.scadenza)){
-      return messaggio('esito2','I pronostici di questa giornata sono chiusi: si e gia cominciato.','ko');
+      return messaggio('esito2','I pronostici di questa giornata sono chiusi: si è già cominciato.','ko');
     }
     var raccolto = raccogli();
     if(!raccolto.quanti){ return messaggio('esito2','Non hai messo nessun pronostico.','ko') }
@@ -292,7 +292,7 @@ def _script(cfg, partite):
         scrivi(chiaveInviato(io.nome), true);
         schedina.hidden = true; fatto.hidden = false;
       } else if(esito && esito.errore === 'codice sbagliato'){
-        messaggio('esito2','Codice sbagliato. Tocca "non sei tu?" e riprova.','ko');
+        messaggio('esito2','Codice sbagliato.','ko');
       } else {
         messaggio('esito2','Non ha funzionato: ' + ((esito && esito.errore) || 'errore') +
           '. Riprova fra un minuto.','ko');
