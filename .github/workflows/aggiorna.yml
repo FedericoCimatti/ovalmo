@@ -1,0 +1,88 @@
+name: Aggiorna il sito
+
+# Ogni ora, dalle 11 all'una di notte italiane (il cron di GitHub e' in UTC,
+# quindi d'inverno la finestra scivola di un'ora: e' voluto, meglio un giro in
+# piu' la mattina che uno in meno la sera). Di notte non succede mai niente.
+# "workflow_dispatch" e' il pulsante per lanciarlo a mano dalla scheda Actions.
+on:
+  schedule:
+    - cron: '0 9-23 * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: write   # per committare i dati e la pagina
+  issues: write     # per aprire la issue quando qualcosa va storto
+
+# due giri contemporanei si darebbero fastidio a vicenda sul commit
+concurrency:
+  group: aggiorna-ovalmo
+  cancel-in-progress: false
+
+jobs:
+  aggiorna:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - run: pip install --quiet -r requirements.txt
+
+      - name: Risultati, pronostici, pagina, Excel
+        env:
+          FD_TOKEN: ${{ secrets.FD_TOKEN }}
+          FOGLIO_CSV: ${{ secrets.FOGLIO_CSV }}
+        run: python aggiorna.py
+
+      - name: Committa, ma solo se e' cambiato davvero qualcosa
+        run: |
+          if [ -z "$(git status --porcelain)" ]; then
+            echo "Niente di nuovo: nessun commit."
+            exit 0
+          fi
+          git config user.name "Trofeo Ovalmo"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A
+          git commit -m "Aggiornamento automatico del $(TZ=Europe/Rome date +'%d/%m/%Y alle %H:%M')"
+          git pull --rebase --autostash
+          git push
+
+      - name: Se e' andato storto, aprimi una issue
+        if: failure()
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const titolo = "L'aggiornamento automatico si e' fermato";
+            const link = `${context.serverUrl}/${context.repo.owner}/${context.repo.repo}/actions/runs/${context.runId}`;
+            const quando = new Date().toLocaleString('it-IT', { timeZone: 'Europe/Rome' });
+            const corpo = [
+              `Il giro delle ${quando} non e' andato a buon fine.`,
+              ``,
+              `Log completo: ${link}`,
+              ``,
+              `Il sito continua a mostrare gli ultimi dati buoni. Le cause piu' probabili,`,
+              `in ordine: token football-data scaduto, foglio Google non piu' pubblicato,`,
+              `una squadra nuova da aggiungere in \`ovalmo/squadre.py\`, API momentaneamente giu'.`,
+              `Il README spiega cosa guardare per ciascuna.`,
+            ].join('\n');
+
+            // una sola issue riaperta e commentata: senza questo, una notte di
+            // API giu' produrrebbe dodici issue identiche
+            const aperte = await github.rest.issues.listForRepo({
+              owner: context.repo.owner, repo: context.repo.repo,
+              state: 'open', labels: 'automatico',
+            });
+            const esistente = aperte.data.find(i => i.title === titolo);
+            if (esistente) {
+              await github.rest.issues.createComment({
+                owner: context.repo.owner, repo: context.repo.repo,
+                issue_number: esistente.number, body: corpo,
+              });
+            } else {
+              await github.rest.issues.create({
+                owner: context.repo.owner, repo: context.repo.repo,
+                title: titolo, body: corpo, labels: ['automatico'],
+              });
+            }

@@ -1,0 +1,4 @@
+# openpyxl serve solo per il foglio Excel: la pagina si genera senza.
+openpyxl==3.1.5
+# pytest serve solo ai test, non al sito.
+pytest==8.3.4
