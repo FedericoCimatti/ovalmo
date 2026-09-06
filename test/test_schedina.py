@@ -80,3 +80,23 @@ def test_dopo_il_fischio_il_modulo_passa_alla_giornata_dopo():
     html = schedina.blocco(DATI, adesso=DOPO, endpoint=ENDPOINT)
     assert "giornata 8" in html and "Napoli" in html
     assert "Inter" not in html
+
+
+def test_il_modulo_dice_chi_ha_gia_mandato_senza_dire_cosa():
+    dati = dict(DATI, calendario={"8": DATI["calendario"]["8"]},
+                consegne={"8": {"Berta": "16/10/2026 18:00"}})
+    html = schedina.blocco(dati, adesso=PRIMA, endpoint=ENDPOINT)
+    assert "Hanno gi&agrave; mandato Berta" in html
+    assert "Mancano Lippi e Lenzuolo" in html
+    assert "restano coperti" in html
+
+
+def test_se_non_ha_mandato_nessuno_lo_dice():
+    dati = dict(DATI, calendario={"8": DATI["calendario"]["8"]}, consegne={})
+    assert "Non ha ancora mandato nessuno" in schedina.blocco(dati, adesso=PRIMA, endpoint=ENDPOINT)
+
+
+def test_quando_ci_sono_tutti_lo_dice():
+    dati = dict(DATI, calendario={"8": DATI["calendario"]["8"]},
+                consegne={"8": {p: "x" for p in DATI["players"]}})
+    assert "tutti e cinque" in schedina.blocco(dati, adesso=PRIMA, endpoint=ENDPOINT)

@@ -172,6 +172,14 @@ Google invece di mostrare una schedina che non saprebbe dove mandare niente.
 Il lettore riconosce da solo quale dei due fogli sta leggendo (vecchio modulo o
 nuovo), quindi il passaggio dall'uno all'altro non richiede di cambiare codice.
 
+### Cancellare un pronostico mandato per sbaglio
+
+Cancellare la riga dal foglio **non basta**: il giro non toglie mai niente da
+`dati/pronostici.json`, per non perdere dati se il foglio diventa irraggiungibile.
+Vanno tolti tutti e due: la riga nel foglio "Pronostici" e la voce corrispondente
+in `dati/pronostici.json` (sezione `consegne` e, se la giornata e' gia' iniziata,
+anche `pronostici`).
+
 ### Se un giorno cambiano i giocatori o i codici
 
 Si modifica la tabella in cima a `google/ricevi_pronostici.gs`, poi dentro Apps

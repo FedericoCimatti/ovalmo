@@ -44,6 +44,12 @@ def blocco(dati, adesso=None, endpoint=None, modulo_google=None):
     scadenza = orari.calcio_dinizio(calendario[g])
     quando = f"{scadenza:%d/%m} alle {scadenza:%H:%M}"
 
+    # chi ha gia' consegnato per la giornata aperta. Solo i nomi: il contenuto
+    # delle schedine non compare qui e non e' nemmeno nel repository, finche'
+    # non si comincia a giocare.
+    consegnato = [p for p in giocatori if p in (dati.get("consegne", {}).get(str(g)) or {})]
+    mancano = [p for p in giocatori if p not in consegnato]
+
     if not endpoint:
         # rete di sicurezza: finche' lo script dentro Google non e' attivo, si
         # continua col modulo di prima invece di lasciare la pagina monca
@@ -87,6 +93,7 @@ def blocco(dati, adesso=None, endpoint=None, modulo_google=None):
     <p class="lede">Si chiude al primo calcio d&rsquo;inizio, {E(quando)}. Puoi correggere quello
     che hai mandato fino a quel momento: vale sempre l&rsquo;ultimo invio. Basta il segno, il
     risultato esatto vale di piu&rsquo;.</p>
+    <p class="lede">{_chi(consegnato, mancano)}</p>
     <div class="mod">
       <div id="chisei">
         <p class="lede" style="margin-top:0">Chi sei?</p>
@@ -107,6 +114,20 @@ def blocco(dati, adesso=None, endpoint=None, modulo_google=None):
     </div>
     </section>
     <script>{_script(cfg, json.dumps(partite, ensure_ascii=False))}</script>"""
+
+
+def _chi(consegnato, mancano):
+    """Una riga su chi ha gia' mandato. Nomi e basta: i pronostici restano coperti."""
+    def elenco(xs):
+        xs = [E(x) for x in xs]
+        return xs[0] if len(xs) == 1 else ", ".join(xs[:-1]) + " e " + xs[-1]
+
+    if not consegnato:
+        return "Non ha ancora mandato nessuno."
+    if not mancano:
+        return "Hanno mandato tutti e cinque. Si pu&ograve; ancora correggere fino al fischio."
+    return (f"Hanno gi&agrave; mandato {elenco(consegnato)}. Mancano {elenco(mancano)}. "
+            "Di loro si sa solo che hanno consegnato: i pronostici restano coperti.")
 
 
 def _script(cfg, partite):
