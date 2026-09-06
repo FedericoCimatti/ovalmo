@@ -400,6 +400,14 @@ details.g[open] > summary{border-bottom:1px solid var(--line)}
     messaggio('esito1', testo, 'ko');
   }
 
+  function verifica(nome, codice){
+    return fetch(CFG.endpoint, {
+      method: 'POST', redirect: 'follow',
+      headers: {'Content-Type': 'text/plain;charset=utf-8'},
+      body: JSON.stringify({azione: 'controlla', giocatore: nome, codice: codice})
+    }).then(function(r){ return r.json() }).then(function(esito){ return !!(esito && esito.ok) });
+  }
+
   $('entra').onclick = function(){
     var codice = $('codice').value.trim();
     if(!scelto){ return messaggio('esito1','Scegli il tuo nome.','ko') }
@@ -407,13 +415,9 @@ details.g[open] > summary{border-bottom:1px solid var(--line)}
     var bottone = $('entra');
     bottone.disabled = true;
     messaggio('esito1','Controllo...','');
-    fetch(CFG.endpoint, {
-      method: 'POST', redirect: 'follow',
-      headers: {'Content-Type': 'text/plain;charset=utf-8'},
-      body: JSON.stringify({azione: 'controlla', giocatore: scelto, codice: codice})
-    }).then(function(r){ return r.json() }).then(function(esito){
+    verifica(scelto, codice).then(function(giusto){
       bottone.disabled = false;
-      if(esito && esito.ok){
+      if(giusto){
         messaggio('esito1','');
         $('codice').classList.remove('sbagliato');
         scrivi(IO, {nome: scelto, codice: codice});
@@ -528,7 +532,19 @@ details.g[open] > summary{border-bottom:1px solid var(--line)}
     });
   };
 
-  if(leggi(IO)) entra();
+  // All'apertura non ci si fida di quello che il telefono si ricorda: il codice
+  // viene ricontrollato. Senza, chi fosse entrato una volta con un codice
+  // sbagliato resterebbe dentro per sempre.
+  var io = leggi(IO);
+  if(io && io.nome){
+    messaggio('esito1','Controllo...','');
+    verifica(io.nome, io.codice).then(function(giusto){
+      messaggio('esito1','');
+      if(giusto) entra(); else esci();
+    }).catch(function(){
+      messaggio('esito1','Non riesco a verificare il codice: controlla la connessione.','ko');
+    });
+  }
 })();
 </script>
 
@@ -556,7 +572,7 @@ details.g[open] > summary{border-bottom:1px solid var(--line)}
         <article class="match" data-mid="G02-09"><header><div class="meta"><span class="num">09</span><span class="ris">0&ndash;4 <span class="sg sg-2">2</span></span></div><h3>Lecce <span class="v">&ndash;</span> Roma</h3></header><div class="picks"><div class="pick pk2" data-chi="Berta"><span class="who">Berta</span><span class="sg sg-2">2</span><span class="sc">0&ndash;3</span><span class="pts">1</span></div><div class="pick pk2" data-chi="Super Gulp"><span class="who">Super Gulp</span><span class="sg sg-2">2</span><span class="sc">0&ndash;3</span><span class="pts">1</span></div><div class="pick" data-chi="Lenzuolo"><span class="who">Lenzuolo</span><span class="sg sg-x">X</span><span class="sc">2&ndash;2</span><span class="pts">0</span></div><div class="pick pk2" data-chi="Just Lele"><span class="who">Just Lele</span><span class="sg sg-2">2</span><span class="sc">1&ndash;4</span><span class="pts">1</span></div><div class="pick pk2" data-chi="Lippi"><span class="who">Lippi</span><span class="sg sg-2">2</span><span class="sc">0&ndash;2</span><span class="pts">1</span></div></div></article>
         <article class="match" data-mid="G02-10"><header><div class="meta"><span class="num">10</span><span class="ris">1&ndash;0 <span class="sg sg-1">1</span></span></div><h3>Atalanta <span class="v">&ndash;</span> Bologna</h3></header><p class="unan">tutti e cinque sullo stesso segno</p><div class="picks"><div class="pick pk2" data-chi="Berta"><span class="who">Berta</span><span class="sg sg-1">1</span><span class="sc">2&ndash;1</span><span class="pts">1</span></div><div class="pick pk2" data-chi="Super Gulp"><span class="who">Super Gulp</span><span class="sg sg-1">1</span><span class="sc">2&ndash;1</span><span class="pts">1</span></div><div class="pick pk2" data-chi="Lenzuolo"><span class="who">Lenzuolo</span><span class="sg sg-1">1</span><span class="sc">3&ndash;0</span><span class="pts">1</span></div><div class="pick pk2" data-chi="Just Lele"><span class="who">Just Lele</span><span class="sg sg-1">1</span><span class="sc">2&ndash;1</span><span class="pts">1</span></div><div class="pick pk2" data-chi="Lippi"><span class="who">Lippi</span><span class="sg sg-1">1</span><span class="sc">2&ndash;1</span><span class="pts">1</span></div></div></article></div></details></div></section>
 
-  <p class="fine">Dati aggiornati il 07/09/2026 alle 01:11</p>
+  <p class="fine">Dati aggiornati il 07/09/2026 alle 01:13</p>
 </div>
 
 <script>(function(){

@@ -172,6 +172,14 @@ def _script(cfg, partite):
     messaggio('esito1', testo, 'ko');
   }
 
+  function verifica(nome, codice){
+    return fetch(CFG.endpoint, {
+      method: 'POST', redirect: 'follow',
+      headers: {'Content-Type': 'text/plain;charset=utf-8'},
+      body: JSON.stringify({azione: 'controlla', giocatore: nome, codice: codice})
+    }).then(function(r){ return r.json() }).then(function(esito){ return !!(esito && esito.ok) });
+  }
+
   $('entra').onclick = function(){
     var codice = $('codice').value.trim();
     if(!scelto){ return messaggio('esito1','Scegli il tuo nome.','ko') }
@@ -179,13 +187,9 @@ def _script(cfg, partite):
     var bottone = $('entra');
     bottone.disabled = true;
     messaggio('esito1','Controllo...','');
-    fetch(CFG.endpoint, {
-      method: 'POST', redirect: 'follow',
-      headers: {'Content-Type': 'text/plain;charset=utf-8'},
-      body: JSON.stringify({azione: 'controlla', giocatore: scelto, codice: codice})
-    }).then(function(r){ return r.json() }).then(function(esito){
+    verifica(scelto, codice).then(function(giusto){
       bottone.disabled = false;
-      if(esito && esito.ok){
+      if(giusto){
         messaggio('esito1','');
         $('codice').classList.remove('sbagliato');
         scrivi(IO, {nome: scelto, codice: codice});
@@ -300,6 +304,18 @@ def _script(cfg, partite):
     });
   };
 
-  if(leggi(IO)) entra();
+  // All'apertura non ci si fida di quello che il telefono si ricorda: il codice
+  // viene ricontrollato. Senza, chi fosse entrato una volta con un codice
+  // sbagliato resterebbe dentro per sempre.
+  var io = leggi(IO);
+  if(io && io.nome){
+    messaggio('esito1','Controllo...','');
+    verifica(io.nome, io.codice).then(function(giusto){
+      messaggio('esito1','');
+      if(giusto) entra(); else esci();
+    }).catch(function(){
+      messaggio('esito1','Non riesco a verificare il codice: controlla la connessione.','ko');
+    });
+  }
 })();
 """ % (cfg, partite)

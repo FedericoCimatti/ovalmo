@@ -133,4 +133,13 @@ def test_il_codice_si_verifica_prima_di_aprire_la_schedina():
     assert "sbagliato('Codice sbagliato" in html
     # e non si entra piu' solo perche' sono quattro cifre
     fra = html[html.index("$('entra').onclick"):html.index("$('annulla').onclick")]
-    assert fra.index("fetch(CFG.endpoint") < fra.index("scrivi(IO,")
+    assert fra.index("verifica(scelto, codice)") < fra.index("scrivi(IO,")
+
+
+def test_il_codice_si_ricontrolla_anche_a_pagina_riaperta():
+    """La memoria del telefono non basta: chi fosse entrato una volta con un
+    codice sbagliato resterebbe dentro per sempre."""
+    html = schedina.blocco(DATI, adesso=PRIMA, endpoint=ENDPOINT)
+    coda = html[html.index("var io = leggi(IO);"):]
+    assert "verifica(io.nome, io.codice)" in coda
+    assert "else esci()" in coda
