@@ -78,7 +78,7 @@ def giro(token=None, foglio_csv=None):
     # ---- 2. pronostici ----
     if foglio_csv:
         testo = modulo.scarica(foglio_csv)
-        consegne, nuovi, note, scarti = modulo.leggi(testo, stagione, adesso)
+        consegne, nuovi, note, scarti = modulo.leggi_qualunque(testo, stagione, adesso)
         cambiato = modulo.unisci(pronostici, consegne, nuovi)
         riepilogo += note or ["nessun pronostico nuovo"]
         riepilogo += ["SCARTATO: " + s for s in scarti]

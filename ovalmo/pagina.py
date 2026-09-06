@@ -14,7 +14,7 @@ import datetime
 import html
 import json
 
-from . import orari
+from . import orari, schedina
 from .dati import id_partita
 from .punteggio import calcola, re_della_giornata, segno, segno_pronosticato
 
@@ -61,6 +61,10 @@ def genera(dati, template, adesso=None, aggiornato=None):
     giocate_tot = conti["giocate"]
 
     coperta = {g: orari.coperta(calendario, g, adesso) for g in calendario}
+    # indirizzo dello script Google che riceve i pronostici. Finche' e' vuoto la
+    # pagina rimanda al vecchio modulo Google invece di mostrare una schedina
+    # che non saprebbe dove mandare niente.
+    endpoint = dati.get("endpoint_pronostici") or ""
 
     def ha_consegnato(g, giocatore):
         """Vero se ha mandato la schedina di quella giornata.
@@ -167,9 +171,13 @@ def genera(dati, template, adesso=None, aggiornato=None):
                           "coperto con una spunta e si svela al primo calcio d&rsquo;inizio.")
         featured = (f'<h2>La schedina &mdash; giornata {g_feat}</h2>'
                     f'<p class="lede">{occhiello}</p>'
-                    f'<a class="cta" href="{MODULO}" target="_blank" rel="noopener">Manda i tuoi pronostici</a>'
-                    '<p class="cta-note">Nel modulo trovi le stesse dieci partite, nello stesso ordine. '
-                    'Si risponde cos&igrave;: <strong>1 (2-1)</strong>.</p>'
+                    + (f'<a class="cta" href="#modulo">Manda i tuoi pronostici</a>'
+                       '<p class="cta-note">Si compila qui sotto, direttamente in questa pagina.</p>'
+                       if endpoint else
+                       f'<a class="cta" href="{MODULO}" target="_blank" rel="noopener">Manda i tuoi pronostici</a>'
+                       '<p class="cta-note">Nel modulo trovi le stesse dieci partite, nello stesso ordine. '
+                       'Si risponde cos&igrave;: <strong>1 (2-1)</strong>.</p>')
+                    +
                     '<div class="matches">' + "\n      ".join(carte(g_feat)) + '</div>')
     else:
         featured = ('<h2>La schedina</h2><p class="lede">Tutte le giornate in calendario sono gi&agrave; '
@@ -224,6 +232,7 @@ def genera(dati, template, adesso=None, aggiornato=None):
               + (f"in testa {_elenco(primi)} a pari merito con {pt1} punti."
                  if len(primi) > 1 else f"in testa {primi[0]} con {pt1} punti."))
 
+    modulo = schedina.blocco(dati, adesso=adesso, endpoint=endpoint, modulo_google=MODULO)
     avviso = _script_avviso(calendario, risultati, giornate)
     fine = (f"Dati aggiornati il {aggiornato:%d/%m/%Y} alle {aggiornato:%H:%M} &middot; "
             "aggiornamento automatico ogni ora &middot; "
@@ -231,11 +240,12 @@ def genera(dati, template, adesso=None, aggiornato=None):
 
     page = template
     for k, v in [("__OG__", E(og)), ("__URL__", E(SITO)), ("__AVVISO__", avviso),
+                 ("__MODULO__", modulo),
                  ("__TAG__", tag), ("__SUB__", sub), ("__LEDE__", lede), ("__TABELLA__", tabella),
                  ("__TABELLA_G__", tabella_g), ("__FEATURED__", featured), ("__ARCHIVIO__", archivio_html),
                  ("__FINE__", fine)]:
         page = page.replace(k, v)
-    resti = [k for k in ("__OG__", "__URL__", "__AVVISO__", "__TAG__", "__SUB__", "__LEDE__",
+    resti = [k for k in ("__OG__", "__URL__", "__AVVISO__", "__MODULO__", "__TAG__", "__SUB__", "__LEDE__",
                          "__TABELLA__", "__TABELLA_G__", "__FEATURED__", "__ARCHIVIO__", "__FINE__")
              if k in page]
     assert not resti, f"segnaposto non sostituiti: {resti}"

@@ -1,0 +1,230 @@
+# -*- coding: utf-8 -*-
+"""Il modulo per mandare i pronostici, dentro la pagina.
+
+Sostituisce il modulo Google. Le dieci partite arrivano dal calendario che
+scarichiamo dall'API, quindi non c'e' piu' niente da rinominare a mano prima di
+ogni giornata: e' esattamente il lavoro manuale che restava.
+
+Come funziona il giro completo:
+  questa pagina  ->  script dentro Google (google/ricevi_pronostici.gs)
+                 ->  foglio "Pronostici"
+                 ->  il giro orario lo rilegge (modulo.leggi_sito)
+
+Chi guarda la pagina non puo' leggere i pronostici degli altri: l'indirizzo
+dello script accetta solo scritture, e la pagina mostra solo la propria
+schedina, ripescata dalla memoria del telefono di chi la sta usando.
+"""
+import html
+import json
+
+from . import orari
+from .dati import id_partita
+
+E = html.escape
+
+
+def giornata_aperta(calendario, adesso=None):
+    """La giornata su cui si sta ancora pronosticando: la prima non iniziata."""
+    adesso = adesso or orari.adesso()
+    future = sorted(g for g in calendario if orari.calcio_dinizio(calendario[g]) > adesso)
+    return future[0] if future else None
+
+
+def blocco(dati, adesso=None, endpoint=None, modulo_google=None):
+    """L'HTML del modulo. Stringa vuota se non c'e' niente da pronosticare."""
+    adesso = adesso or orari.adesso()
+    calendario = {int(k): v for k, v in dati["calendario"].items()}
+    giocatori = dati["players"]
+    g = giornata_aperta(calendario, adesso)
+    if g is None:
+        return ('<section><h2>Manda i tuoi pronostici</h2><p class="lede">Nessuna giornata '
+                'aperta al momento: appena esce il calendario della prossima, la schedina '
+                'compare qui.</p></section>')
+
+    scadenza = orari.calcio_dinizio(calendario[g])
+    quando = f"{scadenza:%d/%m} alle {scadenza:%H:%M}"
+
+    if not endpoint:
+        # rete di sicurezza: finche' lo script dentro Google non e' attivo, si
+        # continua col modulo di prima invece di lasciare la pagina monca
+        link = modulo_google or "#"
+        return ('<section><h2>Manda i tuoi pronostici</h2>'
+                f'<p class="lede">Giornata {g}, si chiude il {E(quando)}.</p>'
+                f'<a class="cta" href="{E(link)}" target="_blank" rel="noopener">Vai al modulo</a>'
+                '</section>')
+
+    partite = []
+    righe = []
+    for n in range(1, len(calendario[g]) + 1):
+        data, ora, casa, osp = calendario[g][n - 1]
+        chiave = f"P{n:02d}"
+        partite.append({"k": chiave, "n": f"{casa} - {osp}"})
+        righe.append(
+            f'<div class="riga" data-p="{chiave}">'
+            f'<div><b>{E(casa)} &ndash; {E(osp)}</b><small>{E(str(data))} &middot; {E(str(ora))}</small></div>'
+            f'<div class="tre">'
+            f'<button type="button" data-s="1" aria-pressed="false">1</button>'
+            f'<button type="button" data-s="X" aria-pressed="false">X</button>'
+            f'<button type="button" data-s="2" aria-pressed="false">2</button>'
+            f'</div>'
+            f'<div><input class="gol" type="number" min="0" max="19" inputmode="numeric" '
+            f'aria-label="gol {E(casa)}"> <input class="gol" type="number" min="0" max="19" '
+            f'inputmode="numeric" aria-label="gol {E(osp)}"></div>'
+            f'</div>')
+
+    cfg = json.dumps({
+        "endpoint": endpoint,
+        "giornata": g,
+        "giocatori": giocatori,
+        "scadenza": scadenza.isoformat(),
+    }, ensure_ascii=False)
+
+    nomi = "".join(f'<button type="button" data-nome="{E(p)}" aria-pressed="false">{E(p)}</button>'
+                   for p in giocatori)
+
+    return f"""<section id="modulo">
+    <h2>Manda i tuoi pronostici &mdash; giornata {g}</h2>
+    <p class="lede">Si chiude al primo calcio d&rsquo;inizio, {E(quando)}. Puoi correggere quello
+    che hai mandato fino a quel momento: vale sempre l&rsquo;ultimo invio. Basta il segno, il
+    risultato esatto vale di piu&rsquo;.</p>
+    <div class="mod">
+      <div id="chisei">
+        <p class="lede" style="margin-top:0">Chi sei?</p>
+        <div class="chi">{nomi}</div>
+        <div class="cod">
+          <input type="tel" id="codice" inputmode="numeric" maxlength="4" placeholder="codice">
+          <button type="button" class="go" id="entra">Entra</button>
+        </div>
+        <p class="esito" id="esito1"></p>
+      </div>
+      <form id="schedina" hidden>
+        <p class="lede" style="margin-top:0">Ciao <b id="ciao"></b> &mdash;
+          <button type="button" class="cambia" id="cambia">non sei tu?</button></p>
+        {"".join(righe)}
+        <p style="margin:14px 0 0"><button type="submit" class="go" id="invia">Invia i pronostici</button></p>
+        <p class="esito" id="esito2"></p>
+      </form>
+    </div>
+    </section>
+    <script>{_script(cfg, json.dumps(partite, ensure_ascii=False))}</script>"""
+
+
+def _script(cfg, partite):
+    """Il codice che gira nel browser di chi compila."""
+    return """
+(function(){
+  var CFG = %s, PARTITE = %s;
+  var IO = 'ovalmo-io', BOZZA = 'ovalmo-g' + CFG.giornata;
+  var $ = function(id){ return document.getElementById(id) };
+  var chisei = $('chisei'), schedina = $('schedina');
+  var scelto = null;
+
+  function leggi(chiave){ try { return JSON.parse(localStorage.getItem(chiave)) } catch(e){ return null } }
+  function scrivi(chiave, v){ try { localStorage.setItem(chiave, JSON.stringify(v)) } catch(e){} }
+
+  // ---- chi sei ----
+  chisei.querySelectorAll('.chi button').forEach(function(b){
+    b.onclick = function(){
+      chisei.querySelectorAll('.chi button').forEach(function(x){ x.setAttribute('aria-pressed','false') });
+      b.setAttribute('aria-pressed','true'); scelto = b.dataset.nome;
+    };
+  });
+  $('entra').onclick = function(){
+    var codice = $('codice').value.trim();
+    if(!scelto){ return messaggio('esito1','Scegli il tuo nome.','ko') }
+    if(!/^[0-9]{4}$/.test(codice)){ return messaggio('esito1','Il codice e di quattro cifre.','ko') }
+    scrivi(IO, {nome: scelto, codice: codice});
+    entra();
+  };
+  $('cambia').onclick = function(){
+    try { localStorage.removeItem(IO) } catch(e){}
+    schedina.hidden = true; chisei.hidden = false;
+  };
+
+  function entra(){
+    var io = leggi(IO);
+    if(!io || !io.nome) return;
+    $('ciao').textContent = io.nome;
+    chisei.hidden = true; schedina.hidden = false;
+    var bozza = leggi(BOZZA) || {};
+    PARTITE.forEach(function(p){
+      var testo = bozza[p.k]; if(!testo) return;
+      var riga = schedina.querySelector('[data-p="' + p.k + '"]');
+      var seg = (testo.match(/^([12X])/) || [])[1];
+      if(seg){ riga.querySelectorAll('.tre button').forEach(function(b){
+        b.setAttribute('aria-pressed', b.dataset.s === seg ? 'true' : 'false') }) }
+      var gol = testo.match(/(\\d+)-(\\d+)/);
+      if(gol){ var caselle = riga.querySelectorAll('.gol');
+        caselle[0].value = gol[1]; caselle[1].value = gol[2] }
+    });
+  }
+
+  // ---- segni ----
+  schedina.querySelectorAll('.riga').forEach(function(riga){
+    riga.querySelectorAll('.tre button').forEach(function(b){
+      b.onclick = function(){
+        var gia = b.getAttribute('aria-pressed') === 'true';
+        riga.querySelectorAll('.tre button').forEach(function(x){ x.setAttribute('aria-pressed','false') });
+        b.setAttribute('aria-pressed', gia ? 'false' : 'true');
+      };
+    });
+  });
+
+  function raccogli(){
+    var fuori = {}, quanti = 0;
+    PARTITE.forEach(function(p){
+      var riga = schedina.querySelector('[data-p="' + p.k + '"]');
+      var premuto = riga.querySelector('.tre button[aria-pressed="true"]');
+      var caselle = riga.querySelectorAll('.gol');
+      var casa = caselle[0].value.trim(), osp = caselle[1].value.trim();
+      var testo = '';
+      if(premuto) testo = premuto.dataset.s;
+      if(casa !== '' && osp !== '') testo = (testo ? testo + ' ' : '') + casa + '-' + osp;
+      if(testo){ fuori[p.k] = testo; quanti++ }
+    });
+    return {pronostici: fuori, quanti: quanti};
+  }
+
+  function messaggio(id, testo, classe){
+    var e = $(id); e.textContent = testo; e.className = 'esito ' + (classe || '');
+  }
+
+  schedina.onsubmit = function(ev){
+    ev.preventDefault();
+    var io = leggi(IO); if(!io) return;
+    if(new Date() >= new Date(CFG.scadenza)){
+      return messaggio('esito2','I pronostici di questa giornata sono chiusi: si e gia cominciato.','ko');
+    }
+    var raccolto = raccogli();
+    if(!raccolto.quanti){ return messaggio('esito2','Non hai messo nessun pronostico.','ko') }
+    scrivi(BOZZA, raccolto.pronostici);
+    var invia = $('invia'); invia.disabled = true;
+    messaggio('esito2','Sto mandando...','');
+    fetch(CFG.endpoint, {
+      method: 'POST', redirect: 'follow',
+      headers: {'Content-Type': 'text/plain;charset=utf-8'},
+      body: JSON.stringify({
+        giocatore: io.nome, codice: io.codice,
+        giornata: CFG.giornata, pronostici: raccolto.pronostici
+      })
+    }).then(function(r){ return r.json() }).then(function(esito){
+      invia.disabled = false;
+      if(esito && esito.ok){
+        messaggio('esito2','Ricevuto: ' + raccolto.quanti + ' partite su ' + PARTITE.length +
+          '. Puoi correggere fino al calcio d inizio.','ok');
+      } else if(esito && esito.errore === 'codice sbagliato'){
+        messaggio('esito2','Codice sbagliato. Tocca "non sei tu?" e riprova.','ko');
+      } else {
+        messaggio('esito2','Non ha funzionato: ' + ((esito && esito.errore) || 'errore') +
+          '. Riprova fra un minuto.','ko');
+      }
+    }).catch(function(){
+      invia.disabled = false;
+      messaggio('esito2','Non sono riuscito a mandarli: controlla la connessione e riprova. ' +
+        'Quello che hai scritto resta qui.','ko');
+    });
+  };
+
+  if(leggi(IO)) entra();
+})();
+""" % (cfg, partite)

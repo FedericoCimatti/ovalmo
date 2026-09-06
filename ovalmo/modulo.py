@@ -241,3 +241,119 @@ def unisci(archivio, consegne, pronostici):
                 archivio["pronostici"][mid][nome] = p
                 cambiato = True
     return cambiato
+
+
+# ---------------------------------------------------------------------------
+# Il modulo dentro il sito (foglio "Pronostici", scritto da Apps Script)
+#
+# E' molto piu' semplice da leggere del modulo Google: la pagina manda anche il
+# numero della giornata e l'orario in formato internazionale, quindi qui non si
+# deve piu' dedurre niente ne' verificare che le intestazioni siano quelle
+# giuste. Le due parti piu' delicate del vecchio sistema spariscono.
+# ---------------------------------------------------------------------------
+
+def leggi_timestamp_iso(testo):
+    """"2026-09-08T18:22:01.123Z" -> orario di Roma. None se illeggibile."""
+    grezzo = (testo or "").strip()
+    if not grezzo:
+        return None
+    if grezzo.endswith("Z"):
+        grezzo = grezzo[:-1] + "+00:00"
+    try:
+        istante = datetime.datetime.fromisoformat(grezzo)
+    except ValueError:
+        return None
+    if istante.tzinfo is None:                    # senza fuso: si assume Roma
+        return istante.replace(tzinfo=orari.ROMA)
+    return istante.astimezone(orari.ROMA)
+
+
+def leggi_sito(testo_csv, stagione, adesso=None):
+    """Come leggi(), ma per il foglio scritto dal modulo dentro il sito.
+
+    Restituisce (consegne, pronostici, note, scarti) con lo stesso significato.
+    """
+    adesso = adesso or orari.adesso()
+    calendario = {int(k): v for k, v in stagione["calendario"].items()}
+    giocatori = set(stagione["players"])
+
+    righe = [r for r in csv.reader(io.StringIO(testo_csv)) if any((c or "").strip() for c in r)]
+    if not righe:
+        return {}, {}, ["il foglio dei pronostici e' vuoto: nessuno ha ancora mandato"], []
+    intestazioni, dati = righe[0], righe[1:]
+    try:
+        i_ts = next(i for i, h in enumerate(intestazioni) if _norm(h).startswith("timestamp"))
+        i_nome = next(i for i, h in enumerate(intestazioni) if _norm(h).startswith("giocatore"))
+        i_giornata = next(i for i, h in enumerate(intestazioni) if _norm(h).startswith("giornata"))
+    except StopIteration:
+        raise ErroreFoglio(
+            "il foglio \"Pronostici\" non ha le colonne Timestamp, Giocatore e Giornata: "
+            "e' il foglio giusto?")
+    colonne = sorted((int(h[1:]), i) for i, h in enumerate(intestazioni)
+                     if re.fullmatch(r"P\d{2}", (h or "").strip()))
+    if not colonne:
+        raise ErroreFoglio("il foglio \"Pronostici\" non ha le colonne P01...P10.")
+
+    note, scarti, migliori = [], [], {}
+    for r in dati:
+        if len(r) <= max(i_ts, i_nome, i_giornata):
+            continue
+        ts = leggi_timestamp_iso(r[i_ts])
+        if ts is None:
+            scarti.append(f"riga con data illeggibile: {r[i_ts]!r}")
+            continue
+        nome = (r[i_nome] or "").strip()
+        if nome not in giocatori:
+            scarti.append(f"nome non riconosciuto: {nome!r}")
+            continue
+        try:
+            g = int(r[i_giornata])
+        except (ValueError, TypeError):
+            scarti.append(f"{nome}: giornata illeggibile {r[i_giornata]!r}")
+            continue
+        if g not in calendario:
+            scarti.append(f"{nome}: giornata {g} non presente in calendario")
+            continue
+        if ts >= orari.calcio_dinizio(calendario[g]):
+            scarti.append(f"{nome} giornata {g}: arrivato dopo il calcio d'inizio, non vale")
+            continue
+        chiave = (nome, g)
+        if chiave not in migliori or ts > migliori[chiave][0]:
+            migliori[chiave] = (ts, r)
+
+    consegne, pronostici = {}, {}
+    for (nome, g), (ts, r) in sorted(migliori.items()):
+        consegne.setdefault(str(g), {})[nome] = f"{ts:%d/%m/%Y %H:%M}"
+        if orari.coperta(calendario, g, adesso):
+            note.append(f"consegnato: {nome}, giornata {g} ({ts:%d/%m %H:%M}) - "
+                        f"pronostici coperti fino al calcio d'inizio")
+            continue
+        quanti = 0
+        for n, idx in colonne:
+            if n > len(calendario[g]):
+                continue
+            p = parse_pronostico(r[idx] if idx < len(r) else "")
+            if p is None:
+                continue
+            if p[0] == "INCOERENTE":
+                note.append(f"{nome} G{g:02d}-{n:02d}: {p[1]!r} ha segno {p[2]} ma punteggio "
+                            f"da {p[3]} - ignorato")
+                continue
+            pronostici.setdefault(id_partita(g, n), {})[nome] = [p[0], p[1], p[2]]
+            quanti += 1
+        note.append(f"importato: {nome}, giornata {g} ({ts:%d/%m %H:%M}) - {quanti} partite")
+    return consegne, pronostici, note, scarti
+
+
+def leggi_qualunque(testo_csv, stagione, adesso=None):
+    """Legge il foglio senza sapere in anticipo quale dei due sia.
+
+    Durante il passaggio dal modulo Google al modulo dentro il sito possono
+    esistere tutti e due. Si guarda l'intestazione e si sceglie il lettore
+    giusto, cosi' il giro automatico non va cambiato il giorno del cambio.
+    """
+    prima = (testo_csv or "").splitlines()[:1]
+    intestazione = _norm(prima[0] if prima else "")
+    if "giocatore" in intestazione and "giornata" in intestazione:
+        return leggi_sito(testo_csv, stagione, adesso)
+    return leggi(testo_csv, stagione, adesso)

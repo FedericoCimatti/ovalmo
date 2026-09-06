@@ -39,7 +39,9 @@ I file, uno per mestiere:
 |---|---|
 | `aggiorna.py` | il giro completo. E' l'unica cosa che il robot lancia |
 | `ovalmo/risultati.py` | calendario e risultati da football-data.org |
-| `ovalmo/modulo.py` | i pronostici dal foglio Google |
+| `ovalmo/modulo.py` | legge i pronostici dal foglio Google |
+| `ovalmo/schedina.py` | il modulo per mandare i pronostici, dentro la pagina |
+| `google/ricevi_pronostici.gs` | lo script dentro Google che riceve i pronostici |
 | `ovalmo/punteggio.py` | punti e classifica |
 | `ovalmo/pagina.py` | riempie `template.html` e produce la pagina |
 | `ovalmo/excel.py` | il foglio Excel con formule e grafico |
@@ -62,7 +64,7 @@ Si mettono in **Settings > Secrets and variables > Actions > New repository secr
 | nome | cos'e' | dove si prende |
 |---|---|---|
 | `FD_TOKEN` | token di football-data.org | registrazione gratuita su football-data.org/client/register, arriva per mail |
-| `FOGLIO_CSV` | indirizzo del foglio risposte pubblicato in CSV | nel foglio: File > Condividi > Pubblica sul web > foglio "Risposte del modulo 1" > formato "Valori separati da virgola (.csv)" > Pubblica |
+| `FOGLIO_CSV` | indirizzo del foglio dei pronostici pubblicato in CSV | nel foglio: File > Condividi > Pubblica sul web > foglio "Pronostici" > formato "Valori separati da virgola (.csv)" > Pubblica |
 
 L'indirizzo del foglio **non va scritto nel codice**: il repository e' pubblico
 e chi ha quell'indirizzo legge tutti i pronostici, anche quelli coperti.
@@ -146,10 +148,31 @@ pronostici non vengono mai cancellati.
 - **La data in fondo alla pagina non conta** per decidere se ripubblicare,
   altrimenti sarebbe sempre "cambiata".
 
-## Cosa resta da fare a mano
+## Come si mandano i pronostici
 
-**Rinominare le dieci domande del modulo Google** con le partite della giornata
-nuova, prima di ogni turno. Va fatto nell'editor del modulo, rinominando (mai
-cancellare e ricreare: si romperebbero le colonne del foglio risposte).
+Direttamente sul sito. Le dieci partite compaiono da sole, prese dal calendario
+dell'API: non c'e' niente da rinominare prima di ogni giornata.
 
-Il job se ne accorge se il modulo e' rimasto indietro e si rifiuta di importare.
+Il giro completo:
+
+```
+la pagina  ->  google/ricevi_pronostici.gs  ->  foglio "Pronostici"
+                                                       |
+                        il giro orario lo rilegge  <---+
+```
+
+Ognuno la prima volta sceglie il suo nome e scrive un codice di quattro cifre;
+il telefono se lo ricorda e non lo chiede piu'. I codici stanno **solo** dentro
+lo script in Google, mai nella pagina: c'e' un test che lo verifica.
+
+L'indirizzo dello script va scritto in `dati/stagione.json`, campo
+`endpoint_pronostici`. Finche' e' vuoto, la pagina rimanda al vecchio modulo
+Google invece di mostrare una schedina che non saprebbe dove mandare niente.
+
+Il lettore riconosce da solo quale dei due fogli sta leggendo (vecchio modulo o
+nuovo), quindi il passaggio dall'uno all'altro non richiede di cambiare codice.
+
+### Se un giorno cambiano i giocatori o i codici
+
+Si modifica la tabella in cima a `google/ricevi_pronostici.gs`, poi dentro Apps
+Script: Distribuisci > Gestisci distribuzioni > modifica > Distribuisci.

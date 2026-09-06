@@ -269,6 +269,39 @@ details.g[open] > summary{border-bottom:1px solid var(--line)}
   text-decoration:none; border-bottom:1px solid var(--line)}
 .scarica:hover{border-bottom-color:var(--accent)}
 
+/* ---- modulo dei pronostici, dentro la pagina ---- */
+.mod{border:1px solid var(--line); border-radius:14px; background:var(--card); padding:16px 14px; margin-top:14px}
+.mod .chi{display:flex; flex-wrap:wrap; gap:8px; margin:10px 0 12px}
+.mod .chi button{
+  font:600 15px/1 var(--ff-s); padding:11px 14px; border-radius:10px; cursor:pointer;
+  border:1px solid var(--line); background:var(--paper); color:var(--ink)}
+.mod .chi button[aria-pressed="true"]{background:var(--accent); color:#fff; border-color:var(--accent)}
+.mod .cod{display:flex; gap:8px; align-items:center; flex-wrap:wrap}
+.mod input[type="tel"],.mod input[type="number"]{
+  font:600 16px/1 var(--ff-m); padding:10px; border-radius:9px; text-align:center;
+  border:1px solid var(--line); background:var(--paper); color:var(--ink)}
+.mod input[type="tel"]{width:6.5em; letter-spacing:.25em}
+.mod .gol{width:3.2em}
+.mod .go{
+  font:700 15px/1 var(--ff-s); padding:12px 18px; border-radius:10px; cursor:pointer;
+  border:0; background:var(--accent); color:#fff}
+.mod .go:disabled{opacity:.5; cursor:default}
+.mod .riga{
+  display:grid; grid-template-columns:1fr auto auto; gap:8px; align-items:center;
+  padding:9px 0; border-bottom:1px solid var(--line2)}
+.mod .riga:last-of-type{border-bottom:0}
+.mod .riga b{font:600 15px/1.25 var(--ff-s)}
+.mod .riga small{display:block; color:var(--mute); font:500 11.5px/1.4 var(--ff-m)}
+.mod .tre{display:flex; gap:4px}
+.mod .tre button{
+  font:700 14px/1 var(--ff-m); width:38px; height:38px; border-radius:9px; cursor:pointer;
+  border:1px solid var(--line); background:var(--paper); color:var(--ink2)}
+.mod .tre button[aria-pressed="true"]{background:var(--accent); color:#fff; border-color:var(--accent)}
+.mod .esito{margin:12px 0 0; font:500 14px/1.5 var(--ff-s)}
+.mod .esito.ok{color:var(--accent)} .mod .esito.ko{color:#b3261e}
+.mod .cambia{background:none; border:0; padding:0; color:var(--mute); font:500 12.5px var(--ff-s);
+  text-decoration:underline; cursor:pointer}
+
 @media (prefers-reduced-motion:reduce){*{animation:none!important; transition:none!important}}
 </style>
 </head>
@@ -289,6 +322,8 @@ details.g[open] > summary{border-bottom:1px solid var(--line)}
     <div class="tw"><table><thead><tr><th></th><th>Giocatore</th><th class="num-pt">Punti</th><th class="num">Segni</th><th class="num">Esatti</th></tr></thead><tbody><tr class="leader"><td class="pos">1</td><td class="nome">Lippi</td><td class="num-pt">19</td><td class="num">11</td><td class="num">4</td></tr><tr><td class="pos">2</td><td class="nome">Berta</td><td class="num-pt">19</td><td class="num">13</td><td class="num">3</td></tr><tr><td class="pos">3</td><td class="nome">Super Gulp</td><td class="num-pt">15</td><td class="num">11</td><td class="num">2</td></tr><tr><td class="pos">4</td><td class="nome">Just Lele</td><td class="num-pt">14</td><td class="num">10</td><td class="num">2</td></tr><tr><td class="pos">5</td><td class="nome">Lenzuolo</td><td class="num-pt">13</td><td class="num">9</td><td class="num">2</td></tr></tbody></table></div>
     <div class="gtab"><div class="tw"><table><thead><tr><th>G.</th><th class="num">Berta</th><th class="num">Super Gulp</th><th class="num">Lenzuolo</th><th class="num">Just Lele</th><th class="num">Lippi</th><th>Re</th></tr></thead><tbody><tr><td class="g">2</td><td class="">9</td><td class="">8</td><td class="">8</td><td class="">7</td><td class="best">12</td><td class="re">Lippi</td></tr><tr><td class="g">3</td><td class="best">10</td><td class="">7</td><td class="">5</td><td class="">7</td><td class="">7</td><td class="re">Berta</td></tr></tbody></table></div></div>
   </section>
+
+  <section><h2>Manda i tuoi pronostici</h2><p class="lede">Giornata 4, si chiude il 11/09 alle 20:45.</p><a class="cta" href="https://forms.gle/vuZK5rm6N8b8Z2Zc7" target="_blank" rel="noopener">Vai al modulo</a></section>
 
   <section>
     <h2>La schedina &mdash; giornata 3</h2><p class="lede">Tutti e cinque hanno mandato. Il segno grande &egrave; l&rsquo;esito, sotto il risultato esatto.</p><a class="cta" href="https://forms.gle/vuZK5rm6N8b8Z2Zc7" target="_blank" rel="noopener">Manda i tuoi pronostici</a><p class="cta-note">Nel modulo trovi le stesse dieci partite, nello stesso ordine. Si risponde cos&igrave;: <strong>1 (2-1)</strong>.</p><div class="matches"><article class="match"><header><div class="meta"><span class="num">01</span><span class="ris">1&ndash;4 <span class="sg sg-2">2</span></span></div><h3>Genoa <span class="v">&ndash;</span> Como</h3></header><p class="unan">tutti e cinque sullo stesso segno</p><div class="picks"><div class="pick pk2"><span class="who">Berta</span><span class="sg sg-2">2</span><span class="sc">0&ndash;2</span><span class="pts">1</span></div><div class="pick pk2"><span class="who">Super Gulp</span><span class="sg sg-2">2</span><span class="sc">1&ndash;2</span><span class="pts">1</span></div><div class="pick pk2"><span class="who">Lenzuolo</span><span class="sg sg-2">2</span><span class="sc">0&ndash;2</span><span class="pts">1</span></div><div class="pick pk2"><span class="who">Just Lele</span><span class="sg sg-2">2</span><span class="sc">0&ndash;3</span><span class="pts">1</span></div><div class="pick pk2"><span class="who">Lippi</span><span class="sg sg-2">2</span><span class="sc">1&ndash;2</span><span class="pts">1</span></div></div></article>
@@ -324,7 +359,7 @@ details.g[open] > summary{border-bottom:1px solid var(--line)}
     <p class="lede" style="margin-top:16px">I punti non si sommano: chi prende il risultato esatto fa 3, non 3+1. Pronostici entro il primo fischio della giornata. A pari punti passa avanti chi ha pi&ugrave; risultati esatti.</p>
   </section>
 
-  <p class="fine">Dati aggiornati il 06/09/2026 alle 23:21 &middot; aggiornamento automatico ogni ora &middot; i punti li calcola il foglio, non la memoria di nessuno</p>
+  <p class="fine">Dati aggiornati il 06/09/2026 alle 23:41 &middot; aggiornamento automatico ogni ora &middot; i punti li calcola il foglio, non la memoria di nessuno</p>
   <p><a class="scarica" href="Trofeo_Ovalmo.xlsx" download>Scarica il foglio Excel con tutti i dettagli</a></p>
 </div>
 
