@@ -114,3 +114,12 @@ def test_i_conti_in_diretta_coincidono_con_quelli_veri():
     vero = {g: calcola(dopo)["stats"][g]["pt"] for g in DATI["players"]}
 
     assert live == vero == {"Berta": 3, "Lippi": 0}
+
+
+def test_c_e_la_prova_di_vita_in_fondo_alla_pagina():
+    """La data in fondo dice quando i dati sono cambiati, non se il sistema e'
+    vivo: puo' restare ferma per giorni legittimamente. La diretta ci scrive
+    accanto l'ora dell'ultimo contatto con Google."""
+    html = diretta.blocco(DATI, adesso=LONTANO, endpoint=ENDPOINT)
+    assert "disegnaControllo(stato.adesso" in html
+    assert "getElementById('controllato')" in html

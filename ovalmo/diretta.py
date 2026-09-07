@@ -159,6 +159,7 @@ def _script(cfg):
 
     if(quante) disegnaClassifica(extra, esatti, stato.adesso);
     disegnaConsegne(stato.consegne || {});
+    disegnaControllo(stato.adesso);
   }
 
   function disegnaPartita(mid, viva){
@@ -216,6 +217,16 @@ def _script(cfg):
         ('0' + ora.getHours()).slice(-2) + ':' + ('0' + ora.getMinutes()).slice(-2);
       nota.hidden = false;
     }
+  }
+
+  // la prova di vita in fondo alla pagina: l'ora in cui si e' parlato con
+  // Google, presa da Google e non dall'orologio di chi guarda
+  function disegnaControllo(quando){
+    var dove = document.getElementById('controllato');
+    if(!dove) return;
+    var ora = new Date(quando);
+    dove.textContent = ' \u00b7 controllato alle ' +
+      ('0' + ora.getHours()).slice(-2) + ':' + ('0' + ora.getMinutes()).slice(-2);
   }
 
   function disegnaConsegne(consegne){

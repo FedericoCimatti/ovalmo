@@ -180,3 +180,8 @@ def test_due_pagine_a_ore_diverse_restano_indistinguibili_per_l_impronta():
     una = genera(DATI, orari.quando("09/10/2026", "12:00"))
     due = genera(DATI, orari.quando("09/10/2026", "23:00"))
     assert aggiorna.impronta_pagina(una) == aggiorna.impronta_pagina(due)
+
+
+def test_il_piede_di_pagina_ha_il_posto_per_la_prova_di_vita():
+    html = genera(DATI, orari.quando("09/10/2026", "12:00"))
+    assert 'Dati aggiornati il 09/10/2026 alle 12:00<span id="controllato"></span>' in html

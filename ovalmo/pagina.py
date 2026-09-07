@@ -239,9 +239,13 @@ def genera(dati, template, adesso=None, aggiornato=None):
     modulo = schedina.blocco(dati, adesso=adesso, endpoint=endpoint, modulo_google=MODULO)
     in_diretta = diretta.blocco(dati, conti=conti, adesso=adesso, endpoint=endpoint)
     avviso = _script_avviso(calendario, risultati, giornate) + _script_freschezza(aggiornato)
-    # solo la data: e' l'unica cosa che dice se il sistema e' vivo. Il resto
-    # del vecchio piede di pagina era spiegazione che non serve piu' a nessuno.
-    fine = f"Dati aggiornati il {aggiornato:%d/%m/%Y} alle {aggiornato:%H:%M}"
+    # Due informazioni diverse, e servono tutte e due:
+    #   la data dice quando i DATI sono cambiati l'ultima volta. Non si tocca a
+    #   ogni controllo, altrimenti si farebbe un commit ogni cinque minuti;
+    #   accanto, la diretta scrive quando ha parlato con Google l'ultima volta.
+    #   E' la prova che il sistema e' vivo. Se resta vuoto, qualcosa non va.
+    fine = (f"Dati aggiornati il {aggiornato:%d/%m/%Y} alle {aggiornato:%H:%M}"
+            '<span id="controllato"></span>')
 
     page = template
     for k, v in [("__OG__", E(og)), ("__URL__", E(SITO)), ("__AVVISO__", avviso),
