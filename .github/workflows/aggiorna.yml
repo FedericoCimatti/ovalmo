@@ -1,19 +1,23 @@
 name: Aggiorna il sito
 
-# Ogni mezz'ora, dalle 11 all'una di notte italiane (il cron di GitHub e' in
+# Ogni cinque minuti, dalle 11 all'una di notte italiane (il cron di GitHub e' in
 # UTC, quindi d'inverno la finestra scivola di un'ora: e' voluto, meglio un
 # giro in piu' la mattina che uno in meno la sera). Di notte non succede niente.
 #
-# Perche' mezz'ora e non un'ora: GitHub non garantisce i giri schedulati e ne
-# salta parecchi quando ha traffico. Il 7 settembre, con la richiesta oraria,
-# ne sono partiti tre su quindici. Chiedendone il doppio si dimezza il buco
-# quando qualcuno viene saltato - e un giro che non ha niente da fare dura
-# dieci secondi e non produce nessun commit.
+# Cinque minuti e' il minimo che GitHub accetta, e serve chiederne tanti perche'
+# ne salta parecchi quando ha traffico: il 7 settembre, chiedendone uno all'ora,
+# ne sono partiti tre su quindici. Chiedendone dodici all'ora si arriva sempre
+# vicini al risultato appena e' definitivo.
+#
+# Non e' spreco: un giro che non ha niente da fare dura una quindicina di
+# secondi, non produce nessun commit, e sui repository pubblici i minuti di
+# calcolo sono gratis e illimitati. Le chiamate a football-data restano una per
+# giro, cioe' 170 al giorno su un limite di 14.400.
 #
 # "workflow_dispatch" e' il pulsante per lanciarlo a mano dalla scheda Actions.
 on:
   schedule:
-    - cron: '0,30 9-23 * * *'
+    - cron: '*/5 9-23 * * *'
   workflow_dispatch:
 
 permissions:

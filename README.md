@@ -196,6 +196,17 @@ I conti veri restano in `punteggio.py`: la diretta parte dai totali gia'
 calcolati e somma soltanto le partite ancora aperte. E' quello che impedisce
 alla classifica in diretta di divergere da quella vera - c'e' un test apposta.
 
+La pagina si porta dietro **tutte** le partite non ancora giocate con i loro
+orari, e quali seguire lo decide il browser mentre gira. Se lo decidesse il
+generatore, una pagina rigenerata alle 16 non saprebbe di dover seguire la
+partita delle 21 - ed e' esattamente quello che e' successo il 7 settembre,
+quando GitHub aveva saltato quasi tutti i giri e durante Cagliari-Lecce la
+diretta non era nemmeno nella pagina.
+
+Resta un limite inevitabile: durante la PRIMA partita di una giornata si vedono
+i gol ma non i punti, perche' i pronostici sono ancora coperti e non stanno
+nella pagina. Compaiono al primo giro dopo il calcio d'inizio.
+
 Serve il token di football-data anche dentro Google: **Impostazioni progetto >
 Proprieta' script > FD_TOKEN**. Se manca, la diretta semplicemente non si
 attiva e la pagina resta quella del giro orario.

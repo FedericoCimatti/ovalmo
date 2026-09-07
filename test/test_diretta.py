@@ -29,24 +29,28 @@ def test_senza_endpoint_niente_diretta():
     assert diretta.blocco(DATI, adesso=DURANTE, endpoint="") == ""
 
 
-def test_senza_partite_in_corso_resta_accesa_ma_piu_rada():
-    """Di martedi' non c'e' nessun risultato da seguire, ma la riga di chi ha
-    gia' consegnato deve aggiornarsi lo stesso: chi manda la schedina si vede
-    comparire entro un minuto e mezzo, non al giro dopo."""
+def test_la_pagina_si_porta_dietro_tutte_le_partite_da_giocare():
+    """Quali seguire lo decide il browser mentre gira. Se lo decidesse questo
+    file, una pagina rigenerata alle 16 non saprebbe di dover seguire la
+    partita delle 21 - ed e' esattamente quello che e' successo il 7 settembre,
+    quando GitHub ha saltato quasi tutti i giri."""
     d = cfg(diretta.blocco(DATI, adesso=LONTANO, endpoint=ENDPOINT))
-    assert d["aperte"] == {}
-    assert d["ogni"] == diretta.OGNI_A_RIPOSO
+    assert set(d["partite"]) == {"G07-01", "G07-02", "G08-01", "G08-02"}
+    assert d["partite"]["G07-01"]["inizio"].startswith("2026-10-10T20:45")
 
 
-def test_mentre_si_gioca_chiede_piu_spesso():
+def test_il_ritmo_lo_decide_il_browser():
+    d = cfg(diretta.blocco(DATI, adesso=LONTANO, endpoint=ENDPOINT))
+    assert d["ogniInGioco"] == diretta.OGNI_IN_GIOCO
+    assert d["ogniARiposo"] == diretta.OGNI_A_RIPOSO
+    html = diretta.blocco(DATI, adesso=LONTANO, endpoint=ENDPOINT)
+    assert "aperteAdesso()" in html
+
+
+def test_ogni_partita_porta_con_se_squadre_e_orario():
     d = cfg(diretta.blocco(DATI, adesso=DURANTE, endpoint=ENDPOINT))
-    assert d["ogni"] == diretta.OGNI_IN_GIOCO
-
-
-def test_segue_solo_le_partite_di_adesso():
-    d = cfg(diretta.blocco(DATI, adesso=DURANTE, endpoint=ENDPOINT))
-    assert list(d["aperte"]) == ["G07-01"]
-    assert d["aperte"]["G07-01"]["casa"] == "Inter"
+    assert d["partite"]["G07-01"]["casa"] == "Inter"
+    assert d["partite"]["G07-01"]["ospite"] == "Milan"
 
 
 def test_porta_con_se_i_totali_gia_calcolati():
@@ -62,10 +66,10 @@ def test_i_pronostici_di_una_giornata_iniziata_servono_ai_conti():
 
 def test_i_pronostici_coperti_non_finiscono_nella_diretta():
     """Prima del calcio d'inizio non deve uscire niente, nemmeno da qui."""
-    prima = orari.quando("10/10/2026", "20:00")    # un'ora prima: partita gia' "aperta"
+    prima = orari.quando("10/10/2026", "20:00")    # un'ora prima del fischio
     html = diretta.blocco(DATI, adesso=prima, endpoint=ENDPOINT)
     d = cfg(html)
-    assert d["aperte"], "la partita imminente dovrebbe essere seguita"
+    assert d["partite"], "la partita imminente dovrebbe essere nell'elenco"
     assert d["picks"] == {}
     assert "2, 1" not in html and '"1", 2' not in html
 
@@ -77,15 +81,17 @@ def test_traduce_i_nomi_dell_api():
     assert "Hellas Verona FC" not in d["squadre"], "solo le squadre di questa stagione"
 
 
-def test_smette_di_seguire_una_partita_finita_da_un_pezzo():
-    tardi = orari.quando("11/10/2026", "03:00")     # sei ore dopo il fischio d'inizio
-    assert cfg(diretta.blocco(DATI, adesso=tardi, endpoint=ENDPOINT))["aperte"] == {}
+def test_una_partita_senza_risultato_resta_nell_elenco_anche_dopo():
+    """Se il risultato non e' ancora stato scritto - rinvio, o GitHub fermo -
+    la partita resta seguibile: e' il browser a smettere di guardarla."""
+    tardi = orari.quando("11/10/2026", "03:00")
+    assert "G07-01" in cfg(diretta.blocco(DATI, adesso=tardi, endpoint=ENDPOINT))["partite"]
 
 
 def test_una_partita_col_risultato_gia_scritto_non_si_segue_piu():
     dati = dict(DATI, risultati={"G07-01": [2, 1]})
     d = cfg(diretta.blocco(dati, adesso=DURANTE, endpoint=ENDPOINT))
-    assert d["aperte"] == {}
+    assert "G07-01" not in d["partite"]
 
 
 def test_i_conti_in_diretta_coincidono_con_quelli_veri():

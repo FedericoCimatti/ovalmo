@@ -57,24 +57,24 @@ def blocco(dati, conti=None, adesso=None, endpoint=None):
     giocatori = dati["players"]
     conti = conti or calcola(dati)
 
-    # le partite che oggi possono ancora muovere qualcosa: senza risultato, e
-    # in una finestra ragionevole attorno al loro orario
-    aperte = {}
+    # TUTTE le partite non ancora giocate, con il loro orario. Quali seguire lo
+    # decide il browser mentre gira, non questo file: la pagina viene rigenerata
+    # quando GitHub si degna, e se la lista fosse decisa qui una pagina fatta
+    # tre ore prima non saprebbe di dover seguire la partita delle nove.
+    da_seguire = {}
     for g, partite in calendario.items():
         for n in range(1, len(partite) + 1):
             mid = id_partita(g, n)
             if risultati.get(mid):
                 continue
             data, ora, casa, ospite = partite[n - 1]
-            inizio = orari.quando(data, ora)
-            ore = (adesso - inizio).total_seconds() / 3600
-            if -PRIMA_ORE <= ore <= DOPO_ORE:
-                aperte[mid] = {"g": g, "casa": casa, "ospite": ospite}
+            da_seguire[mid] = {"g": g, "casa": casa, "ospite": ospite,
+                               "inizio": orari.quando(data, ora).isoformat()}
 
     # i pronostici che servono per i conti in diretta: solo quelli delle
-    # partite aperte, e solo se la loro giornata e' gia' cominciata
+    # giornate gia' cominciate, che sono gia' pubblici
     picks = {}
-    for mid, p in aperte.items():
+    for mid, p in da_seguire.items():
         if orari.coperta(calendario, p["g"], adesso):
             continue
         if pronostici.get(mid):
@@ -88,10 +88,13 @@ def blocco(dati, conti=None, adesso=None, endpoint=None):
 
     cfg = json.dumps({
         "endpoint": endpoint,
-        "ogni": OGNI_IN_GIOCO if aperte else OGNI_A_RIPOSO,
+        "ogniInGioco": OGNI_IN_GIOCO,
+        "ogniARiposo": OGNI_A_RIPOSO,
+        "prima": PRIMA_ORE,
+        "dopo": DOPO_ORE,
         "giocatori": giocatori,
         "base": base,
-        "aperte": aperte,
+        "partite": da_seguire,
         "picks": picks,
         "squadre": mappa,
     }, ensure_ascii=False)
@@ -102,7 +105,18 @@ def _script(cfg):
     return """
 (function(){
   var D = %s;
-  var ultimo = null;
+  var ultimaChiamata = 0;
+
+  // quali partite stanno per cominciare, o sono in corso, ADESSO
+  function aperteAdesso(){
+    var fuori = {};
+    Object.keys(D.partite).forEach(function(mid){
+      var p = D.partite[mid];
+      var ore = (Date.now() - new Date(p.inizio).getTime()) / 3600000;
+      if(ore >= -D.prima && ore <= D.dopo) fuori[mid] = p;
+    });
+    return fuori;
+  }
 
   // stesse regole di punteggio.py: 3 segno e risultato, 1 solo il segno, 0 il resto
   function segno(a, b){ return a > b ? '1' : (a === b ? 'X' : '2') }
@@ -124,10 +138,11 @@ def _script(cfg):
     });
 
     var extra = {}, esatti = {}, quante = 0;
+    var aperte = aperteAdesso();
     D.giocatori.forEach(function(g){ extra[g] = 0; esatti[g] = 0 });
 
-    Object.keys(D.aperte).forEach(function(mid){
-      var a = D.aperte[mid];
+    Object.keys(aperte).forEach(function(mid){
+      var a = aperte[mid];
       var viva = vive[a.g + '|' + a.casa + '|' + a.ospite];
       if(!viva) return;
       quante++;
@@ -220,14 +235,18 @@ def _script(cfg):
 
   function chiedi(){
     if(document.hidden) return;            // scheda in secondo piano: si sta fermi
+    // fitto mentre si gioca, rado quando c'e' solo da vedere chi ha consegnato
+    var pausa = Object.keys(aperteAdesso()).length ? D.ogniInGioco : D.ogniARiposo;
+    if(Date.now() - ultimaChiamata < pausa * 1000) return;
+    ultimaChiamata = Date.now();
     fetch(D.endpoint + '?azione=stato', {redirect: 'follow'})
       .then(function(r){ return r.json() })
-      .then(function(stato){ if(stato && stato.ok){ ultimo = stato; aggiorna(stato) } })
+      .then(function(stato){ if(stato && stato.ok) aggiorna(stato) })
       .catch(function(){ /* rete assente o script giu': si tiene quello che c'e' */ });
   }
 
   chiedi();
-  setInterval(chiedi, D.ogni * 1000);
+  setInterval(chiedi, 10 * 1000);          // il freno vero e' dentro chiedi()
   document.addEventListener('visibilitychange', function(){ if(!document.hidden) chiedi() });
 })();
 """ % cfg
