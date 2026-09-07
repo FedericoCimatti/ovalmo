@@ -85,6 +85,11 @@ Se i risultati smettono di arrivare, la pagina se ne accorge da sola e mostra in
 cima un avviso "mancano dei risultati": e' il browser di chi guarda a
 controllare, quindi funziona anche se il robot e' morto del tutto.
 
+La pagina si ricarica anche da sola quando sul sito ne esiste una piu' nuova.
+Senza, chi la lascia aperta continua a vedere la copia che il browser si e'
+tenuto in memoria e pensa che il sito sia fermo - e' successo davvero, il primo
+giorno. Non lo fa mentre qualcuno sta compilando la schedina.
+
 Le cause probabili, in ordine di frequenza:
 
 1. **Una squadra nuova non e' in tabella.** Succede dopo le promozioni. Il

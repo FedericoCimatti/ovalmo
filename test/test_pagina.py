@@ -160,3 +160,23 @@ def test_la_schedina_mostra_il_giorno_delle_partite_da_giocare():
     html = genera(DATI, orari.quando("09/10/2026", "12:00"))
     assert "Domani 20:45" in html          # Inter-Milan, 10/10
     assert "11/10 15:00" in html           # Roma-Lazio, dopodomani
+
+
+def test_la_pagina_si_ricarica_quando_ne_esiste_una_piu_nuova():
+    """Il browser tiene in memoria la pagina vecchia e sembra che il sito sia
+    fermo. La pagina controlla da sola e si ricarica."""
+    quando = orari.quando("09/10/2026", "12:00")
+    html = genera(DATI, quando)
+    assert 'var MIA = "Dati aggiornati il 09/10/2026 alle 12:00"' in html
+    assert "location.reload()" in html
+    assert "stoCompilando" in html          # mai mentre uno sta scrivendo
+
+
+def test_due_pagine_a_ore_diverse_restano_indistinguibili_per_l_impronta():
+    """La data compare ora in due punti (il piede e il controllo automatico):
+    l'impronta deve neutralizzarli entrambi, altrimenti si farebbe un commit
+    ogni ora anche senza novita'."""
+    import aggiorna
+    una = genera(DATI, orari.quando("09/10/2026", "12:00"))
+    due = genera(DATI, orari.quando("09/10/2026", "23:00"))
+    assert aggiorna.impronta_pagina(una) == aggiorna.impronta_pagina(due)

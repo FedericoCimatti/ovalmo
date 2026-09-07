@@ -238,7 +238,7 @@ def genera(dati, template, adesso=None, aggiornato=None):
 
     modulo = schedina.blocco(dati, adesso=adesso, endpoint=endpoint, modulo_google=MODULO)
     in_diretta = diretta.blocco(dati, conti=conti, adesso=adesso, endpoint=endpoint)
-    avviso = _script_avviso(calendario, risultati, giornate)
+    avviso = _script_avviso(calendario, risultati, giornate) + _script_freschezza(aggiornato)
     # solo la data: e' l'unica cosa che dice se il sistema e' vivo. Il resto
     # del vecchio piede di pagina era spiegazione che non serve piu' a nessuno.
     fine = f"Dati aggiornati il {aggiornato:%d/%m/%Y} alle {aggiornato:%H:%M}"
@@ -255,6 +255,41 @@ def genera(dati, template, adesso=None, aggiornato=None):
              if k in page]
     assert not resti, f"segnaposto non sostituiti: {resti}"
     return page
+
+
+def _script_freschezza(aggiornato):
+    """Ricarica la pagina quando ne esiste una piu' nuova.
+
+    Il browser tiene in memoria la pagina scaricata e continua a mostrarla anche
+    quando sul sito ce n'e' una nuova: chi la lascia aperta la sera se la ritrova
+    identica il giorno dopo, e pensa che il sistema sia fermo. Qui la pagina
+    controlla da sola se e' invecchiata e in quel caso si ricarica.
+
+    Non lo fa mai mentre qualcuno sta compilando la schedina: si perderebbe
+    quello che ha scritto.
+    """
+    mia = f"Dati aggiornati il {aggiornato:%d/%m/%Y} alle {aggiornato:%H:%M}"
+    return (
+        "(function(){\n"
+        f"  var MIA = {json.dumps(mia)};\n"
+        "  var OGNI = 5 * 60 * 1000;\n"
+        "  function stoCompilando(){\n"
+        "    var f = document.getElementById('schedina');\n"
+        "    return f && !f.hidden;\n"
+        "  }\n"
+        "  function controlla(){\n"
+        "    if(document.hidden || stoCompilando()) return;\n"
+        "    fetch(location.pathname + '?t=' + Date.now(), {cache: 'no-store'})\n"
+        "      .then(function(r){ return r.text() })\n"
+        "      .then(function(testo){\n"
+        "        var trovato = testo.match(/Dati aggiornati il \\d{2}\\/\\d{2}\\/\\d{4} alle \\d{2}:\\d{2}/);\n"
+        "        if(trovato && trovato[0] !== MIA) location.reload();\n"
+        "      }).catch(function(){});\n"
+        "  }\n"
+        "  setInterval(controlla, OGNI);\n"
+        "  document.addEventListener('visibilitychange', function(){ if(!document.hidden) controlla() });\n"
+        "})();"
+    )
 
 
 def _script_avviso(calendario, risultati, giornate):

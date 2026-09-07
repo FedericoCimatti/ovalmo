@@ -1,12 +1,19 @@
 name: Aggiorna il sito
 
-# Ogni ora, dalle 11 all'una di notte italiane (il cron di GitHub e' in UTC,
-# quindi d'inverno la finestra scivola di un'ora: e' voluto, meglio un giro in
-# piu' la mattina che uno in meno la sera). Di notte non succede mai niente.
+# Ogni mezz'ora, dalle 11 all'una di notte italiane (il cron di GitHub e' in
+# UTC, quindi d'inverno la finestra scivola di un'ora: e' voluto, meglio un
+# giro in piu' la mattina che uno in meno la sera). Di notte non succede niente.
+#
+# Perche' mezz'ora e non un'ora: GitHub non garantisce i giri schedulati e ne
+# salta parecchi quando ha traffico. Il 7 settembre, con la richiesta oraria,
+# ne sono partiti tre su quindici. Chiedendone il doppio si dimezza il buco
+# quando qualcuno viene saltato - e un giro che non ha niente da fare dura
+# dieci secondi e non produce nessun commit.
+#
 # "workflow_dispatch" e' il pulsante per lanciarlo a mano dalla scheda Actions.
 on:
   schedule:
-    - cron: '0 9-23 * * *'
+    - cron: '0,30 9-23 * * *'
   workflow_dispatch:
 
 permissions:
