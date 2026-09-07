@@ -1,11 +1,14 @@
 # -*- coding: utf-8 -*-
-"""I gol in diretta, mentre si gioca.
+"""La diretta: quello che si muove senza aspettare il giro automatico.
 
-Il sito e' una pagina ferma, rigenerata una volta all'ora: da sola non potrebbe
-mai mostrare un gol appena fatto. Qui si aggiunge uno strato sottile che gira
-nel browser di chi guarda: ogni minuto chiede allo script dentro Google come
-vanno le partite, e aggiorna i punteggi, i punti e la classifica sotto gli
-occhi di chi sta guardando.
+Il sito e' una pagina ferma, rigenerata ogni mezz'ora quando GitHub si degna:
+da sola non potrebbe mai mostrare un gol appena fatto. Qui si aggiunge uno
+strato sottile che gira nel browser di chi guarda e chiede allo script dentro
+Google come vanno le cose - ogni 30 secondi mentre si gioca, ogni 90 quando non
+c'e' nessuna partita ma qualcuno potrebbe mandare la schedina.
+
+Aggiorna i punteggi, i punti, la classifica e la riga di chi ha gia' consegnato,
+sotto gli occhi di chi sta guardando e senza ricaricare niente.
 
 Due cose per capire perche' e' fatto cosi':
 
@@ -28,15 +31,23 @@ from . import orari, squadre
 from .dati import id_partita
 from .punteggio import calcola
 
-# ogni quanto la pagina richiede i risultati, in secondi
-OGNI = 45
+# ogni quanto la pagina richiede notizie, in secondi: fitto mentre si gioca,
+# piu' rado quando c'e' solo da vedere chi ha consegnato
+OGNI_IN_GIOCO = 30
+OGNI_A_RIPOSO = 90
 # quanto prima del calcio d'inizio comincia a guardare, e quanto dopo smette
 PRIMA_ORE = 1
 DOPO_ORE = 3
 
 
 def blocco(dati, conti=None, adesso=None, endpoint=None):
-    """Lo <script> della diretta. Stringa vuota se non c'e' niente da seguire."""
+    """Lo <script> della diretta.
+
+    Gira sempre, non solo durante le partite: anche a campionato fermo tiene
+    aggiornata la riga di chi ha gia' consegnato, che altrimenti resterebbe
+    ferma fino al giro successivo. Quando non si gioca chiede notizie piu'
+    di rado.
+    """
     if not endpoint:
         return ""
     adesso = adesso or orari.adesso()
@@ -59,8 +70,6 @@ def blocco(dati, conti=None, adesso=None, endpoint=None):
             ore = (adesso - inizio).total_seconds() / 3600
             if -PRIMA_ORE <= ore <= DOPO_ORE:
                 aperte[mid] = {"g": g, "casa": casa, "ospite": ospite}
-    if not aperte:
-        return ""
 
     # i pronostici che servono per i conti in diretta: solo quelli delle
     # partite aperte, e solo se la loro giornata e' gia' cominciata
@@ -79,7 +88,7 @@ def blocco(dati, conti=None, adesso=None, endpoint=None):
 
     cfg = json.dumps({
         "endpoint": endpoint,
-        "ogni": OGNI,
+        "ogni": OGNI_IN_GIOCO if aperte else OGNI_A_RIPOSO,
         "giocatori": giocatori,
         "base": base,
         "aperte": aperte,
