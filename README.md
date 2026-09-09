@@ -186,7 +186,10 @@ nuovo), quindi il passaggio dall'uno all'altro non richiede di cambiare codice.
 
 ## La diretta
 
-Mentre si gioca, la pagina non aspetta il giro orario: ogni 45 secondi chiede
+Chi manda la schedina compare agli altri entro un minuto e mezzo - riga e
+spunte verdi insieme, senza che nessuno ricarichi.
+
+Mentre si gioca, la pagina non aspetta il giro automatico: ogni 45 secondi chiede
 allo script dentro Google come vanno le partite e aggiorna punteggi, punti e
 classifica sotto gli occhi di chi guarda. Si ferma da sola quando la scheda del
 browser non e' in primo piano, e quando non c'e' nessuna partita in corso non

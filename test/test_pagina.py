@@ -185,3 +185,11 @@ def test_due_pagine_a_ore_diverse_restano_indistinguibili_per_l_impronta():
 def test_il_piede_di_pagina_ha_il_posto_per_la_prova_di_vita():
     html = genera(DATI, orari.quando("09/10/2026", "12:00"))
     assert 'Dati aggiornati il 09/10/2026 alle 12:00<span id="controllato"></span>' in html
+
+
+def test_le_carte_coperte_si_riconoscono():
+    """Servono alla diretta per sapere dove mettere le spunte."""
+    coperta = genera(DATI, PRIMA)
+    assert 'data-coperta="7"' in coperta
+    svelata = genera(DATI, DOPO)
+    assert "data-coperta=" not in svelata

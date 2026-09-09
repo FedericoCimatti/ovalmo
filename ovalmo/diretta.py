@@ -236,12 +236,30 @@ def _script(cfg):
     var chi = consegne[g] || [];
     var mancano = D.giocatori.filter(function(p){ return chi.indexOf(p) < 0 });
     function elenco(xs){ return xs.length === 1 ? xs[0] : xs.slice(0,-1).join(', ') + ' e ' + xs[xs.length-1] }
+    spunte(g, chi);
     if(!chi.length){ riga.textContent = 'Non ha ancora mandato nessuno.'; return }
     if(!mancano.length){
       riga.textContent = 'Hanno mandato tutti e cinque.'; return;
     }
     riga.textContent = 'Hanno gia\\u2019 mandato ' + elenco(chi) + '. Mancano ' + elenco(mancano) +
       '. Di loro si sa solo che hanno consegnato: i pronostici restano coperti.';
+  }
+
+  // le spunte accanto ai nomi, nella schedina ancora coperta: chi ha consegnato
+  // deve comparire subito come la riga qui sopra, non al giro successivo
+  function spunte(giornata, chi){
+    document.querySelectorAll('[data-coperta="' + giornata + '"]').forEach(function(carta){
+      D.giocatori.forEach(function(g){
+        var cella = carta.querySelector('[data-chi="' + g + '"]');
+        if(!cella) return;
+        var mandato = chi.indexOf(g) >= 0;
+        var segno = cella.querySelector('.sg');
+        if(!segno) return;
+        segno.className = 'sg ' + (mandato ? 'sg-lock' : 'sg-tbd');
+        segno.innerHTML = mandato ? '&#10003;' : 'TBD';
+        cella.classList.toggle('attesa-p', !mandato);
+      });
+    });
   }
 
   function chiedi(){

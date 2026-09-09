@@ -141,7 +141,8 @@ def genera(dati, template, adesso=None, aggiornato=None):
                     f'<span class="sc">{"&nbsp;" if ph is None else f"{ph}&ndash;{pa}"}</span>'
                     + (f'<span class="pts">{pts}</span>' if pts is not None else '') + '</div>')
             out.append(
-                f'<article class="match" data-mid="{mid}"><header>'
+                f'<article class="match" data-mid="{mid}"'
+                + (f' data-coperta="{g}"' if nascosta else '') + '><header>'
                 f'<div class="meta"><span class="num">{m:02d}</span>{esito}</div>'
                 f'<h3>{E(casa)} <span class="v">&ndash;</span> {E(osp)}</h3></header>'
                 + ('<p class="unan">tutti e cinque sullo stesso segno</p>' if unanime else '')

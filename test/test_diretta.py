@@ -123,3 +123,12 @@ def test_c_e_la_prova_di_vita_in_fondo_alla_pagina():
     html = diretta.blocco(DATI, adesso=LONTANO, endpoint=ENDPOINT)
     assert "disegnaControllo(stato.adesso" in html
     assert "getElementById('controllato')" in html
+
+
+def test_anche_le_spunte_si_aggiornano_in_diretta():
+    """La riga "hanno gia' mandato" e le spunte accanto ai nomi dicono la
+    stessa cosa: non possono aggiornarsi a velocita' diverse."""
+    html = diretta.blocco(DATI, adesso=LONTANO, endpoint=ENDPOINT)
+    assert "spunte(g, chi)" in html
+    assert "data-coperta=" in html
+    assert "sg-lock" in html and "sg-tbd" in html
