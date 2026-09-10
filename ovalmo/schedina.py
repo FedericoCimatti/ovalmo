@@ -30,8 +30,18 @@ def giornata_aperta(calendario, adesso=None):
     return future[0] if future else None
 
 
-def blocco(dati, adesso=None, endpoint=None, modulo_google=None):
-    """L'HTML del modulo. Stringa vuota se non c'e' niente da pronosticare."""
+# se la giornata da pronosticare comincia entro queste ore, il modulo si apre
+# comunque: meglio anticipare che rischiare di non far mandare nessuno perche'
+# la giornata precedente e' rimasta incagliata
+ORE_DI_SICUREZZA = 36
+
+
+def blocco(dati, adesso=None, endpoint=None, modulo_google=None, in_corso=None):
+    """L'HTML del modulo. Stringa vuota se non c'e' niente da pronosticare.
+
+    in_corso e' la giornata che si sta giocando adesso, se ce n'e' una. Finche'
+    si gioca il modulo resta chiuso: si torna a pronosticare a giornata finita.
+    """
     adesso = adesso or orari.adesso()
     calendario = {int(k): v for k, v in dati["calendario"].items()}
     giocatori = dati["players"]
@@ -43,6 +53,16 @@ def blocco(dati, adesso=None, endpoint=None, modulo_google=None):
 
     scadenza = orari.calcio_dinizio(calendario[g])
     quando = f"{scadenza:%d/%m} alle {scadenza:%H:%M}"
+
+    # Mentre si gioca non si pronostica: il modulo torna a fine giornata.
+    # A meno che la prossima non sia ormai vicina - se la giornata in corso
+    # restasse incagliata per un guasto, senza questa valvola nessuno potrebbe
+    # piu' mandare niente.
+    mancano_ore = (scadenza - adesso).total_seconds() / 3600
+    if in_corso is not None and in_corso < g and mancano_ore > ORE_DI_SICUREZZA:
+        return ('<section id="modulo"><h2>Manda i tuoi pronostici</h2>'
+                f'<p class="lede">Si sta giocando la giornata {in_corso}. La schedina della '
+                f'giornata {g} si apre appena finisce.</p></section>')
 
     # chi ha gia' consegnato per la giornata aperta. Solo i nomi: il contenuto
     # delle schedine non compare qui e non e' nemmeno nel repository, finche'

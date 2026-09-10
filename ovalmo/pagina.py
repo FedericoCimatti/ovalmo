@@ -292,7 +292,13 @@ def genera(dati, template, adesso=None, aggiornato=None):
               + (f"in testa {_elenco(primi)} a pari merito con {pt1} punti."
                  if len(primi) > 1 else f"in testa {primi[0]} con {pt1} punti."))
 
-    modulo = schedina.blocco(dati, adesso=adesso, endpoint=endpoint, modulo_google=MODULO)
+    # la giornata che si sta giocando: se ce n'e' una, il modulo dei pronostici
+    # resta chiuso finche' non finisce
+    # "si gioca" vuol dire che il primo calcio d'inizio e' passato, non che c'e'
+    # gia' un risultato: fra il fischio e il primo gol passa un'ora buona
+    si_gioca = g_feat if (g_feat is not None and not coperta.get(g_feat, True)) else None
+    modulo = schedina.blocco(dati, adesso=adesso, endpoint=endpoint, modulo_google=MODULO,
+                             in_corso=si_gioca)
     in_diretta = diretta.blocco(dati, conti=conti, adesso=adesso, endpoint=endpoint)
     avviso = _script_avviso(calendario, risultati, giornate) + _script_freschezza(aggiornato)
     # Due informazioni diverse, e servono tutte e due:

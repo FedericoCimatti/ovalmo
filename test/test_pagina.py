@@ -269,3 +269,45 @@ def test_l_invito_a_compilare_si_puo_nascondere():
     assert '<div id="invito">' in html
     dentro = html[html.index('<div id="invito">'):html.index("</div>", html.index('<div id="invito">'))]
     assert "Manda i tuoi pronostici" in dentro and "direttamente in questa pagina" in dentro
+
+
+def test_mentre_si_gioca_il_modulo_e_chiuso():
+    """Al primo calcio d'inizio il modulo sparisce per tutti, anche per chi non
+    ha ancora mandato: si torna a pronosticare a giornata finita."""
+    dati = dict(DATI, endpoint_pronostici="https://script.google.com/macros/s/ABC/exec",
+                calendario={**DATI["calendario"],
+                            "8": [["17/10/2026", "20:45", "Napoli", "Como"],
+                                  ["18/10/2026", "15:00", "Genoa", "Parma"]]})
+    # giornata 7 iniziata (10/10 20:45) e non finita
+    html = genera(dati, orari.quando("10/10/2026", "21:30"))
+    assert "Si sta giocando la giornata 7" in html
+    assert 'id="chisei"' not in html          # niente da compilare
+
+
+def test_a_giornata_finita_il_modulo_torna():
+    dati = dict(DATI, endpoint_pronostici="https://script.google.com/macros/s/ABC/exec",
+                risultati={"G07-01": [2, 1], "G07-02": [0, 0]},
+                calendario={**DATI["calendario"],
+                            "8": [["17/10/2026", "20:45", "Napoli", "Como"],
+                                  ["18/10/2026", "15:00", "Genoa", "Parma"]]})
+    html = genera(dati, orari.quando("12/10/2026", "12:00"))
+    assert "Manda i tuoi pronostici &mdash; giornata 8" in html
+    assert 'id="chisei"' in html
+
+
+def test_prima_che_cominci_il_modulo_e_aperto():
+    dati = dict(DATI, endpoint_pronostici="https://script.google.com/macros/s/ABC/exec")
+    html = genera(dati, orari.quando("09/10/2026", "12:00"))
+    assert "Manda i tuoi pronostici &mdash; giornata 7" in html
+
+
+def test_se_la_giornata_dopo_e_vicina_il_modulo_si_apre_lo_stesso():
+    """La valvola di sicurezza: se la giornata precedente restasse incagliata
+    per un guasto, senza questa nessuno potrebbe piu' mandare niente."""
+    dati = dict(DATI, endpoint_pronostici="https://script.google.com/macros/s/ABC/exec",
+                calendario={**DATI["calendario"],
+                            "8": [["12/10/2026", "20:45", "Napoli", "Como"]]})
+    # la 7 e' iniziata e incagliata, ma la 8 comincia fra meno di 36 ore
+    html = genera(dati, orari.quando("11/10/2026", "20:00"))
+    assert "Manda i tuoi pronostici &mdash; giornata 8" in html
+    assert 'id="chisei"' in html

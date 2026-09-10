@@ -205,6 +205,12 @@ nuovo), quindi il passaggio dall'uno all'altro non richiede di cambiare codice.
 Chi manda la schedina compare agli altri entro un minuto e mezzo - riga e
 spunte verdi insieme, senza che nessuno ricarichi.
 
+Il modulo segue il ritmo della giornata: aperto finche' non si comincia, chiuso
+per tutti dal primo calcio d'inizio, e riaperto sulla giornata successiva quando
+quella in corso e' finita. C'e' una valvola: se la giornata successiva comincia
+entro 36 ore il modulo si apre comunque, cosi' una giornata rimasta incagliata
+per un guasto non impedisce a nessuno di mandare.
+
 Chi ha mandato non vede piu' il modulo: la sezione sparisce del tutto e
 ricompare alla giornata successiva. Nella schedina ancora coperta, al posto
 della propria spunta ognuno rivede il proprio pronostico; degli altri resta la
