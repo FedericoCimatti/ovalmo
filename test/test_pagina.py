@@ -193,3 +193,61 @@ def test_le_carte_coperte_si_riconoscono():
     assert 'data-coperta="7"' in coperta
     svelata = genera(DATI, DOPO)
     assert "data-coperta=" not in svelata
+
+
+# ---------------------------------------------------------------- rinvii
+RINVIO = {
+    "players": ["Berta", "Lippi"],
+    "partite_per_giornata": 3,
+    "calendario": {"7": [["10/10/2026", "20:45", "Inter", "Milan"],
+                         ["11/10/2026", "15:00", "Roma", "Lazio"],
+                         ["24/10/2026", "18:00", "Genoa", "Como"]],   # rinviata
+                   "8": [["17/10/2026", "20:45", "Napoli", "Como"],
+                         ["18/10/2026", "15:00", "Genoa", "Parma"],
+                         ["18/10/2026", "18:00", "Lecce", "Monza"]]},
+    "risultati": {"G07-01": [2, 1], "G07-02": [0, 0]},                # le altre due giocate
+    "pronostici": {"G07-01": {"Berta": ["1", 2, 1], "Lippi": ["2", 0, 1]}},
+    "consegne": {"7": {"Berta": "x", "Lippi": "x"}},
+}
+DOPO_LA_SETTE = orari.quando("12/10/2026", "12:00")     # giornata 7 finita, resta il recupero
+
+
+def test_un_rinvio_non_blocca_il_sito_sulla_giornata():
+    """Senza questo, una partita rinviata al 24 terrebbe la schedina ferma
+    sulla giornata 7 per due settimane."""
+    html = genera(RINVIO, DOPO_LA_SETTE)
+    assert "La schedina &mdash; giornata 8" in html
+    assert "Giornate precedenti" in html
+
+
+def test_al_posto_del_re_si_dice_che_manca_una_partita():
+    html = genera(RINVIO, DOPO_LA_SETTE)
+    archivio = html[html.index("Giornate precedenti"):]
+    assert "da recuperare" in archivio
+    assert "Genoa&ndash;Como" in archivio
+    assert "re della giornata" not in archivio
+
+
+def test_col_recupero_giocato_torna_il_re():
+    dati = dict(RINVIO, risultati={**RINVIO["risultati"], "G07-03": [1, 0]})
+    html = genera(dati, orari.quando("25/10/2026", "12:00"))
+    archivio = html[html.index("Giornate precedenti"):]
+    assert "re della giornata" in archivio
+    assert "da recuperare" not in archivio
+
+
+def test_una_partita_che_doveva_giocarsi_e_non_ha_risultato_blocca_ancora():
+    """Diverso dal rinvio: se una partita di ieri non ha il risultato, qualcosa
+    non ha funzionato e la giornata non e' finita."""
+    dati = dict(RINVIO, calendario={**RINVIO["calendario"],
+                                    "7": [["10/10/2026", "20:45", "Inter", "Milan"],
+                                          ["11/10/2026", "15:00", "Roma", "Lazio"],
+                                          ["11/10/2026", "18:00", "Genoa", "Como"]]})
+    html = genera(dati, DOPO_LA_SETTE)
+    assert "La schedina &mdash; giornata 7" in html
+
+
+def test_si_pronostica_gia_la_giornata_dopo_anche_col_recupero_in_ballo():
+    from ovalmo import schedina
+    cal = {int(k): v for k, v in RINVIO["calendario"].items()}
+    assert schedina.giornata_aperta(cal, DOPO_LA_SETTE) == 8

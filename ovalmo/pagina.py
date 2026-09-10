@@ -24,12 +24,51 @@ MODULO = "https://forms.gle/vuZK5rm6N8b8Z2Zc7"
 SITO = "https://federicocimatti.github.io/ovalmo/"
 # dopo quante ore dal calcio d'inizio una partita senza risultato diventa sospetta
 ORE_PRIMA_DI_INSOSPETTIRSI = 4
+# dopo quante ore dal calcio d'inizio una partita si considera finita: oltre,
+# se manca il risultato, e' la giornata a essere bloccata e non un rinvio
+ORE_PER_GIOCARE = 3
 
 E = html.escape
 
 
 def _giorn(n):
     return "1 giornata conclusa" if n == 1 else f"{n} giornate concluse"
+
+
+def _mancanti(calendario, risultati, g, adesso):
+    """Le partite della giornata senza risultato, divise fra quelle che si
+    sarebbero gia' dovute giocare e quelle ancora da giocare."""
+    scadute, future = [], []
+    for n in range(1, len(calendario[g]) + 1):
+        mid = id_partita(g, n)
+        if risultati.get(mid):
+            continue
+        data, ora, casa, ospite = calendario[g][n - 1]
+        inizio = orari.quando(data, ora)
+        finita_da = (adesso - inizio).total_seconds() / 3600
+        (scadute if finita_da > ORE_PER_GIOCARE else future).append(
+            {"mid": mid, "casa": casa, "ospite": ospite, "data": data, "ora": ora})
+    return scadute, future
+
+
+def _scadute(calendario, risultati, g, adesso):
+    """Partite che dovevano essere finite e non hanno un risultato."""
+    return _mancanti(calendario, risultati, g, adesso)[0]
+
+
+def _da_recuperare(calendario, risultati, g, adesso):
+    """Partite della giornata rimandate a una data futura."""
+    return _mancanti(calendario, risultati, g, adesso)[1]
+
+
+def _etichetta_recuperi(partite):
+    """Che cosa si scrive al posto del re della giornata, quando manca qualcosa."""
+    if len(partite) == 1:
+        p = partite[0]
+        return (f'{E(p["casa"])}&ndash;{E(p["ospite"])}<br>da recuperare &middot; '
+                f'{E(quando_si_gioca(p["data"], p["ora"], orari.adesso()))}')
+    return (f'{len(partite)} partite da recuperare<br>'
+            'il re della giornata si sapr&agrave; allora')
 
 
 def quando_si_gioca(data, ora, adesso):
@@ -149,12 +188,24 @@ def genera(dati, template, adesso=None, aggiornato=None):
                 + f'<div class="picks">{"".join(celle)}</div></article>')
         return out
 
-    # giornata in corso = la prima non ancora completata
-    pendenti = [g for g in giornate if giocate_g[g] < len(calendario[g])]
-    g_feat = min(pendenti) if pendenti else None
-    concluse_desc = sorted(concluse, reverse=True)
-    archivio = [g for g in concluse_desc if g != g_feat]
-    g_show = g_feat if g_feat is not None else (concluse_desc[0] if concluse_desc else giornate[0])
+    # Quando una giornata e' finita, anche se un recupero e' ancora in ballo.
+    #
+    # Una partita rinviata non blocca la giornata: l'API le cambia la data, e
+    # quindi diventa una partita di un altro giorno. Una giornata e' "chiusa"
+    # quando tutto cio' che doveva giocarsi si e' giocato, anche se restano
+    # recuperi in calendario. Senza questa distinzione un rinvio terrebbe il
+    # sito fermo su quella giornata per settimane.
+    da_recuperare = {g: _da_recuperare(calendario, risultati, g, adesso) for g in giornate}
+    scadute = {g: _scadute(calendario, risultati, g, adesso) for g in giornate}
+
+    def chiusa(g):
+        return giocate_g[g] > 0 and not scadute[g]
+
+    aperte = [g for g in giornate if not chiusa(g)]
+    g_feat = min(aperte) if aperte else None
+    chiuse_desc = sorted((g for g in giornate if chiusa(g)), reverse=True)
+    archivio = [g for g in chiuse_desc if g != g_feat]
+    g_show = g_feat if g_feat is not None else (chiuse_desc[0] if chiuse_desc else giornate[0])
 
     if giocate_tot == 0:
         prima = calendario[g_show][0]
@@ -210,8 +261,12 @@ def genera(dati, template, adesso=None, aggiornato=None):
     if archivio:
         blocchi = []
         for g in archivio:
-            re_g, mx = re_della_giornata(conti, giocatori, g)
-            etichetta = (f'{E(_elenco(re_g))}<br>re della giornata &middot; {mx} punti' if re_g else 'nessun punto')
+            if da_recuperare[g]:
+                etichetta = _etichetta_recuperi(da_recuperare[g])
+            else:
+                re_g, mx = re_della_giornata(conti, giocatori, g)
+                etichetta = (f'{E(_elenco(re_g))}<br>re della giornata &middot; {mx} punti'
+                             if re_g else 'nessun punto')
             blocchi.append(
                 # tutte chiuse: chi vuole rivedere una giornata la apre
                 '<details class="g">'

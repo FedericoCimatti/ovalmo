@@ -139,6 +139,22 @@ Il giro successivo **non** sovrascrive quello che hai scritto a mano: i
 risultati vengono riscritti solo se l'API dice qualcosa di diverso, e i
 pronostici non vengono mai cancellati.
 
+## Partite rinviate
+
+Un rinvio non blocca il sito. Quando la Lega sposta una partita, football-data
+le cambia la data: da quel momento non e' piu' una partita di ieri senza
+risultato, e' una partita del 24. La giornata viene considerata **chiusa**
+quando tutto cio' che doveva giocarsi si e' giocato, e finisce in archivio con
+scritto quale partita manca invece del re della giornata. Il re compare quando
+il recupero e' stato giocato.
+
+Nel frattempo si pronostica normalmente la giornata successiva: le due cose
+sono indipendenti.
+
+La differenza che conta: una partita di ieri **senza** risultato e senza nuova
+data non e' un rinvio, e' un guasto - li' la giornata resta aperta e la pagina
+mostra l'avviso "mancano dei risultati".
+
 ## Le cose che sembrano strane ma sono volute
 
 - **L'ID di una partita e' la sua posizione nella giornata** (`G03-01`), e viene
