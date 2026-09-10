@@ -251,3 +251,11 @@ def test_si_pronostica_gia_la_giornata_dopo_anche_col_recupero_in_ballo():
     from ovalmo import schedina
     cal = {int(k): v for k, v in RINVIO["calendario"].items()}
     assert schedina.giornata_aperta(cal, DOPO_LA_SETTE) == 8
+
+
+def test_la_freschezza_si_controlla_subito_non_fra_cinque_minuti():
+    """Chi apre una copia vecchia tenuta in memoria dal browser deve
+    ritrovarsi quella giusta subito, non dopo cinque minuti di attesa."""
+    html = genera(DATI, orari.quando("09/10/2026", "12:00"))
+    coda = html[html.index("var MIA ="):]
+    assert coda.index("controlla();") < coda.index("setInterval(controlla")

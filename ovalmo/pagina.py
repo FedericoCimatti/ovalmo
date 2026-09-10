@@ -346,6 +346,9 @@ def _script_freschezza(aggiornato):
         "        if(trovato && trovato[0] !== MIA) location.reload();\n"
         "      }).catch(function(){});\n"
         "  }\n"
+        # subito, non fra cinque minuti: chi apre una copia vecchia tenuta dal
+        # browser deve ritrovarsi quella giusta nel giro di un secondo
+        "  controlla();\n"
         "  setInterval(controlla, OGNI);\n"
         "  document.addEventListener('visibilitychange', function(){ if(!document.hidden) controlla() });\n"
         "})();"
