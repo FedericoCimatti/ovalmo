@@ -91,12 +91,14 @@ def blocco(dati, adesso=None, endpoint=None, modulo_google=None):
                    for p in giocatori)
 
     return f"""<section id="modulo">
-    <h2>Manda i tuoi pronostici &mdash; giornata {g}</h2>
+    <h2 id="titoloModulo">Manda i tuoi pronostici &mdash; giornata {g}</h2>
+    <div id="introModulo">
     <p class="lede">Si chiude al primo calcio d&rsquo;inizio, {E(quando)}. Basta il segno, il
     risultato esatto vale di piu&rsquo;. <strong>Una volta inviata la schedina non si pu&ograve;
     pi&ugrave; cambiare</strong>, quindi controllala prima di mandarla. Gli altri vedono che hai
     mandato, non che cosa hai scritto.</p>
     <p class="lede" id="chiHaMandato" data-giornata="{g}">{_chi(consegnato, mancano)}</p>
+    </div>
     <div class="mod">
       <div id="chisei">
         <p class="lede" style="margin-top:0">Chi sei?</p>
@@ -120,6 +122,7 @@ def blocco(dati, adesso=None, endpoint=None, modulo_google=None):
         <p class="lede" style="margin-top:0"><b id="ciao2"></b>, la tua schedina della giornata
         {g} &egrave; arrivata. Non si pu&ograve; pi&ugrave; cambiare: si svela a tutti al primo
         calcio d&rsquo;inizio, {E(quando)}.</p>
+        <div id="mie"></div>
         <button type="button" class="no" id="esci" style="margin-left:0">Esci</button>
         <p class="cta-note">Esce dal tuo nome su questo telefono: per rientrare serve di
         nuovo il codice. La schedina che hai mandato resta valida.</p>
@@ -187,6 +190,36 @@ def _script(cfg, partite):
     messaggio('esito1', testo, 'ko');
   }
 
+  // Chi ha gia' mandato non deve piu' vedere la schermata di compilazione:
+  // ne' le istruzioni, ne' i nomi da scegliere. Tornera' alla giornata dopo.
+  function chiudiModulo(){
+    var intro = $('introModulo'), titolo = $('titoloModulo');
+    if(intro) intro.hidden = true;
+    if(titolo) titolo.textContent = 'La tua schedina \u2014 giornata ' + CFG.giornata;
+  }
+  function apriModulo(){
+    var intro = $('introModulo'), titolo = $('titoloModulo');
+    if(intro) intro.hidden = false;
+    if(titolo) titolo.textContent = 'Manda i tuoi pronostici \u2014 giornata ' + CFG.giornata;
+  }
+
+  // I propri pronostici si rivedono sempre; quelli degli altri mai. Vengono
+  // dalla memoria di questo telefono, l'unico posto dove sono in chiaro prima
+  // del calcio d'inizio: nel sito non ci sono, e lo script in Google li sa
+  // scrivere ma non li restituisce a nessuno.
+  function mostraMie(){
+    var dove = $('mie');
+    if(!dove) return;
+    var bozza = leggi(BOZZA) || {};
+    var righe = PARTITE.filter(function(p){ return bozza[p.k] }).map(function(p){
+      return '<div class="mia"><span>' + p.n + '</span><b>' + bozza[p.k] + '</b></div>';
+    });
+    dove.innerHTML = righe.length
+      ? '<p class="cta-note" style="margin-bottom:6px">Quello che hai mandato:</p>' + righe.join('')
+      : '<p class="cta-note">Hai mandato la schedina da un altro telefono, quindi qui non ' +
+        'posso mostrarti che cosa avevi scritto: i pronostici non stanno nel sito.</p>';
+  }
+
   function verifica(nome, codice){
     return fetch(CFG.endpoint, {
       method: 'POST', redirect: 'follow',
@@ -222,6 +255,7 @@ def _script(cfg, partite):
   // aperta per giorni.
   function esci(){
     try { localStorage.removeItem(IO) } catch(e){}
+    apriModulo();
     schedina.hidden = true; fatto.hidden = true; chisei.hidden = false;
     $('codice').value = ''; scelto = null;
     chisei.querySelectorAll('.chi button').forEach(function(x){ x.setAttribute('aria-pressed','false') });
@@ -237,8 +271,11 @@ def _script(cfg, partite):
     $('ciao2').textContent = io.nome;
     chisei.hidden = true;
     if(leggi(chiaveInviato(io.nome))){      // ha gia' mandato: niente da cambiare
-      schedina.hidden = true; fatto.hidden = false; return;
+      schedina.hidden = true; fatto.hidden = false;
+      chiudiModulo(); mostraMie();
+      return;
     }
+    apriModulo();
     fatto.hidden = true; schedina.hidden = false;
     var bozza = leggi(BOZZA) || {};
     PARTITE.forEach(function(p){
@@ -306,6 +343,7 @@ def _script(cfg, partite):
       if(esito && esito.ok){
         scrivi(chiaveInviato(io.nome), true);
         schedina.hidden = true; fatto.hidden = false;
+        chiudiModulo(); mostraMie();
       } else if(esito && esito.errore === 'codice sbagliato'){
         messaggio('esito2','Codice sbagliato.','ko');
       } else {

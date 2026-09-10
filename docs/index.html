@@ -313,6 +313,11 @@ details.g[open] > summary{border-bottom:1px solid var(--line)}
   border:1px solid var(--line); background:var(--paper); color:var(--ink2)}
 .mod .tre button[aria-pressed="true"]{background:var(--accent); color:#fff; border-color:var(--accent)}
 .mod .esito{margin:12px 0 0; font:500 14px/1.5 var(--ff-s)}
+.mod .mia{
+  display:flex; justify-content:space-between; align-items:baseline; gap:12px;
+  padding:7px 0; border-bottom:1px solid var(--line2); font-size:14.5px}
+.mod .mia:last-child{border-bottom:0}
+.mod .mia b{font-family:var(--ff-m); font-weight:600; color:var(--accent)}
 .mod .esito.ok{color:var(--accent)} .mod .esito.ko{color:#b3261e}
 .mod .cambia{background:none; border:0; padding:0; color:var(--mute); font:500 12.5px var(--ff-s);
   text-decoration:underline; cursor:pointer}
@@ -338,12 +343,14 @@ details.g[open] > summary{border-bottom:1px solid var(--line)}
   </section>
 
   <section id="modulo">
-    <h2>Manda i tuoi pronostici &mdash; giornata 4</h2>
+    <h2 id="titoloModulo">Manda i tuoi pronostici &mdash; giornata 4</h2>
+    <div id="introModulo">
     <p class="lede">Si chiude al primo calcio d&rsquo;inizio, 11/09 alle 20:45. Basta il segno, il
     risultato esatto vale di piu&rsquo;. <strong>Una volta inviata la schedina non si pu&ograve;
     pi&ugrave; cambiare</strong>, quindi controllala prima di mandarla. Gli altri vedono che hai
     mandato, non che cosa hai scritto.</p>
     <p class="lede" id="chiHaMandato" data-giornata="4">Hanno gi&agrave; mandato Super Gulp, Lenzuolo e Lippi. Mancano Berta e Just Lele. Si sa solo chi ha consegnato: i pronostici restano coperti.</p>
+    </div>
     <div class="mod">
       <div id="chisei">
         <p class="lede" style="margin-top:0">Chi sei?</p>
@@ -367,6 +374,7 @@ details.g[open] > summary{border-bottom:1px solid var(--line)}
         <p class="lede" style="margin-top:0"><b id="ciao2"></b>, la tua schedina della giornata
         4 &egrave; arrivata. Non si pu&ograve; pi&ugrave; cambiare: si svela a tutti al primo
         calcio d&rsquo;inizio, 11/09 alle 20:45.</p>
+        <div id="mie"></div>
         <button type="button" class="no" id="esci" style="margin-left:0">Esci</button>
         <p class="cta-note">Esce dal tuo nome su questo telefono: per rientrare serve di
         nuovo il codice. La schedina che hai mandato resta valida.</p>
@@ -404,6 +412,36 @@ details.g[open] > summary{border-bottom:1px solid var(--line)}
     messaggio('esito1', testo, 'ko');
   }
 
+  // Chi ha gia' mandato non deve piu' vedere la schermata di compilazione:
+  // ne' le istruzioni, ne' i nomi da scegliere. Tornera' alla giornata dopo.
+  function chiudiModulo(){
+    var intro = $('introModulo'), titolo = $('titoloModulo');
+    if(intro) intro.hidden = true;
+    if(titolo) titolo.textContent = 'La tua schedina — giornata ' + CFG.giornata;
+  }
+  function apriModulo(){
+    var intro = $('introModulo'), titolo = $('titoloModulo');
+    if(intro) intro.hidden = false;
+    if(titolo) titolo.textContent = 'Manda i tuoi pronostici — giornata ' + CFG.giornata;
+  }
+
+  // I propri pronostici si rivedono sempre; quelli degli altri mai. Vengono
+  // dalla memoria di questo telefono, l'unico posto dove sono in chiaro prima
+  // del calcio d'inizio: nel sito non ci sono, e lo script in Google li sa
+  // scrivere ma non li restituisce a nessuno.
+  function mostraMie(){
+    var dove = $('mie');
+    if(!dove) return;
+    var bozza = leggi(BOZZA) || {};
+    var righe = PARTITE.filter(function(p){ return bozza[p.k] }).map(function(p){
+      return '<div class="mia"><span>' + p.n + '</span><b>' + bozza[p.k] + '</b></div>';
+    });
+    dove.innerHTML = righe.length
+      ? '<p class="cta-note" style="margin-bottom:6px">Quello che hai mandato:</p>' + righe.join('')
+      : '<p class="cta-note">Hai mandato la schedina da un altro telefono, quindi qui non ' +
+        'posso mostrarti che cosa avevi scritto: i pronostici non stanno nel sito.</p>';
+  }
+
   function verifica(nome, codice){
     return fetch(CFG.endpoint, {
       method: 'POST', redirect: 'follow',
@@ -439,6 +477,7 @@ details.g[open] > summary{border-bottom:1px solid var(--line)}
   // aperta per giorni.
   function esci(){
     try { localStorage.removeItem(IO) } catch(e){}
+    apriModulo();
     schedina.hidden = true; fatto.hidden = true; chisei.hidden = false;
     $('codice').value = ''; scelto = null;
     chisei.querySelectorAll('.chi button').forEach(function(x){ x.setAttribute('aria-pressed','false') });
@@ -454,8 +493,11 @@ details.g[open] > summary{border-bottom:1px solid var(--line)}
     $('ciao2').textContent = io.nome;
     chisei.hidden = true;
     if(leggi(chiaveInviato(io.nome))){      // ha gia' mandato: niente da cambiare
-      schedina.hidden = true; fatto.hidden = false; return;
+      schedina.hidden = true; fatto.hidden = false;
+      chiudiModulo(); mostraMie();
+      return;
     }
+    apriModulo();
     fatto.hidden = true; schedina.hidden = false;
     var bozza = leggi(BOZZA) || {};
     PARTITE.forEach(function(p){
@@ -523,6 +565,7 @@ details.g[open] > summary{border-bottom:1px solid var(--line)}
       if(esito && esito.ok){
         scrivi(chiaveInviato(io.nome), true);
         schedina.hidden = true; fatto.hidden = false;
+        chiudiModulo(); mostraMie();
       } else if(esito && esito.errore === 'codice sbagliato'){
         messaggio('esito2','Codice sbagliato.','ko');
       } else {
@@ -586,7 +629,7 @@ details.g[open] > summary{border-bottom:1px solid var(--line)}
         <article class="match" data-mid="G02-09"><header><div class="meta"><span class="num">09</span><span class="ris">0&ndash;4 <span class="sg sg-2">2</span></span></div><h3>Lecce <span class="v">&ndash;</span> Roma</h3></header><div class="picks"><div class="pick pk2" data-chi="Berta"><span class="who">Berta</span><span class="sg sg-2">2</span><span class="sc">0&ndash;3</span><span class="pts">1</span></div><div class="pick pk2" data-chi="Super Gulp"><span class="who">Super Gulp</span><span class="sg sg-2">2</span><span class="sc">0&ndash;3</span><span class="pts">1</span></div><div class="pick" data-chi="Lenzuolo"><span class="who">Lenzuolo</span><span class="sg sg-x">X</span><span class="sc">2&ndash;2</span><span class="pts">0</span></div><div class="pick pk2" data-chi="Just Lele"><span class="who">Just Lele</span><span class="sg sg-2">2</span><span class="sc">1&ndash;4</span><span class="pts">1</span></div><div class="pick pk2" data-chi="Lippi"><span class="who">Lippi</span><span class="sg sg-2">2</span><span class="sc">0&ndash;2</span><span class="pts">1</span></div></div></article>
         <article class="match" data-mid="G02-10"><header><div class="meta"><span class="num">10</span><span class="ris">1&ndash;0 <span class="sg sg-1">1</span></span></div><h3>Atalanta <span class="v">&ndash;</span> Bologna</h3></header><p class="unan">tutti e cinque sullo stesso segno</p><div class="picks"><div class="pick pk2" data-chi="Berta"><span class="who">Berta</span><span class="sg sg-1">1</span><span class="sc">2&ndash;1</span><span class="pts">1</span></div><div class="pick pk2" data-chi="Super Gulp"><span class="who">Super Gulp</span><span class="sg sg-1">1</span><span class="sc">2&ndash;1</span><span class="pts">1</span></div><div class="pick pk2" data-chi="Lenzuolo"><span class="who">Lenzuolo</span><span class="sg sg-1">1</span><span class="sc">3&ndash;0</span><span class="pts">1</span></div><div class="pick pk2" data-chi="Just Lele"><span class="who">Just Lele</span><span class="sg sg-1">1</span><span class="sc">2&ndash;1</span><span class="pts">1</span></div><div class="pick pk2" data-chi="Lippi"><span class="who">Lippi</span><span class="sg sg-1">1</span><span class="sc">2&ndash;1</span><span class="pts">1</span></div></div></article></div></details></div></section>
 
-  <p class="fine">Dati aggiornati il 10/09/2026 alle 21:34<span id="controllato"></span></p>
+  <p class="fine">Dati aggiornati il 10/09/2026 alle 23:11<span id="controllato"></span></p>
 </div>
 
 <script>(function(){
@@ -606,7 +649,7 @@ details.g[open] > summary{border-bottom:1px solid var(--line)}
     (vecchie.length === 1 ? ' e finita' : ' sono finite') + ' da un pezzo ma il risultato non e ancora arrivato: l\'aggiornamento automatico potrebbe essersi fermato. I dati qui sotto sono gli ultimi buoni.';
   box.hidden = false;
 })();(function(){
-  var MIA = "Dati aggiornati il 10/09/2026 alle 21:34";
+  var MIA = "Dati aggiornati il 10/09/2026 alle 23:11";
   var OGNI = 5 * 60 * 1000;
   function stoCompilando(){
     var f = document.getElementById('schedina');

@@ -176,3 +176,30 @@ def test_si_spiega_cosa_fa_il_pulsante_esci():
     html = schedina.blocco(DATI, adesso=PRIMA, endpoint=ENDPOINT)
     assert "per rientrare serve di\n        nuovo il codice" in html
     assert "La schedina che hai mandato resta valida." in html
+
+
+def test_chi_ha_gia_mandato_non_rivede_la_schermata_di_compilazione():
+    """Le istruzioni e i nomi da scegliere spariscono: non c'e' piu' niente da
+    fare fino alla giornata dopo."""
+    html = schedina.blocco(DATI, adesso=PRIMA, endpoint=ENDPOINT)
+    assert 'id="introModulo"' in html and 'id="titoloModulo"' in html
+    assert "chiudiModulo(); mostraMie();" in html
+    # e riaprendo, si torna a vedere tutto
+    fra = html[html.index("function esci()"):html.index("$('annulla').onclick")]
+    assert "apriModulo();" in fra
+
+
+def test_ognuno_rivede_i_propri_pronostici():
+    html = schedina.blocco(DATI, adesso=PRIMA, endpoint=ENDPOINT)
+    assert "function mostraMie()" in html
+    assert "Quello che hai mandato:" in html
+    # e se ha mandato da un altro telefono, glielo si dice invece di mentire
+    assert "da un altro telefono" in html
+
+
+def test_i_pronostici_altrui_non_sono_da_nessuna_parte_nel_modulo():
+    """mostraMie legge solo la memoria di questo telefono: nel sito i pronostici
+    coperti non ci sono, e nessuno puo' chiederli allo script."""
+    html = schedina.blocco(DATI, adesso=PRIMA, endpoint=ENDPOINT)
+    assert "leggi(BOZZA)" in html
+    assert "azione: 'mie'" not in html and "consegne" not in html.split("function mostraMie")[1][:600]
