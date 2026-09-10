@@ -259,3 +259,13 @@ def test_la_freschezza_si_controlla_subito_non_fra_cinque_minuti():
     html = genera(DATI, orari.quando("09/10/2026", "12:00"))
     coda = html[html.index("var MIA ="):]
     assert coda.index("controlla();") < coda.index("setInterval(controlla")
+
+
+def test_l_invito_a_compilare_si_puo_nascondere():
+    """Serve un aggancio: chi ha gia' mandato non deve vedere ne' il pulsante
+    ne' la nota sotto."""
+    dati = dict(DATI, endpoint_pronostici="https://script.google.com/macros/s/ABC/exec")
+    html = genera(dati, PRIMA)
+    assert '<div id="invito">' in html
+    dentro = html[html.index('<div id="invito">'):html.index("</div>", html.index('<div id="invito">'))]
+    assert "Manda i tuoi pronostici" in dentro and "direttamente in questa pagina" in dentro

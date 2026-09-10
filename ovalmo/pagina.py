@@ -245,8 +245,8 @@ def genera(dati, template, adesso=None, aggiornato=None):
                           "coperto con una spunta e si svela al primo calcio d&rsquo;inizio.")
         featured = (f'<h2>La schedina &mdash; giornata {g_feat}</h2>'
                     f'<p class="lede">{occhiello}</p>'
-                    + (f'<a class="cta" href="#modulo">Manda i tuoi pronostici</a>'
-                       '<p class="cta-note">Si compila qui sotto, direttamente in questa pagina.</p>'
+                    + (f'<div id="invito"><a class="cta" href="#modulo">Manda i tuoi pronostici</a>'
+                       '<p class="cta-note">Si compila qui sotto, direttamente in questa pagina.</p></div>'
                        if endpoint else
                        f'<a class="cta" href="{MODULO}" target="_blank" rel="noopener">Manda i tuoi pronostici</a>'
                        '<p class="cta-note">Nel modulo trovi le stesse dieci partite, nello stesso ordine. '

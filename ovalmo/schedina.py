@@ -181,13 +181,16 @@ def _script(cfg, partite):
 
   // Chi ha gia' mandato non ha piu' niente da fare qui: la sezione sparisce
   // tutta, e ricompare da sola alla giornata successiva.
-  function chiudiModulo(){
-    var sezione = document.getElementById('modulo');
-    if(sezione) sezione.hidden = true;
-  }
-  function apriModulo(){
-    var sezione = document.getElementById('modulo');
-    if(sezione) sezione.hidden = false;
+  // Sparisce la sezione del modulo E l'invito a compilarla che sta dentro la
+  // schedina: sono la stessa cosa detta in due punti, e chi ha gia' mandato
+  // non deve trovarsi ne' l'una ne' l'altro.
+  function chiudiModulo(){ mostraModulo(true) }
+  function apriModulo(){ mostraModulo(false) }
+  function mostraModulo(chiuso){
+    ['modulo', 'invito'].forEach(function(id){
+      var pezzo = document.getElementById(id);
+      if(pezzo) pezzo.hidden = chiuso;
+    });
   }
 
   // Nella schedina coperta, al posto della propria spunta si mette il proprio
