@@ -23,6 +23,7 @@
   --line:#D4DBD6; --line2:#E4E9E5; --accent:#0F6E4C; --brass:#96701C;
   --s1:#0F6E4C; --s1b:#DAECE2; --sx:#6F5F1C; --sxb:#ECE7D2; --s2:#255579; --s2b:#D8E5EF;
   --pk3:#DAECE2; --pk2:#F2ECD9; --pkline:#C9D6CF;
+  --gr1:#2a78d6; --gr2:#eb6834; --gr3:#1baf7a; --gr4:#eda100; --gr5:#e87ba4;
   --shadow:0 1px 2px rgba(16,27,23,.05), 0 10px 24px -16px rgba(16,27,23,.25);
   --ff-d:"Barlow Condensed","Haettenschweiler","Arial Narrow",sans-serif;
   --ff-b:"IBM Plex Sans","Segoe UI",Helvetica,Arial,sans-serif;
@@ -33,6 +34,7 @@
   --line:#26332D; --line2:#1E2924; --accent:#48AC81; --brass:#D0A24E;
   --s1:#5CBE93; --s1b:#15332A; --sx:#C5AC5C; --sxb:#2B2917; --s2:#80B3DD; --s2b:#16293A;
   --pk3:#15332A; --pk2:#2B2917; --pkline:#2C3A34;
+  --gr1:#3987e5; --gr2:#d95926; --gr3:#199e70; --gr4:#c98500; --gr5:#d55181;
   --shadow:0 1px 2px rgba(0,0,0,.45), 0 10px 24px -16px rgba(0,0,0,.7);
 }}
 :root[data-theme="dark"]{
@@ -40,6 +42,7 @@
   --line:#26332D; --line2:#1E2924; --accent:#48AC81; --brass:#D0A24E;
   --s1:#5CBE93; --s1b:#15332A; --sx:#C5AC5C; --sxb:#2B2917; --s2:#80B3DD; --s2b:#16293A;
   --pk3:#15332A; --pk2:#2B2917; --pkline:#2C3A34;
+  --gr1:#3987e5; --gr2:#d95926; --gr3:#199e70; --gr4:#c98500; --gr5:#d55181;
   --shadow:0 1px 2px rgba(0,0,0,.45), 0 10px 24px -16px rgba(0,0,0,.7);
 }
 
@@ -259,6 +262,30 @@ details.g[open] > summary{border-bottom:1px solid var(--line)}
 .gbody .match{box-shadow:none; border-color:var(--line2)}
 .vuoto{color:var(--mute); font-size:14.5px; margin:0}
 
+/* ---- andamento della classifica ---- */
+.andamento .gbody{padding:14px 10px 16px}
+.graf{position:relative}
+#andamento{width:100%; height:auto; display:block; touch-action:pan-y}
+#andamento .griglia{stroke:var(--line2); stroke-width:1}
+#andamento .tacca{fill:var(--mute); font-family:var(--ff-m); font-size:11px}
+#andamento .linea{fill:none; stroke-width:2; stroke-linejoin:round; stroke-linecap:round}
+#andamento .punta{stroke:var(--card); stroke-width:2}
+#andamento .mirino{stroke:var(--mute); stroke-width:1; stroke-dasharray:3 3}
+.bolla{
+  position:absolute; top:0; transform:translateX(-50%); pointer-events:none;
+  background:var(--paper); border:1px solid var(--line); border-radius:9px;
+  padding:7px 10px; box-shadow:var(--shadow); font-size:12.5px; line-height:1.5;
+  display:flex; flex-direction:column; white-space:nowrap}
+.bolla > b{font-family:var(--ff-m); font-size:11px; color:var(--mute);
+  letter-spacing:.04em; margin-bottom:3px}
+.bolla span{display:flex; justify-content:space-between; gap:14px; color:var(--ink2)}
+.bolla span b{color:var(--ink); font-family:var(--ff-m)}
+.leg{display:flex; flex-wrap:wrap; gap:6px 16px; margin-top:12px; padding:0 4px;
+  font-size:13.5px; color:var(--ink2)}
+.leg .voce{display:inline-flex; align-items:center; gap:6px}
+.leg i{width:10px; height:10px; border-radius:3px; display:inline-block}
+.leg b{color:var(--ink); font-family:var(--ff-m); font-weight:600}
+
 /* avviso: compare da solo se i risultati non arrivano piu' (aggiornamento fermo) */
 .avviso{
   border:1px solid var(--brass); border-radius:10px; background:var(--pk2);
@@ -340,6 +367,65 @@ details.g[open] > summary{border-bottom:1px solid var(--line)}
     <h2>Classifica</h2>
     <p class="lede">Dopo 20 partite e 2 giornate concluse.</p>
     <p class="live" id="inGioco" hidden></p><div class="tw"><table id="classifica"><thead><tr><th></th><th>Giocatore</th><th class="num-pt">Punti</th><th class="num">Segni</th><th class="num">Esatti</th></tr></thead><tbody><tr class="leader" data-chi="Lippi"><td class="pos">1</td><td class="nome">Lippi</td><td class="num-pt">22</td><td class="num">12</td><td class="num">5</td></tr><tr data-chi="Berta"><td class="pos">2</td><td class="nome">Berta</td><td class="num-pt">20</td><td class="num">14</td><td class="num">3</td></tr><tr data-chi="Just Lele"><td class="pos">3</td><td class="nome">Just Lele</td><td class="num-pt">17</td><td class="num">11</td><td class="num">3</td></tr><tr data-chi="Super Gulp"><td class="pos">4</td><td class="nome">Super Gulp</td><td class="num-pt">15</td><td class="num">11</td><td class="num">2</td></tr><tr data-chi="Lenzuolo"><td class="pos">5</td><td class="nome">Lenzuolo</td><td class="num-pt">13</td><td class="num">9</td><td class="num">2</td></tr></tbody></table></div>
+    <details class="g andamento">
+      <summary><span class="gname">Andamento</span>
+      <span class="gre">chi era davanti,<br>giornata per giornata</span>
+      <span class="caret">&rsaquo;</span></summary>
+      <div class="gbody">
+        <div class="graf">
+          <svg id="andamento" data-cfg="{&quot;xs&quot;: [34.0, 706.0], &quot;giornate&quot;: [2, 3], &quot;ymax&quot;: 25, &quot;y0&quot;: 310, &quot;dentroY&quot;: 294, &quot;serie&quot;: {&quot;Berta&quot;: [9, 20], &quot;Super Gulp&quot;: [8, 15], &quot;Lenzuolo&quot;: [8, 13], &quot;Just Lele&quot;: [7, 17], &quot;Lippi&quot;: [12, 22]}, &quot;giocatori&quot;: [&quot;Berta&quot;, &quot;Super Gulp&quot;, &quot;Lenzuolo&quot;, &quot;Just Lele&quot;, &quot;Lippi&quot;]}" viewBox="0 0 720 340" role="img"
+               aria-label="Punti accumulati da ogni giocatore, giornata per giornata">
+            <line class="griglia" x1="34" y1="310.0" x2="706" y2="310.0"/><text class="tacca" x="26" y="314.0" text-anchor="end">0</text><line class="griglia" x1="34" y1="251.2" x2="706" y2="251.2"/><text class="tacca" x="26" y="255.2" text-anchor="end">5</text><line class="griglia" x1="34" y1="192.4" x2="706" y2="192.4"/><text class="tacca" x="26" y="196.4" text-anchor="end">10</text><line class="griglia" x1="34" y1="133.6" x2="706" y2="133.6"/><text class="tacca" x="26" y="137.6" text-anchor="end">15</text><line class="griglia" x1="34" y1="74.8" x2="706" y2="74.8"/><text class="tacca" x="26" y="78.8" text-anchor="end">20</text><line class="griglia" x1="34" y1="16.0" x2="706" y2="16.0"/><text class="tacca" x="26" y="20.0" text-anchor="end">25</text><text class="tacca" x="34.0" y="330" text-anchor="middle">2</text><text class="tacca" x="706.0" y="330" text-anchor="middle">3</text><polyline class="linea" data-chi="Berta" points="34.0,204.2 706.0,74.8" stroke="var(--gr1)"/><circle class="punta" data-chi="Berta" cx="706.0" cy="74.8" r="4.5" fill="var(--gr1)"/><polyline class="linea" data-chi="Super Gulp" points="34.0,215.9 706.0,133.6" stroke="var(--gr2)"/><circle class="punta" data-chi="Super Gulp" cx="706.0" cy="133.6" r="4.5" fill="var(--gr2)"/><polyline class="linea" data-chi="Lenzuolo" points="34.0,215.9 706.0,157.1" stroke="var(--gr3)"/><circle class="punta" data-chi="Lenzuolo" cx="706.0" cy="157.1" r="4.5" fill="var(--gr3)"/><polyline class="linea" data-chi="Just Lele" points="34.0,227.7 706.0,110.1" stroke="var(--gr4)"/><circle class="punta" data-chi="Just Lele" cx="706.0" cy="110.1" r="4.5" fill="var(--gr4)"/><polyline class="linea" data-chi="Lippi" points="34.0,168.9 706.0,51.3" stroke="var(--gr5)"/><circle class="punta" data-chi="Lippi" cx="706.0" cy="51.3" r="4.5" fill="var(--gr5)"/>
+            <line class="mirino" x1="0" y1="16" x2="0" y2="310" hidden/>
+          </svg>
+          <div class="bolla" id="bolla" hidden></div>
+        </div>
+        <div class="leg"><span class="voce"><i style="background:var(--gr1)"></i>Berta <b data-tot="Berta">20</b></span><span class="voce"><i style="background:var(--gr2)"></i>Super Gulp <b data-tot="Super Gulp">15</b></span><span class="voce"><i style="background:var(--gr3)"></i>Lenzuolo <b data-tot="Lenzuolo">13</b></span><span class="voce"><i style="background:var(--gr4)"></i>Just Lele <b data-tot="Just Lele">17</b></span><span class="voce"><i style="background:var(--gr5)"></i>Lippi <b data-tot="Lippi">22</b></span></div>
+      </div>
+    </details>
+    <script>
+(function(){
+  var svg = document.getElementById('andamento');
+  var bolla = document.getElementById('bolla');
+  if(!svg || !bolla) return;
+  function config(){ try { return JSON.parse(svg.dataset.cfg) } catch(e){ return null } }
+  var mirino = svg.querySelector('.mirino');
+
+  function vicino(G, px){
+    var quale = 0, minimo = Infinity;
+    G.xs.forEach(function(x, i){
+      var d = Math.abs(x - px);
+      if(d < minimo){ minimo = d; quale = i }
+    });
+    return quale;
+  }
+
+  function mostra(ev){
+    var G = config();
+    if(!G) return;
+    var r = svg.getBoundingClientRect();
+    var px = (ev.clientX - r.left) / r.width * svg.viewBox.baseVal.width;
+    var i = vicino(G, px);
+    mirino.setAttribute('x1', G.xs[i]);
+    mirino.setAttribute('x2', G.xs[i]);
+    mirino.hidden = false;
+    var righe = G.giocatori.map(function(p){
+      return {chi: p, pt: G.serie[p][i]};
+    }).sort(function(a, b){ return b.pt - a.pt });
+    bolla.innerHTML = '<b>Giornata ' + G.giornate[i] + '</b>' +
+      righe.map(function(r){ return '<span>' + r.chi + ' <b>' + r.pt + '</b></span>' }).join('');
+    bolla.hidden = false;
+    bolla.style.left = Math.min(Math.max(G.xs[i] / svg.viewBox.baseVal.width * 100, 12), 88) + '%';
+  }
+
+  function nascondi(){ mirino.hidden = true; bolla.hidden = true }
+
+  svg.addEventListener('pointermove', mostra);
+  svg.addEventListener('pointerdown', mostra);
+  svg.addEventListener('pointerleave', nascondi);
+  svg.addEventListener('pointercancel', nascondi);
+})();
+</script>
   </section>
 
   <section id="modulo">
@@ -608,11 +694,11 @@ details.g[open] > summary{border-bottom:1px solid var(--line)}
 </script>
 
   <section>
-    <h2>La schedina &mdash; giornata 4</h2><p class="lede">Mancano ancora i pronostici di Berta e Just Lele: le loro caselle sono TBD. Nessuno vede i pronostici degli altri: il segno di chi ha gi&agrave; mandato resta coperto con una spunta e si svela al primo calcio d&rsquo;inizio.</p><div id="invito"><a class="cta" href="#modulo">Manda i tuoi pronostici</a><p class="cta-note">Si compila qui sotto, direttamente in questa pagina.</p></div><div class="matches"><article class="match" data-mid="G04-01" data-coperta="4"><header><div class="meta"><span class="num">01</span><span class="ora">Domani 20:45</span></div><h3>Venezia <span class="v">&ndash;</span> Fiorentina</h3></header><div class="picks"><div class="pick attesa-p" data-chi="Berta"><span class="who">Berta</span><span class="sg sg-tbd">TBD</span><span class="sc">&nbsp;</span></div><div class="pick" data-chi="Super Gulp"><span class="who">Super Gulp</span><span class="sg sg-lock">&#10003;</span><span class="sc">&nbsp;</span></div><div class="pick" data-chi="Lenzuolo"><span class="who">Lenzuolo</span><span class="sg sg-lock">&#10003;</span><span class="sc">&nbsp;</span></div><div class="pick attesa-p" data-chi="Just Lele"><span class="who">Just Lele</span><span class="sg sg-tbd">TBD</span><span class="sc">&nbsp;</span></div><div class="pick" data-chi="Lippi"><span class="who">Lippi</span><span class="sg sg-lock">&#10003;</span><span class="sc">&nbsp;</span></div></div></article>
-      <article class="match" data-mid="G04-02" data-coperta="4"><header><div class="meta"><span class="num">02</span><span class="ora">12/09 15:00</span></div><h3>Genoa <span class="v">&ndash;</span> Frosinone</h3></header><div class="picks"><div class="pick attesa-p" data-chi="Berta"><span class="who">Berta</span><span class="sg sg-tbd">TBD</span><span class="sc">&nbsp;</span></div><div class="pick" data-chi="Super Gulp"><span class="who">Super Gulp</span><span class="sg sg-lock">&#10003;</span><span class="sc">&nbsp;</span></div><div class="pick" data-chi="Lenzuolo"><span class="who">Lenzuolo</span><span class="sg sg-lock">&#10003;</span><span class="sc">&nbsp;</span></div><div class="pick attesa-p" data-chi="Just Lele"><span class="who">Just Lele</span><span class="sg sg-tbd">TBD</span><span class="sc">&nbsp;</span></div><div class="pick" data-chi="Lippi"><span class="who">Lippi</span><span class="sg sg-lock">&#10003;</span><span class="sc">&nbsp;</span></div></div></article>
-      <article class="match" data-mid="G04-03" data-coperta="4"><header><div class="meta"><span class="num">03</span><span class="ora">12/09 18:00</span></div><h3>Lazio <span class="v">&ndash;</span> Milan</h3></header><div class="picks"><div class="pick attesa-p" data-chi="Berta"><span class="who">Berta</span><span class="sg sg-tbd">TBD</span><span class="sc">&nbsp;</span></div><div class="pick" data-chi="Super Gulp"><span class="who">Super Gulp</span><span class="sg sg-lock">&#10003;</span><span class="sc">&nbsp;</span></div><div class="pick" data-chi="Lenzuolo"><span class="who">Lenzuolo</span><span class="sg sg-lock">&#10003;</span><span class="sc">&nbsp;</span></div><div class="pick attesa-p" data-chi="Just Lele"><span class="who">Just Lele</span><span class="sg sg-tbd">TBD</span><span class="sc">&nbsp;</span></div><div class="pick" data-chi="Lippi"><span class="who">Lippi</span><span class="sg sg-lock">&#10003;</span><span class="sc">&nbsp;</span></div></div></article>
+    <h2>La schedina &mdash; giornata 4</h2><p class="lede">Mancano ancora i pronostici di Berta e Just Lele: le loro caselle sono TBD. Nessuno vede i pronostici degli altri: il segno di chi ha gi&agrave; mandato resta coperto con una spunta e si svela al primo calcio d&rsquo;inizio.</p><div id="invito"><a class="cta" href="#modulo">Manda i tuoi pronostici</a><p class="cta-note">Si compila qui sotto, direttamente in questa pagina.</p></div><div class="matches"><article class="match" data-mid="G04-01" data-coperta="4"><header><div class="meta"><span class="num">01</span><span class="ora">Oggi 20:45</span></div><h3>Venezia <span class="v">&ndash;</span> Fiorentina</h3></header><div class="picks"><div class="pick attesa-p" data-chi="Berta"><span class="who">Berta</span><span class="sg sg-tbd">TBD</span><span class="sc">&nbsp;</span></div><div class="pick" data-chi="Super Gulp"><span class="who">Super Gulp</span><span class="sg sg-lock">&#10003;</span><span class="sc">&nbsp;</span></div><div class="pick" data-chi="Lenzuolo"><span class="who">Lenzuolo</span><span class="sg sg-lock">&#10003;</span><span class="sc">&nbsp;</span></div><div class="pick attesa-p" data-chi="Just Lele"><span class="who">Just Lele</span><span class="sg sg-tbd">TBD</span><span class="sc">&nbsp;</span></div><div class="pick" data-chi="Lippi"><span class="who">Lippi</span><span class="sg sg-lock">&#10003;</span><span class="sc">&nbsp;</span></div></div></article>
+      <article class="match" data-mid="G04-02" data-coperta="4"><header><div class="meta"><span class="num">02</span><span class="ora">Domani 15:00</span></div><h3>Genoa <span class="v">&ndash;</span> Frosinone</h3></header><div class="picks"><div class="pick attesa-p" data-chi="Berta"><span class="who">Berta</span><span class="sg sg-tbd">TBD</span><span class="sc">&nbsp;</span></div><div class="pick" data-chi="Super Gulp"><span class="who">Super Gulp</span><span class="sg sg-lock">&#10003;</span><span class="sc">&nbsp;</span></div><div class="pick" data-chi="Lenzuolo"><span class="who">Lenzuolo</span><span class="sg sg-lock">&#10003;</span><span class="sc">&nbsp;</span></div><div class="pick attesa-p" data-chi="Just Lele"><span class="who">Just Lele</span><span class="sg sg-tbd">TBD</span><span class="sc">&nbsp;</span></div><div class="pick" data-chi="Lippi"><span class="who">Lippi</span><span class="sg sg-lock">&#10003;</span><span class="sc">&nbsp;</span></div></div></article>
+      <article class="match" data-mid="G04-03" data-coperta="4"><header><div class="meta"><span class="num">03</span><span class="ora">Domani 18:00</span></div><h3>Lazio <span class="v">&ndash;</span> Milan</h3></header><div class="picks"><div class="pick attesa-p" data-chi="Berta"><span class="who">Berta</span><span class="sg sg-tbd">TBD</span><span class="sc">&nbsp;</span></div><div class="pick" data-chi="Super Gulp"><span class="who">Super Gulp</span><span class="sg sg-lock">&#10003;</span><span class="sc">&nbsp;</span></div><div class="pick" data-chi="Lenzuolo"><span class="who">Lenzuolo</span><span class="sg sg-lock">&#10003;</span><span class="sc">&nbsp;</span></div><div class="pick attesa-p" data-chi="Just Lele"><span class="who">Just Lele</span><span class="sg sg-tbd">TBD</span><span class="sc">&nbsp;</span></div><div class="pick" data-chi="Lippi"><span class="who">Lippi</span><span class="sg sg-lock">&#10003;</span><span class="sc">&nbsp;</span></div></div></article>
       <article class="match" data-mid="G04-04" data-coperta="4"><header><div class="meta"><span class="num">04</span><span class="ora">13/09 20:45</span></div><h3>Sassuolo <span class="v">&ndash;</span> Juventus</h3></header><div class="picks"><div class="pick attesa-p" data-chi="Berta"><span class="who">Berta</span><span class="sg sg-tbd">TBD</span><span class="sc">&nbsp;</span></div><div class="pick" data-chi="Super Gulp"><span class="who">Super Gulp</span><span class="sg sg-lock">&#10003;</span><span class="sc">&nbsp;</span></div><div class="pick" data-chi="Lenzuolo"><span class="who">Lenzuolo</span><span class="sg sg-lock">&#10003;</span><span class="sc">&nbsp;</span></div><div class="pick attesa-p" data-chi="Just Lele"><span class="who">Just Lele</span><span class="sg sg-tbd">TBD</span><span class="sc">&nbsp;</span></div><div class="pick" data-chi="Lippi"><span class="who">Lippi</span><span class="sg sg-lock">&#10003;</span><span class="sc">&nbsp;</span></div></div></article>
-      <article class="match" data-mid="G04-05" data-coperta="4"><header><div class="meta"><span class="num">05</span><span class="ora">12/09 20:45</span></div><h3>Atalanta <span class="v">&ndash;</span> Cagliari</h3></header><div class="picks"><div class="pick attesa-p" data-chi="Berta"><span class="who">Berta</span><span class="sg sg-tbd">TBD</span><span class="sc">&nbsp;</span></div><div class="pick" data-chi="Super Gulp"><span class="who">Super Gulp</span><span class="sg sg-lock">&#10003;</span><span class="sc">&nbsp;</span></div><div class="pick" data-chi="Lenzuolo"><span class="who">Lenzuolo</span><span class="sg sg-lock">&#10003;</span><span class="sc">&nbsp;</span></div><div class="pick attesa-p" data-chi="Just Lele"><span class="who">Just Lele</span><span class="sg sg-tbd">TBD</span><span class="sc">&nbsp;</span></div><div class="pick" data-chi="Lippi"><span class="who">Lippi</span><span class="sg sg-lock">&#10003;</span><span class="sc">&nbsp;</span></div></div></article>
+      <article class="match" data-mid="G04-05" data-coperta="4"><header><div class="meta"><span class="num">05</span><span class="ora">Domani 20:45</span></div><h3>Atalanta <span class="v">&ndash;</span> Cagliari</h3></header><div class="picks"><div class="pick attesa-p" data-chi="Berta"><span class="who">Berta</span><span class="sg sg-tbd">TBD</span><span class="sc">&nbsp;</span></div><div class="pick" data-chi="Super Gulp"><span class="who">Super Gulp</span><span class="sg sg-lock">&#10003;</span><span class="sc">&nbsp;</span></div><div class="pick" data-chi="Lenzuolo"><span class="who">Lenzuolo</span><span class="sg sg-lock">&#10003;</span><span class="sc">&nbsp;</span></div><div class="pick attesa-p" data-chi="Just Lele"><span class="who">Just Lele</span><span class="sg sg-tbd">TBD</span><span class="sc">&nbsp;</span></div><div class="pick" data-chi="Lippi"><span class="who">Lippi</span><span class="sg sg-lock">&#10003;</span><span class="sc">&nbsp;</span></div></div></article>
       <article class="match" data-mid="G04-06" data-coperta="4"><header><div class="meta"><span class="num">06</span><span class="ora">14/09 18:30</span></div><h3>Torino <span class="v">&ndash;</span> Roma</h3></header><div class="picks"><div class="pick attesa-p" data-chi="Berta"><span class="who">Berta</span><span class="sg sg-tbd">TBD</span><span class="sc">&nbsp;</span></div><div class="pick" data-chi="Super Gulp"><span class="who">Super Gulp</span><span class="sg sg-lock">&#10003;</span><span class="sc">&nbsp;</span></div><div class="pick" data-chi="Lenzuolo"><span class="who">Lenzuolo</span><span class="sg sg-lock">&#10003;</span><span class="sc">&nbsp;</span></div><div class="pick attesa-p" data-chi="Just Lele"><span class="who">Just Lele</span><span class="sg sg-tbd">TBD</span><span class="sc">&nbsp;</span></div><div class="pick" data-chi="Lippi"><span class="who">Lippi</span><span class="sg sg-lock">&#10003;</span><span class="sc">&nbsp;</span></div></div></article>
       <article class="match" data-mid="G04-07" data-coperta="4"><header><div class="meta"><span class="num">07</span><span class="ora">14/09 18:30</span></div><h3>Como <span class="v">&ndash;</span> Parma</h3></header><div class="picks"><div class="pick attesa-p" data-chi="Berta"><span class="who">Berta</span><span class="sg sg-tbd">TBD</span><span class="sc">&nbsp;</span></div><div class="pick" data-chi="Super Gulp"><span class="who">Super Gulp</span><span class="sg sg-lock">&#10003;</span><span class="sc">&nbsp;</span></div><div class="pick" data-chi="Lenzuolo"><span class="who">Lenzuolo</span><span class="sg sg-lock">&#10003;</span><span class="sc">&nbsp;</span></div><div class="pick attesa-p" data-chi="Just Lele"><span class="who">Just Lele</span><span class="sg sg-tbd">TBD</span><span class="sc">&nbsp;</span></div><div class="pick" data-chi="Lippi"><span class="who">Lippi</span><span class="sg sg-lock">&#10003;</span><span class="sc">&nbsp;</span></div></div></article>
       <article class="match" data-mid="G04-08" data-coperta="4"><header><div class="meta"><span class="num">08</span><span class="ora">13/09 15:00</span></div><h3>Lecce <span class="v">&ndash;</span> Monza</h3></header><div class="picks"><div class="pick attesa-p" data-chi="Berta"><span class="who">Berta</span><span class="sg sg-tbd">TBD</span><span class="sc">&nbsp;</span></div><div class="pick" data-chi="Super Gulp"><span class="who">Super Gulp</span><span class="sg sg-lock">&#10003;</span><span class="sc">&nbsp;</span></div><div class="pick" data-chi="Lenzuolo"><span class="who">Lenzuolo</span><span class="sg sg-lock">&#10003;</span><span class="sc">&nbsp;</span></div><div class="pick attesa-p" data-chi="Just Lele"><span class="who">Just Lele</span><span class="sg sg-tbd">TBD</span><span class="sc">&nbsp;</span></div><div class="pick" data-chi="Lippi"><span class="who">Lippi</span><span class="sg sg-lock">&#10003;</span><span class="sc">&nbsp;</span></div></div></article>
@@ -641,7 +727,7 @@ details.g[open] > summary{border-bottom:1px solid var(--line)}
         <article class="match" data-mid="G02-09"><header><div class="meta"><span class="num">09</span><span class="ris">0&ndash;4 <span class="sg sg-2">2</span></span></div><h3>Lecce <span class="v">&ndash;</span> Roma</h3></header><div class="picks"><div class="pick pk2" data-chi="Berta"><span class="who">Berta</span><span class="sg sg-2">2</span><span class="sc">0&ndash;3</span><span class="pts">1</span></div><div class="pick pk2" data-chi="Super Gulp"><span class="who">Super Gulp</span><span class="sg sg-2">2</span><span class="sc">0&ndash;3</span><span class="pts">1</span></div><div class="pick" data-chi="Lenzuolo"><span class="who">Lenzuolo</span><span class="sg sg-x">X</span><span class="sc">2&ndash;2</span><span class="pts">0</span></div><div class="pick pk2" data-chi="Just Lele"><span class="who">Just Lele</span><span class="sg sg-2">2</span><span class="sc">1&ndash;4</span><span class="pts">1</span></div><div class="pick pk2" data-chi="Lippi"><span class="who">Lippi</span><span class="sg sg-2">2</span><span class="sc">0&ndash;2</span><span class="pts">1</span></div></div></article>
         <article class="match" data-mid="G02-10"><header><div class="meta"><span class="num">10</span><span class="ris">1&ndash;0 <span class="sg sg-1">1</span></span></div><h3>Atalanta <span class="v">&ndash;</span> Bologna</h3></header><p class="unan">tutti e cinque sullo stesso segno</p><div class="picks"><div class="pick pk2" data-chi="Berta"><span class="who">Berta</span><span class="sg sg-1">1</span><span class="sc">2&ndash;1</span><span class="pts">1</span></div><div class="pick pk2" data-chi="Super Gulp"><span class="who">Super Gulp</span><span class="sg sg-1">1</span><span class="sc">2&ndash;1</span><span class="pts">1</span></div><div class="pick pk2" data-chi="Lenzuolo"><span class="who">Lenzuolo</span><span class="sg sg-1">1</span><span class="sc">3&ndash;0</span><span class="pts">1</span></div><div class="pick pk2" data-chi="Just Lele"><span class="who">Just Lele</span><span class="sg sg-1">1</span><span class="sc">2&ndash;1</span><span class="pts">1</span></div><div class="pick pk2" data-chi="Lippi"><span class="who">Lippi</span><span class="sg sg-1">1</span><span class="sc">2&ndash;1</span><span class="pts">1</span></div></div></article></div></details></div></section>
 
-  <p class="fine">Dati aggiornati il 10/09/2026 alle 23:35<span id="controllato"></span></p>
+  <p class="fine">Dati aggiornati il 11/09/2026 alle 00:50<span id="controllato"></span></p>
 </div>
 
 <script>(function(){
@@ -661,7 +747,7 @@ details.g[open] > summary{border-bottom:1px solid var(--line)}
     (vecchie.length === 1 ? ' e finita' : ' sono finite') + ' da un pezzo ma il risultato non e ancora arrivato: l\'aggiornamento automatico potrebbe essersi fermato. I dati qui sotto sono gli ultimi buoni.';
   box.hidden = false;
 })();(function(){
-  var MIA = "Dati aggiornati il 10/09/2026 alle 23:35";
+  var MIA = "Dati aggiornati il 11/09/2026 alle 00:50";
   var OGNI = 5 * 60 * 1000;
   function stoCompilando(){
     var f = document.getElementById('schedina');
@@ -735,7 +821,7 @@ details.g[open] > summary{border-bottom:1px solid var(--line)}
       });
     });
 
-    if(quante) disegnaClassifica(extra, esatti, stato.adesso);
+    if(quante){ disegnaClassifica(extra, esatti, stato.adesso); disegnaAndamento(extra) }
     disegnaConsegne(stato.consegne || {});
     disegnaControllo(stato.adesso);
   }
@@ -765,6 +851,35 @@ details.g[open] > summary{border-bottom:1px solid var(--line)}
     var pts = cella.querySelector('.pts');
     if(!pts){ pts = document.createElement('span'); pts.className = 'pts'; cella.appendChild(pts) }
     pts.textContent = valore;
+  }
+
+  // il grafico dell'andamento: si muove l'ultimo punto di ogni linea, a ogni gol.
+  // La geometria si legge dal grafico stesso, che e' l'unica copia: cosi' i due
+  // disegni non possono divergere.
+  function disegnaAndamento(extra){
+    var svg = document.getElementById('andamento');
+    if(!svg) return;
+    var G;
+    try { G = JSON.parse(svg.dataset.cfg) } catch(e){ return }
+    var ultimo = G.xs.length - 1;
+    D.giocatori.forEach(function(p){
+      var serie = G.serie[p];
+      if(!serie) return;
+      var valore = serie[ultimo] + (extra[p] || 0);
+      var y = G.y0 - (valore / G.ymax) * G.dentroY;
+      var linea = svg.querySelector('.linea[data-chi="' + p + '"]');
+      if(linea){
+        var punti = linea.getAttribute('points').trim().split(/\s+/);
+        punti[ultimo] = G.xs[ultimo] + ',' + y.toFixed(1);
+        linea.setAttribute('points', punti.join(' '));
+      }
+      var punta = svg.querySelector('.punta[data-chi="' + p + '"]');
+      if(punta) punta.setAttribute('cy', y.toFixed(1));
+      var totale = document.querySelector('[data-tot="' + p + '"]');
+      if(totale) totale.textContent = valore;
+      G.serie[p] = serie.slice(0, ultimo).concat([valore]);
+    });
+    svg.dataset.cfg = JSON.stringify(G);   // anche il mirino dice i numeri veri
   }
 
   function disegnaClassifica(extra, esatti, quando){

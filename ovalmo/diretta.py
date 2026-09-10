@@ -157,7 +157,7 @@ def _script(cfg):
       });
     });
 
-    if(quante) disegnaClassifica(extra, esatti, stato.adesso);
+    if(quante){ disegnaClassifica(extra, esatti, stato.adesso); disegnaAndamento(extra) }
     disegnaConsegne(stato.consegne || {});
     disegnaControllo(stato.adesso);
   }
@@ -187,6 +187,35 @@ def _script(cfg):
     var pts = cella.querySelector('.pts');
     if(!pts){ pts = document.createElement('span'); pts.className = 'pts'; cella.appendChild(pts) }
     pts.textContent = valore;
+  }
+
+  // il grafico dell'andamento: si muove l'ultimo punto di ogni linea, a ogni gol.
+  // La geometria si legge dal grafico stesso, che e' l'unica copia: cosi' i due
+  // disegni non possono divergere.
+  function disegnaAndamento(extra){
+    var svg = document.getElementById('andamento');
+    if(!svg) return;
+    var G;
+    try { G = JSON.parse(svg.dataset.cfg) } catch(e){ return }
+    var ultimo = G.xs.length - 1;
+    D.giocatori.forEach(function(p){
+      var serie = G.serie[p];
+      if(!serie) return;
+      var valore = serie[ultimo] + (extra[p] || 0);
+      var y = G.y0 - (valore / G.ymax) * G.dentroY;
+      var linea = svg.querySelector('.linea[data-chi="' + p + '"]');
+      if(linea){
+        var punti = linea.getAttribute('points').trim().split(/\s+/);
+        punti[ultimo] = G.xs[ultimo] + ',' + y.toFixed(1);
+        linea.setAttribute('points', punti.join(' '));
+      }
+      var punta = svg.querySelector('.punta[data-chi="' + p + '"]');
+      if(punta) punta.setAttribute('cy', y.toFixed(1));
+      var totale = document.querySelector('[data-tot="' + p + '"]');
+      if(totale) totale.textContent = valore;
+      G.serie[p] = serie.slice(0, ultimo).concat([valore]);
+    });
+    svg.dataset.cfg = JSON.stringify(G);   // anche il mirino dice i numeri veri
   }
 
   function disegnaClassifica(extra, esatti, quando){

@@ -42,6 +42,7 @@ I file, uno per mestiere:
 | `ovalmo/modulo.py` | legge i pronostici dal foglio Google |
 | `ovalmo/schedina.py` | il modulo per mandare i pronostici, dentro la pagina |
 | `ovalmo/diretta.py` | i gol e i punti che si muovono mentre si gioca |
+| `ovalmo/grafico.py` | l'andamento della classifica, disegnato a mano in SVG |
 | `google/ricevi_pronostici.gs` | lo script dentro Google che riceve i pronostici |
 | `ovalmo/punteggio.py` | punti e classifica |
 | `ovalmo/pagina.py` | riempie `template.html` e produce la pagina |
@@ -138,6 +139,22 @@ I dati sono file di testo: si aprono, si modificano e si committa.
 Il giro successivo **non** sovrascrive quello che hai scritto a mano: i
 risultati vengono riscritti solo se l'API dice qualcosa di diverso, e i
 pronostici non vengono mai cancellati.
+
+## L'andamento della classifica
+
+Sotto la classifica c'e' una cella che si apre: una linea per giocatore, i punti
+accumulati giornata per giornata. E' un SVG scritto a mano, senza librerie: pesa
+un paio di kilobyte e cambia colore da solo fra tema chiaro e scuro.
+
+Si muove in diretta come i punti: durante le partite la giornata in corso e' gia'
+nel grafico e l'ultimo punto di ogni linea sale a ogni gol. Perche' funzioni, la
+scala verticale nasce con dentro lo spazio per i punti che le partite aperte
+possono ancora dare - se cambiasse mentre si gioca, il grafico andrebbe
+ridisegnato da capo e le due versioni (Python e browser) potrebbero divergere.
+
+I colori sono una tavolozza validata per daltonismo e contrasto, assegnati in
+ordine fisso: il primo giocatore ha sempre il primo colore. Non vanno riordinati,
+altrimenti la stessa persona cambia colore da una settimana all'altra.
 
 ## Partite rinviate
 

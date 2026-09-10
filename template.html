@@ -23,6 +23,7 @@
   --line:#D4DBD6; --line2:#E4E9E5; --accent:#0F6E4C; --brass:#96701C;
   --s1:#0F6E4C; --s1b:#DAECE2; --sx:#6F5F1C; --sxb:#ECE7D2; --s2:#255579; --s2b:#D8E5EF;
   --pk3:#DAECE2; --pk2:#F2ECD9; --pkline:#C9D6CF;
+  --gr1:#2a78d6; --gr2:#eb6834; --gr3:#1baf7a; --gr4:#eda100; --gr5:#e87ba4;
   --shadow:0 1px 2px rgba(16,27,23,.05), 0 10px 24px -16px rgba(16,27,23,.25);
   --ff-d:"Barlow Condensed","Haettenschweiler","Arial Narrow",sans-serif;
   --ff-b:"IBM Plex Sans","Segoe UI",Helvetica,Arial,sans-serif;
@@ -33,6 +34,7 @@
   --line:#26332D; --line2:#1E2924; --accent:#48AC81; --brass:#D0A24E;
   --s1:#5CBE93; --s1b:#15332A; --sx:#C5AC5C; --sxb:#2B2917; --s2:#80B3DD; --s2b:#16293A;
   --pk3:#15332A; --pk2:#2B2917; --pkline:#2C3A34;
+  --gr1:#3987e5; --gr2:#d95926; --gr3:#199e70; --gr4:#c98500; --gr5:#d55181;
   --shadow:0 1px 2px rgba(0,0,0,.45), 0 10px 24px -16px rgba(0,0,0,.7);
 }}
 :root[data-theme="dark"]{
@@ -40,6 +42,7 @@
   --line:#26332D; --line2:#1E2924; --accent:#48AC81; --brass:#D0A24E;
   --s1:#5CBE93; --s1b:#15332A; --sx:#C5AC5C; --sxb:#2B2917; --s2:#80B3DD; --s2b:#16293A;
   --pk3:#15332A; --pk2:#2B2917; --pkline:#2C3A34;
+  --gr1:#3987e5; --gr2:#d95926; --gr3:#199e70; --gr4:#c98500; --gr5:#d55181;
   --shadow:0 1px 2px rgba(0,0,0,.45), 0 10px 24px -16px rgba(0,0,0,.7);
 }
 
@@ -259,6 +262,30 @@ details.g[open] > summary{border-bottom:1px solid var(--line)}
 .gbody .match{box-shadow:none; border-color:var(--line2)}
 .vuoto{color:var(--mute); font-size:14.5px; margin:0}
 
+/* ---- andamento della classifica ---- */
+.andamento .gbody{padding:14px 10px 16px}
+.graf{position:relative}
+#andamento{width:100%; height:auto; display:block; touch-action:pan-y}
+#andamento .griglia{stroke:var(--line2); stroke-width:1}
+#andamento .tacca{fill:var(--mute); font-family:var(--ff-m); font-size:11px}
+#andamento .linea{fill:none; stroke-width:2; stroke-linejoin:round; stroke-linecap:round}
+#andamento .punta{stroke:var(--card); stroke-width:2}
+#andamento .mirino{stroke:var(--mute); stroke-width:1; stroke-dasharray:3 3}
+.bolla{
+  position:absolute; top:0; transform:translateX(-50%); pointer-events:none;
+  background:var(--paper); border:1px solid var(--line); border-radius:9px;
+  padding:7px 10px; box-shadow:var(--shadow); font-size:12.5px; line-height:1.5;
+  display:flex; flex-direction:column; white-space:nowrap}
+.bolla > b{font-family:var(--ff-m); font-size:11px; color:var(--mute);
+  letter-spacing:.04em; margin-bottom:3px}
+.bolla span{display:flex; justify-content:space-between; gap:14px; color:var(--ink2)}
+.bolla span b{color:var(--ink); font-family:var(--ff-m)}
+.leg{display:flex; flex-wrap:wrap; gap:6px 16px; margin-top:12px; padding:0 4px;
+  font-size:13.5px; color:var(--ink2)}
+.leg .voce{display:inline-flex; align-items:center; gap:6px}
+.leg i{width:10px; height:10px; border-radius:3px; display:inline-block}
+.leg b{color:var(--ink); font-family:var(--ff-m); font-weight:600}
+
 /* avviso: compare da solo se i risultati non arrivano piu' (aggiornamento fermo) */
 .avviso{
   border:1px solid var(--brass); border-radius:10px; background:var(--pk2);
@@ -340,6 +367,7 @@ details.g[open] > summary{border-bottom:1px solid var(--line)}
     <h2>Classifica</h2>
     <p class="lede">__LEDE__</p>
     __TABELLA__
+    __ANDAMENTO__
   </section>
 
   __MODULO__

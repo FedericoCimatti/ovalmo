@@ -14,7 +14,7 @@ import datetime
 import html
 import json
 
-from . import diretta, orari, schedina
+from . import diretta, grafico, orari, schedina
 from .dati import id_partita
 from .punteggio import calcola, re_della_giornata, segno, segno_pronosticato
 
@@ -279,6 +279,16 @@ def genera(dati, template, adesso=None, aggiornato=None):
     else:
         archivio_html = ''
 
+    # "si gioca" vuol dire che il primo calcio d'inizio e' passato, non che c'e'
+    # gia' un risultato: fra il fischio e il primo gol passa un'ora buona
+    si_gioca = g_feat if (g_feat is not None and not coperta.get(g_feat, True)) else None
+    aperte_ora = sum(len(_mancanti(calendario, risultati, g, adesso)[0]) +
+                     sum(1 for p in _mancanti(calendario, risultati, g, adesso)[1]
+                         if orari.quando(p["data"], p["ora"]) <= adesso)
+                     for g in giornate)
+    andamento = grafico.disegna(conti, giocatori, aperte_ora=aperte_ora,
+                                giornata_viva=si_gioca)
+
     tag = f"Giornata {g_show}" + (" &middot; in attesa dei risultati" if giocate_g.get(g_show, 0) == 0 else "")
     sub = "Serie A 2026/27 &middot; " + (_giorn(len(concluse)) if concluse else "si comincia dalla seconda")
 
@@ -294,9 +304,6 @@ def genera(dati, template, adesso=None, aggiornato=None):
 
     # la giornata che si sta giocando: se ce n'e' una, il modulo dei pronostici
     # resta chiuso finche' non finisce
-    # "si gioca" vuol dire che il primo calcio d'inizio e' passato, non che c'e'
-    # gia' un risultato: fra il fischio e il primo gol passa un'ora buona
-    si_gioca = g_feat if (g_feat is not None and not coperta.get(g_feat, True)) else None
     modulo = schedina.blocco(dati, adesso=adesso, endpoint=endpoint, modulo_google=MODULO,
                              in_corso=si_gioca)
     in_diretta = diretta.blocco(dati, conti=conti, adesso=adesso, endpoint=endpoint)
@@ -312,11 +319,13 @@ def genera(dati, template, adesso=None, aggiornato=None):
     page = template
     for k, v in [("__OG__", E(og)), ("__URL__", E(SITO)), ("__AVVISO__", avviso),
                  ("__MODULO__", modulo), ("__DIRETTA__", in_diretta),
+                 ("__ANDAMENTO__", andamento),
                  ("__TAG__", tag), ("__SUB__", sub), ("__LEDE__", lede), ("__TABELLA__", tabella),
                  ("__FEATURED__", featured), ("__ARCHIVIO__", archivio_html),
                  ("__FINE__", fine)]:
         page = page.replace(k, v)
-    resti = [k for k in ("__OG__", "__URL__", "__AVVISO__", "__MODULO__", "__DIRETTA__", "__TAG__", "__SUB__", "__LEDE__",
+    resti = [k for k in ("__OG__", "__URL__", "__AVVISO__", "__MODULO__", "__DIRETTA__",
+                         "__ANDAMENTO__", "__TAG__", "__SUB__", "__LEDE__",
                          "__TABELLA__", "__FEATURED__", "__ARCHIVIO__", "__FINE__")
              if k in page]
     assert not resti, f"segnaposto non sostituiti: {resti}"
