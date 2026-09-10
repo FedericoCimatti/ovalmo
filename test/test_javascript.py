@@ -59,3 +59,22 @@ def test_tutta_la_pagina_vera_e_sintatticamente_sana():
     assert len(pezzi) >= 3
     for js in pezzi:
         controlla(js)
+
+
+def test_il_modulo_non_cerca_elementi_che_non_esistono():
+    """Un getElementById su un id sparito non da' errore di sintassi: da' errore
+    quando qualcuno preme un pulsante, e la funzione muore a meta'.
+
+    E' successo togliendo il pannello di conferma: il codice continuava a
+    scrivere in un elemento che non c'era piu', e la sezione non si nascondeva
+    piu' dopo l'invio.
+    """
+    import re
+
+    html = schedina.blocco(DATI, adesso=ADESSO, endpoint=ENDPOINT)
+    presenti = set(re.findall(r'id="([^"]+)"', html))
+    cercati = set(re.findall(r"\$\('([^']+)'\)", html))
+    cercati |= set(re.findall(r"getElementById\('([^']+)'\)", html))
+    # 'modulo' e' l'id della sezione stessa, gli altri stanno dentro
+    mancanti = sorted(cercati - presenti - {"modulo"})
+    assert not mancanti, f"il codice cerca elementi che nella pagina non ci sono: {mancanti}"

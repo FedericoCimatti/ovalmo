@@ -135,10 +135,14 @@ def test_c_e_il_pulsante_annulla_accanto_a_invia():
     assert "$('codice').value = ''" in html           # e ripulisce il codice
 
 
-def test_c_e_il_pannello_di_schedina_gia_inviata():
+def test_dopo_l_invio_la_sezione_sparisce_tutta():
+    """Non resta niente: ne' istruzioni, ne' nomi, ne' pulsanti. Ricompare da
+    sola alla giornata successiva."""
     html = schedina.blocco(DATI, adesso=PRIMA, endpoint=ENDPOINT)
-    assert 'id="fatto"' in html
-    assert "chiaveInviato" in html                    # se l'ha gia' mandata, resta bloccata
+    assert "chiaveInviato" in html
+    assert "function chiudiModulo(){" in html
+    assert "sezione.hidden = true" in html
+    assert 'id="fatto"' not in html and 'id="esci"' not in html
 
 
 def test_il_codice_si_verifica_prima_di_aprire_la_schedina():
@@ -170,31 +174,29 @@ def test_c_e_il_trattino_fra_le_due_caselle_dei_gol():
     assert fra.index('class="gol"') < fra.index('class="tra"') < fra.rindex('class="gol"')
 
 
-def test_si_spiega_cosa_fa_il_pulsante_esci():
-    """Se se lo chiede chi l'ha scritto, se lo chiedono anche gli altri: Esci
-    non annulla la schedina, esce e basta."""
+def test_non_c_e_piu_il_pulsante_esci():
+    """Sparisce con tutta la sezione: dopo l'invio non c'e' piu' niente da fare."""
     html = schedina.blocco(DATI, adesso=PRIMA, endpoint=ENDPOINT)
-    assert "per rientrare serve di\n        nuovo il codice" in html
-    assert "La schedina che hai mandato resta valida." in html
+    assert "Esci" not in html
+    assert 'id="annulla"' in html          # Annulla resta: serve PRIMA di mandare
 
 
 def test_chi_ha_gia_mandato_non_rivede_la_schermata_di_compilazione():
-    """Le istruzioni e i nomi da scegliere spariscono: non c'e' piu' niente da
-    fare fino alla giornata dopo."""
+    """Sparisce la sezione intera: non c'e' piu' niente da fare fino alla
+    giornata dopo."""
     html = schedina.blocco(DATI, adesso=PRIMA, endpoint=ENDPOINT)
-    assert 'id="introModulo"' in html and 'id="titoloModulo"' in html
-    assert "chiudiModulo(); mostraMie();" in html
-    # e riaprendo, si torna a vedere tutto
+    assert "mostraMie(); chiudiModulo();" in html
+    # e annullando prima di mandare si torna a vedere tutto
     fra = html[html.index("function esci()"):html.index("$('annulla').onclick")]
     assert "apriModulo();" in fra
 
 
-def test_ognuno_rivede_i_propri_pronostici():
+def test_il_proprio_pronostico_prende_il_posto_della_propria_spunta():
+    """Nella schedina coperta ognuno rivede il suo, degli altri resta la spunta."""
     html = schedina.blocco(DATI, adesso=PRIMA, endpoint=ENDPOINT)
     assert "function mostraMie()" in html
-    assert "Quello che hai mandato:" in html
-    # e se ha mandato da un altro telefono, glielo si dice invece di mentire
-    assert "da un altro telefono" in html
+    assert "data-coperta" in html                  # tocca solo le giornate coperte
+    assert "cella.dataset.mio = '1'" in html       # e la diretta non lo ricopre
 
 
 def test_i_pronostici_altrui_non_sono_da_nessuna_parte_nel_modulo():
@@ -202,4 +204,23 @@ def test_i_pronostici_altrui_non_sono_da_nessuna_parte_nel_modulo():
     coperti non ci sono, e nessuno puo' chiederli allo script."""
     html = schedina.blocco(DATI, adesso=PRIMA, endpoint=ENDPOINT)
     assert "leggi(BOZZA)" in html
-    assert "azione: 'mie'" not in html and "consegne" not in html.split("function mostraMie")[1][:600]
+    assert "azione: 'mie'" not in html
+
+
+def test_chi_ha_gia_mandato_non_dipende_dalla_rete():
+    """Aprire la schedina richiede il codice, e quindi la rete. Ma a chi ha gia'
+    mandato non si deve aprire niente: se si chiedesse comunque il codice, con
+    la rete assente la sezione resterebbe li' aperta a chiedere di mandare una
+    schedina gia' mandata."""
+    html = schedina.blocco(DATI, adesso=PRIMA, endpoint=ENDPOINT)
+    coda = html[html.index("var io = leggi(IO);"):]
+    assert "if(io && io.nome && leggi(chiaveInviato(io.nome)))" in coda
+    assert coda.index("chiaveInviato") < coda.index("verifica(io.nome")
+
+
+def test_si_aspetta_che_la_pagina_sia_pronta():
+    """Lo script del modulo sta piu' in alto delle schede delle partite: al
+    caricamento quelle caselle non esistono ancora."""
+    html = schedina.blocco(DATI, adesso=PRIMA, endpoint=ENDPOINT)
+    assert "document.readyState === 'loading'" in html
+    assert "DOMContentLoaded" in html

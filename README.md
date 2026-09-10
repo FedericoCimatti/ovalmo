@@ -205,6 +205,13 @@ nuovo), quindi il passaggio dall'uno all'altro non richiede di cambiare codice.
 Chi manda la schedina compare agli altri entro un minuto e mezzo - riga e
 spunte verdi insieme, senza che nessuno ricarichi.
 
+Chi ha mandato non vede piu' il modulo: la sezione sparisce del tutto e
+ricompare alla giornata successiva. Nella schedina ancora coperta, al posto
+della propria spunta ognuno rivede il proprio pronostico; degli altri resta la
+spunta. Quei pronostici vengono dalla memoria di quel telefono - nel sito non
+ci sono e lo script in Google non li restituisce a nessuno - quindi da un altro
+telefono si rivede la spunta e basta.
+
 Mentre si gioca, la pagina non aspetta il giro automatico: ogni 45 secondi chiede
 allo script dentro Google come vanno le partite e aggiorna punteggi, punti e
 classifica sotto gli occhi di chi guarda. Si ferma da sola quando la scheda del

@@ -236,6 +236,7 @@ def _script(cfg):
       D.giocatori.forEach(function(g){
         var cella = carta.querySelector('[data-chi="' + g + '"]');
         if(!cella) return;
+        if(cella.dataset.mio) return;   // e' il pronostico di chi sta guardando
         var mandato = chi.indexOf(g) >= 0;
         var segno = cella.querySelector('.sg');
         if(!segno) return;

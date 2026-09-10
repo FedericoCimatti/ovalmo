@@ -91,14 +91,12 @@ def blocco(dati, adesso=None, endpoint=None, modulo_google=None):
                    for p in giocatori)
 
     return f"""<section id="modulo">
-    <h2 id="titoloModulo">Manda i tuoi pronostici &mdash; giornata {g}</h2>
-    <div id="introModulo">
+    <h2>Manda i tuoi pronostici &mdash; giornata {g}</h2>
     <p class="lede">Si chiude al primo calcio d&rsquo;inizio, {E(quando)}. Basta il segno, il
     risultato esatto vale di piu&rsquo;. <strong>Una volta inviata la schedina non si pu&ograve;
     pi&ugrave; cambiare</strong>, quindi controllala prima di mandarla. Gli altri vedono che hai
     mandato, non che cosa hai scritto.</p>
     <p class="lede" id="chiHaMandato" data-giornata="{g}">{_chi(consegnato, mancano)}</p>
-    </div>
     <div class="mod">
       <div id="chisei">
         <p class="lede" style="margin-top:0">Chi sei?</p>
@@ -118,15 +116,6 @@ def blocco(dati, adesso=None, endpoint=None, modulo_google=None):
         </p>
         <p class="esito" id="esito2"></p>
       </form>
-      <div id="fatto" hidden>
-        <p class="lede" style="margin-top:0"><b id="ciao2"></b>, la tua schedina della giornata
-        {g} &egrave; arrivata. Non si pu&ograve; pi&ugrave; cambiare: si svela a tutti al primo
-        calcio d&rsquo;inizio, {E(quando)}.</p>
-        <div id="mie"></div>
-        <button type="button" class="no" id="esci" style="margin-left:0">Esci</button>
-        <p class="cta-note">Esce dal tuo nome su questo telefono: per rientrare serve di
-        nuovo il codice. La schedina che hai mandato resta valida.</p>
-      </div>
     </div>
     </section>
     <script>{_script(cfg, json.dumps(partite, ensure_ascii=False))}</script>"""
@@ -164,7 +153,7 @@ def _script(cfg, partite):
   var CFG = %s, PARTITE = %s;
   var IO = 'ovalmo-io', BOZZA = 'ovalmo-g' + CFG.giornata;
   var $ = function(id){ return document.getElementById(id) };
-  var chisei = $('chisei'), schedina = $('schedina'), fatto = $('fatto');
+  var chisei = $('chisei'), schedina = $('schedina');
   function chiaveInviato(nome){ return 'ovalmo-inviato-g' + CFG.giornata + '-' + nome }
   var scelto = null;
 
@@ -190,34 +179,40 @@ def _script(cfg, partite):
     messaggio('esito1', testo, 'ko');
   }
 
-  // Chi ha gia' mandato non deve piu' vedere la schermata di compilazione:
-  // ne' le istruzioni, ne' i nomi da scegliere. Tornera' alla giornata dopo.
+  // Chi ha gia' mandato non ha piu' niente da fare qui: la sezione sparisce
+  // tutta, e ricompare da sola alla giornata successiva.
   function chiudiModulo(){
-    var intro = $('introModulo'), titolo = $('titoloModulo');
-    if(intro) intro.hidden = true;
-    if(titolo) titolo.textContent = 'La tua schedina \u2014 giornata ' + CFG.giornata;
+    var sezione = document.getElementById('modulo');
+    if(sezione) sezione.hidden = true;
   }
   function apriModulo(){
-    var intro = $('introModulo'), titolo = $('titoloModulo');
-    if(intro) intro.hidden = false;
-    if(titolo) titolo.textContent = 'Manda i tuoi pronostici \u2014 giornata ' + CFG.giornata;
+    var sezione = document.getElementById('modulo');
+    if(sezione) sezione.hidden = false;
   }
 
-  // I propri pronostici si rivedono sempre; quelli degli altri mai. Vengono
-  // dalla memoria di questo telefono, l'unico posto dove sono in chiaro prima
-  // del calcio d'inizio: nel sito non ci sono, e lo script in Google li sa
-  // scrivere ma non li restituisce a nessuno.
+  // Nella schedina coperta, al posto della propria spunta si mette il proprio
+  // pronostico: uno deve poter rivedere che cosa ha mandato. Degli altri resta
+  // la spunta, come prima. I pronostici vengono dalla memoria di questo
+  // telefono: nel sito non ci sono, e lo script in Google non li restituisce.
   function mostraMie(){
-    var dove = $('mie');
-    if(!dove) return;
+    var io = leggi(IO);
+    if(!io || !io.nome) return;
     var bozza = leggi(BOZZA) || {};
-    var righe = PARTITE.filter(function(p){ return bozza[p.k] }).map(function(p){
-      return '<div class="mia"><span>' + p.n + '</span><b>' + bozza[p.k] + '</b></div>';
+    var gg = ('0' + CFG.giornata).slice(-2);
+    PARTITE.forEach(function(p){
+      var testo = bozza[p.k];
+      if(!testo) return;
+      var cella = document.querySelector(
+        '[data-mid="G' + gg + '-' + p.k.slice(1) + '"] [data-chi="' + io.nome + '"]');
+      if(!cella || !cella.closest('[data-coperta]')) return;
+      var seg = (testo.match(/([12X])/) || [])[1] || '';
+      var gol = testo.match(/(\d+)-(\d+)/);
+      var chip = cella.querySelector('.sg'), punteggio = cella.querySelector('.sc');
+      if(chip && seg){ chip.className = 'sg sg-' + seg.toLowerCase(); chip.textContent = seg }
+      if(punteggio && gol){ punteggio.innerHTML = gol[1] + '&ndash;' + gol[2] }
+      cella.classList.remove('attesa-p');
+      cella.dataset.mio = '1';        // la diretta non deve ricoprirlo con la spunta
     });
-    dove.innerHTML = righe.length
-      ? '<p class="cta-note" style="margin-bottom:6px">Quello che hai mandato:</p>' + righe.join('')
-      : '<p class="cta-note">Hai mandato la schedina da un altro telefono, quindi qui non ' +
-        'posso mostrarti che cosa avevi scritto: i pronostici non stanno nel sito.</p>';
   }
 
   function verifica(nome, codice){
@@ -250,33 +245,31 @@ def _script(cfg, partite):
       sbagliato('Non riesco a verificare il codice: controlla la connessione e riprova.');
     });
   };
-  // Annulla / Esci: si torna indietro e per rientrare serve di nuovo il codice.
+  // Annulla: si torna indietro e per rientrare serve di nuovo il codice.
   // Serve su un telefono che passa di mano, e perche' la schedina non resti
-  // aperta per giorni.
+  // aperta per giorni. Vale solo prima di mandare: dopo, la sezione sparisce.
   function esci(){
     try { localStorage.removeItem(IO) } catch(e){}
     apriModulo();
-    schedina.hidden = true; fatto.hidden = true; chisei.hidden = false;
+    schedina.hidden = true; chisei.hidden = false;
     $('codice').value = ''; scelto = null;
     chisei.querySelectorAll('.chi button').forEach(function(x){ x.setAttribute('aria-pressed','false') });
     messaggio('esito1',''); messaggio('esito2','');
   }
   $('annulla').onclick = esci;
-  $('esci').onclick = esci;
 
   function entra(){
     var io = leggi(IO);
     if(!io || !io.nome) return;
     $('ciao').textContent = io.nome;
-    $('ciao2').textContent = io.nome;
     chisei.hidden = true;
     if(leggi(chiaveInviato(io.nome))){      // ha gia' mandato: niente da cambiare
-      schedina.hidden = true; fatto.hidden = false;
-      chiudiModulo(); mostraMie();
+      schedina.hidden = true;
+      mostraMie(); chiudiModulo();
       return;
     }
     apriModulo();
-    fatto.hidden = true; schedina.hidden = false;
+    schedina.hidden = false;
     var bozza = leggi(BOZZA) || {};
     PARTITE.forEach(function(p){
       var testo = bozza[p.k]; if(!testo) return;
@@ -342,8 +335,8 @@ def _script(cfg, partite):
       invia.disabled = false;
       if(esito && esito.ok){
         scrivi(chiaveInviato(io.nome), true);
-        schedina.hidden = true; fatto.hidden = false;
-        chiudiModulo(); mostraMie();
+        schedina.hidden = true;
+        mostraMie(); chiudiModulo();
       } else if(esito && esito.errore === 'codice sbagliato'){
         messaggio('esito2','Codice sbagliato.','ko');
       } else {
@@ -360,8 +353,17 @@ def _script(cfg, partite):
   // All'apertura non ci si fida di quello che il telefono si ricorda: il codice
   // viene ricontrollato. Senza, chi fosse entrato una volta con un codice
   // sbagliato resterebbe dentro per sempre.
+  // Lo <script> del modulo sta piu' in alto delle schede delle partite: al
+  // caricamento quelle schede non esistono ancora, e mostraMie() non troverebbe
+  // le caselle da riempire. Si aspetta che la pagina sia finita.
+  function avvia(){
   var io = leggi(IO);
-  if(io && io.nome){
+  if(io && io.nome && leggi(chiaveInviato(io.nome))){
+    // ha gia' mandato: non c'e' niente da aprire e quindi niente da verificare.
+    // Chiedere il codice a Google servirebbe solo a lasciare la sezione aperta
+    // quando la rete non risponde, che e' peggio di non chiederlo.
+    entra();
+  } else if(io && io.nome){
     messaggio('esito1','Controllo...','');
     verifica(io.nome, io.codice).then(function(giusto){
       messaggio('esito1','');
@@ -369,6 +371,13 @@ def _script(cfg, partite):
     }).catch(function(){
       messaggio('esito1','Non riesco a verificare il codice: controlla la connessione.','ko');
     });
+  }
+  }
+
+  if(document.readyState === 'loading'){
+    document.addEventListener('DOMContentLoaded', avvia);
+  } else {
+    avvia();
   }
 })();
 """ % (cfg, partite)
