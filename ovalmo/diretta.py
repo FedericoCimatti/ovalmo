@@ -229,24 +229,8 @@ def _script(cfg):
       ('0' + ora.getHours()).slice(-2) + ':' + ('0' + ora.getMinutes()).slice(-2);
   }
 
-  function disegnaConsegne(consegne){
-    var riga = document.getElementById('chiHaMandato');
-    if(!riga) return;
-    var g = riga.dataset.giornata;
-    var chi = consegne[g] || [];
-    var mancano = D.giocatori.filter(function(p){ return chi.indexOf(p) < 0 });
-    function elenco(xs){ return xs.length === 1 ? xs[0] : xs.slice(0,-1).join(', ') + ' e ' + xs[xs.length-1] }
-    spunte(g, chi);
-    if(!chi.length){ riga.textContent = 'Non ha ancora mandato nessuno.'; return }
-    if(!mancano.length){
-      riga.textContent = 'Hanno mandato tutti e cinque.'; return;
-    }
-    riga.textContent = 'Hanno gia\\u2019 mandato ' + elenco(chi) + '. Mancano ' + elenco(mancano) +
-      '. Di loro si sa solo che hanno consegnato: i pronostici restano coperti.';
-  }
-
   // le spunte accanto ai nomi, nella schedina ancora coperta: chi ha consegnato
-  // deve comparire subito come la riga qui sopra, non al giro successivo
+  // deve comparire subito come la riga qui sotto, non al giro successivo
   function spunte(giornata, chi){
     document.querySelectorAll('[data-coperta="' + giornata + '"]').forEach(function(carta){
       D.giocatori.forEach(function(g){
@@ -260,6 +244,34 @@ def _script(cfg):
         cella.classList.toggle('attesa-p', !mandato);
       });
     });
+  }
+
+  // Le stesse identiche parole di _chi() in schedina.py: singolare quando ha
+  // mandato una persona sola, plurale quando sono di piu'. Se le due versioni
+  // divergono, la riga cambia da sola sotto gli occhi appena arriva la diretta.
+  function disegnaConsegne(consegne){
+    var riga = document.getElementById('chiHaMandato');
+    if(!riga) return;
+    var g = riga.dataset.giornata;
+    var chi = D.giocatori.filter(function(p){ return (consegne[g] || []).indexOf(p) >= 0 });
+    var mancano = D.giocatori.filter(function(p){ return chi.indexOf(p) < 0 });
+    function elenco(xs){
+      return xs.length === 1 ? xs[0] : xs.slice(0,-1).join(', ') + ' e ' + xs[xs.length-1];
+    }
+    spunte(g, chi);
+    if(!chi.length){ riga.textContent = 'Non ha ancora mandato nessuno.'; return }
+    if(!mancano.length){
+      riga.textContent = chi.length === 5 ? 'Hanno mandato tutti e cinque.' : 'Hanno mandato tutti.';
+      return;
+    }
+    var testa = chi.length === 1
+      ? chi[0] + ' ha gi\u00e0 mandato.'
+      : 'Hanno gi\u00e0 mandato ' + elenco(chi) + '.';
+    var coda = mancano.length === 1
+      ? 'Manca solo ' + mancano[0] + '.'
+      : 'Mancano ' + elenco(mancano) + '.';
+    riga.textContent = testa + ' ' + coda +
+      ' Si sa solo chi ha consegnato: i pronostici restano coperti.';
   }
 
   function chiedi(){

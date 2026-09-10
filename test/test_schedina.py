@@ -83,13 +83,23 @@ def test_dopo_il_fischio_il_modulo_passa_alla_giornata_dopo():
     assert "Inter" not in html
 
 
-def test_il_modulo_dice_chi_ha_gia_mandato_senza_dire_cosa():
+def test_se_ha_mandato_una_persona_sola_si_usa_il_singolare():
     dati = dict(DATI, calendario={"8": DATI["calendario"]["8"]},
                 consegne={"8": {"Berta": "16/10/2026 18:00"}})
     html = schedina.blocco(dati, adesso=PRIMA, endpoint=ENDPOINT)
-    assert "Hanno gi&agrave; mandato Berta" in html
-    assert "Mancano Lippi e Lenzuolo" in html
+    assert "Berta ha gi&agrave; mandato." in html
+    assert "Hanno gi&agrave; mandato Berta" not in html
+    assert "Mancano Lippi e Lenzuolo." in html
     assert "restano coperti" in html
+
+
+def test_se_hanno_mandato_in_piu_si_torna_al_plurale():
+    dati = dict(DATI, calendario={"8": DATI["calendario"]["8"]},
+                consegne={"8": {"Berta": "x", "Lippi": "x"}})
+    html = schedina.blocco(dati, adesso=PRIMA, endpoint=ENDPOINT)
+    assert "Hanno gi&agrave; mandato Berta e Lippi." in html
+    assert "Manca solo Lenzuolo." in html
+    assert "Mancano Lenzuolo" not in html
 
 
 def test_se_non_ha_mandato_nessuno_lo_dice():
@@ -100,7 +110,14 @@ def test_se_non_ha_mandato_nessuno_lo_dice():
 def test_quando_ci_sono_tutti_lo_dice():
     dati = dict(DATI, calendario={"8": DATI["calendario"]["8"]},
                 consegne={"8": {p: "x" for p in DATI["players"]}})
-    assert "tutti e cinque" in schedina.blocco(dati, adesso=PRIMA, endpoint=ENDPOINT)
+    assert "Hanno mandato tutti." in schedina.blocco(dati, adesso=PRIMA, endpoint=ENDPOINT)
+
+
+def test_coi_cinque_veri_si_dice_tutti_e_cinque():
+    cinque = ["Berta", "Super Gulp", "Lenzuolo", "Just Lele", "Lippi"]
+    dati = dict(DATI, players=cinque, calendario={"8": DATI["calendario"]["8"]},
+                consegne={"8": {p: "x" for p in cinque}})
+    assert "Hanno mandato tutti e cinque." in schedina.blocco(dati, adesso=PRIMA, endpoint=ENDPOINT)
 
 
 def test_il_modulo_dice_che_non_si_puo_correggere():
@@ -143,3 +160,19 @@ def test_il_codice_si_ricontrolla_anche_a_pagina_riaperta():
     coda = html[html.index("var io = leggi(IO);"):]
     assert "verifica(io.nome, io.codice)" in coda
     assert "else esci()" in coda
+
+
+def test_c_e_il_trattino_fra_le_due_caselle_dei_gol():
+    """Senza, non si capisce che quelle due caselle sono un risultato."""
+    html = schedina.blocco(DATI, adesso=PRIMA, endpoint=ENDPOINT)
+    assert html.count('<span class="tra">&ndash;</span>') == 2   # una per partita
+    fra = html[html.index('data-p="P01"'):html.index('data-p="P02"')]
+    assert fra.index('class="gol"') < fra.index('class="tra"') < fra.rindex('class="gol"')
+
+
+def test_si_spiega_cosa_fa_il_pulsante_esci():
+    """Se se lo chiede chi l'ha scritto, se lo chiedono anche gli altri: Esci
+    non annulla la schedina, esce e basta."""
+    html = schedina.blocco(DATI, adesso=PRIMA, endpoint=ENDPOINT)
+    assert "per rientrare serve di\n        nuovo il codice" in html
+    assert "La schedina che hai mandato resta valida." in html

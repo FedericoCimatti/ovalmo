@@ -73,8 +73,10 @@ def blocco(dati, adesso=None, endpoint=None, modulo_google=None):
             f'<button type="button" data-s="X" aria-pressed="false">X</button>'
             f'<button type="button" data-s="2" aria-pressed="false">2</button>'
             f'</div>'
-            f'<div><input class="gol" type="number" min="0" max="19" inputmode="numeric" '
-            f'aria-label="gol {E(casa)}"> <input class="gol" type="number" min="0" max="19" '
+            f'<div class="gol2"><input class="gol" type="number" min="0" max="19" '
+            f'inputmode="numeric" aria-label="gol {E(casa)}">'
+            f'<span class="tra">&ndash;</span>'
+            f'<input class="gol" type="number" min="0" max="19" '
             f'inputmode="numeric" aria-label="gol {E(osp)}"></div>'
             f'</div>')
 
@@ -119,6 +121,8 @@ def blocco(dati, adesso=None, endpoint=None, modulo_google=None):
         {g} &egrave; arrivata. Non si pu&ograve; pi&ugrave; cambiare: si svela a tutti al primo
         calcio d&rsquo;inizio, {E(quando)}.</p>
         <button type="button" class="no" id="esci" style="margin-left:0">Esci</button>
+        <p class="cta-note">Esce dal tuo nome su questo telefono: per rientrare serve di
+        nuovo il codice. La schedina che hai mandato resta valida.</p>
       </div>
     </div>
     </section>
@@ -126,7 +130,13 @@ def blocco(dati, adesso=None, endpoint=None, modulo_google=None):
 
 
 def _chi(consegnato, mancano):
-    """Una riga su chi ha gia' mandato. Nomi e basta: i pronostici restano coperti."""
+    """La riga su chi ha gia' mandato. Nomi e basta: i pronostici restano coperti.
+
+    Singolare e plurale contano: "Lippi ha gia' mandato" e non "hanno gia'
+    mandato Lippi". La stessa frase la ricostruisce anche la diretta nel
+    browser (diretta.py) quando arriva qualcuno di nuovo: le due versioni
+    devono dire le stesse identiche parole.
+    """
     def elenco(xs):
         xs = [E(x) for x in xs]
         return xs[0] if len(xs) == 1 else ", ".join(xs[:-1]) + " e " + xs[-1]
@@ -134,9 +144,14 @@ def _chi(consegnato, mancano):
     if not consegnato:
         return "Non ha ancora mandato nessuno."
     if not mancano:
-        return "Hanno mandato tutti e cinque. Si pu&ograve; ancora correggere fino al fischio."
-    return (f"Hanno gi&agrave; mandato {elenco(consegnato)}. Mancano {elenco(mancano)}. "
-            "Di loro si sa solo che hanno consegnato: i pronostici restano coperti.")
+        return ("Hanno mandato tutti e cinque." if len(consegnato) == 5
+                else "Hanno mandato tutti.")
+    testa = (f"{E(consegnato[0])} ha gi&agrave; mandato."
+             if len(consegnato) == 1
+             else f"Hanno gi&agrave; mandato {elenco(consegnato)}.")
+    coda = (f"Manca solo {E(mancano[0])}." if len(mancano) == 1
+            else f"Mancano {elenco(mancano)}.")
+    return f"{testa} {coda} Si sa solo chi ha consegnato: i pronostici restano coperti."
 
 
 def _script(cfg, partite):

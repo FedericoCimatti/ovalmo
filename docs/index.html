@@ -278,6 +278,8 @@ details.g[open] > summary{border-bottom:1px solid var(--line)}
   border:1px solid var(--line); background:var(--paper); color:var(--ink)}
 .mod input[type="tel"]{width:6.5em; letter-spacing:.25em}
 .mod .gol{width:3.2em}
+.mod .gol2{display:flex; align-items:center; gap:6px}
+.mod .tra{font:600 15px/1 var(--ff-m); color:var(--mute)}
 .mod .go{
   font:700 15px/1 var(--ff-s); padding:12px 18px; border-radius:10px; cursor:pointer;
   border:0; background:var(--accent); color:#fff}
@@ -341,7 +343,7 @@ details.g[open] > summary{border-bottom:1px solid var(--line)}
     risultato esatto vale di piu&rsquo;. <strong>Una volta inviata la schedina non si pu&ograve;
     pi&ugrave; cambiare</strong>, quindi controllala prima di mandarla. Gli altri vedono che hai
     mandato, non che cosa hai scritto.</p>
-    <p class="lede" id="chiHaMandato" data-giornata="4">Hanno gi&agrave; mandato Lenzuolo e Lippi. Mancano Berta, Super Gulp e Just Lele. Di loro si sa solo che hanno consegnato: i pronostici restano coperti.</p>
+    <p class="lede" id="chiHaMandato" data-giornata="4">Hanno gi&agrave; mandato Lenzuolo e Lippi. Mancano Berta, Super Gulp e Just Lele. Si sa solo chi ha consegnato: i pronostici restano coperti.</p>
     <div class="mod">
       <div id="chisei">
         <p class="lede" style="margin-top:0">Chi sei?</p>
@@ -354,7 +356,7 @@ details.g[open] > summary{border-bottom:1px solid var(--line)}
       </div>
       <form id="schedina" hidden>
         <p class="lede" style="margin-top:0">Ciao <b id="ciao"></b></p>
-        <div class="riga" data-p="P01"><div><b>Venezia &ndash; Fiorentina</b><small>11/09/2026 &middot; 20:45</small></div><div class="tre"><button type="button" data-s="1" aria-pressed="false">1</button><button type="button" data-s="X" aria-pressed="false">X</button><button type="button" data-s="2" aria-pressed="false">2</button></div><div><input class="gol" type="number" min="0" max="19" inputmode="numeric" aria-label="gol Venezia"> <input class="gol" type="number" min="0" max="19" inputmode="numeric" aria-label="gol Fiorentina"></div></div><div class="riga" data-p="P02"><div><b>Genoa &ndash; Frosinone</b><small>12/09/2026 &middot; 15:00</small></div><div class="tre"><button type="button" data-s="1" aria-pressed="false">1</button><button type="button" data-s="X" aria-pressed="false">X</button><button type="button" data-s="2" aria-pressed="false">2</button></div><div><input class="gol" type="number" min="0" max="19" inputmode="numeric" aria-label="gol Genoa"> <input class="gol" type="number" min="0" max="19" inputmode="numeric" aria-label="gol Frosinone"></div></div><div class="riga" data-p="P03"><div><b>Lazio &ndash; Milan</b><small>12/09/2026 &middot; 18:00</small></div><div class="tre"><button type="button" data-s="1" aria-pressed="false">1</button><button type="button" data-s="X" aria-pressed="false">X</button><button type="button" data-s="2" aria-pressed="false">2</button></div><div><input class="gol" type="number" min="0" max="19" inputmode="numeric" aria-label="gol Lazio"> <input class="gol" type="number" min="0" max="19" inputmode="numeric" aria-label="gol Milan"></div></div><div class="riga" data-p="P04"><div><b>Sassuolo &ndash; Juventus</b><small>13/09/2026 &middot; 20:45</small></div><div class="tre"><button type="button" data-s="1" aria-pressed="false">1</button><button type="button" data-s="X" aria-pressed="false">X</button><button type="button" data-s="2" aria-pressed="false">2</button></div><div><input class="gol" type="number" min="0" max="19" inputmode="numeric" aria-label="gol Sassuolo"> <input class="gol" type="number" min="0" max="19" inputmode="numeric" aria-label="gol Juventus"></div></div><div class="riga" data-p="P05"><div><b>Atalanta &ndash; Cagliari</b><small>12/09/2026 &middot; 20:45</small></div><div class="tre"><button type="button" data-s="1" aria-pressed="false">1</button><button type="button" data-s="X" aria-pressed="false">X</button><button type="button" data-s="2" aria-pressed="false">2</button></div><div><input class="gol" type="number" min="0" max="19" inputmode="numeric" aria-label="gol Atalanta"> <input class="gol" type="number" min="0" max="19" inputmode="numeric" aria-label="gol Cagliari"></div></div><div class="riga" data-p="P06"><div><b>Torino &ndash; Roma</b><small>14/09/2026 &middot; 18:30</small></div><div class="tre"><button type="button" data-s="1" aria-pressed="false">1</button><button type="button" data-s="X" aria-pressed="false">X</button><button type="button" data-s="2" aria-pressed="false">2</button></div><div><input class="gol" type="number" min="0" max="19" inputmode="numeric" aria-label="gol Torino"> <input class="gol" type="number" min="0" max="19" inputmode="numeric" aria-label="gol Roma"></div></div><div class="riga" data-p="P07"><div><b>Como &ndash; Parma</b><small>14/09/2026 &middot; 18:30</small></div><div class="tre"><button type="button" data-s="1" aria-pressed="false">1</button><button type="button" data-s="X" aria-pressed="false">X</button><button type="button" data-s="2" aria-pressed="false">2</button></div><div><input class="gol" type="number" min="0" max="19" inputmode="numeric" aria-label="gol Como"> <input class="gol" type="number" min="0" max="19" inputmode="numeric" aria-label="gol Parma"></div></div><div class="riga" data-p="P08"><div><b>Lecce &ndash; Monza</b><small>13/09/2026 &middot; 15:00</small></div><div class="tre"><button type="button" data-s="1" aria-pressed="false">1</button><button type="button" data-s="X" aria-pressed="false">X</button><button type="button" data-s="2" aria-pressed="false">2</button></div><div><input class="gol" type="number" min="0" max="19" inputmode="numeric" aria-label="gol Lecce"> <input class="gol" type="number" min="0" max="19" inputmode="numeric" aria-label="gol Monza"></div></div><div class="riga" data-p="P09"><div><b>Napoli &ndash; Bologna</b><small>13/09/2026 &middot; 18:00</small></div><div class="tre"><button type="button" data-s="1" aria-pressed="false">1</button><button type="button" data-s="X" aria-pressed="false">X</button><button type="button" data-s="2" aria-pressed="false">2</button></div><div><input class="gol" type="number" min="0" max="19" inputmode="numeric" aria-label="gol Napoli"> <input class="gol" type="number" min="0" max="19" inputmode="numeric" aria-label="gol Bologna"></div></div><div class="riga" data-p="P10"><div><b>Inter &ndash; Udinese</b><small>14/09/2026 &middot; 20:45</small></div><div class="tre"><button type="button" data-s="1" aria-pressed="false">1</button><button type="button" data-s="X" aria-pressed="false">X</button><button type="button" data-s="2" aria-pressed="false">2</button></div><div><input class="gol" type="number" min="0" max="19" inputmode="numeric" aria-label="gol Inter"> <input class="gol" type="number" min="0" max="19" inputmode="numeric" aria-label="gol Udinese"></div></div>
+        <div class="riga" data-p="P01"><div><b>Venezia &ndash; Fiorentina</b><small>11/09/2026 &middot; 20:45</small></div><div class="tre"><button type="button" data-s="1" aria-pressed="false">1</button><button type="button" data-s="X" aria-pressed="false">X</button><button type="button" data-s="2" aria-pressed="false">2</button></div><div class="gol2"><input class="gol" type="number" min="0" max="19" inputmode="numeric" aria-label="gol Venezia"><span class="tra">&ndash;</span><input class="gol" type="number" min="0" max="19" inputmode="numeric" aria-label="gol Fiorentina"></div></div><div class="riga" data-p="P02"><div><b>Genoa &ndash; Frosinone</b><small>12/09/2026 &middot; 15:00</small></div><div class="tre"><button type="button" data-s="1" aria-pressed="false">1</button><button type="button" data-s="X" aria-pressed="false">X</button><button type="button" data-s="2" aria-pressed="false">2</button></div><div class="gol2"><input class="gol" type="number" min="0" max="19" inputmode="numeric" aria-label="gol Genoa"><span class="tra">&ndash;</span><input class="gol" type="number" min="0" max="19" inputmode="numeric" aria-label="gol Frosinone"></div></div><div class="riga" data-p="P03"><div><b>Lazio &ndash; Milan</b><small>12/09/2026 &middot; 18:00</small></div><div class="tre"><button type="button" data-s="1" aria-pressed="false">1</button><button type="button" data-s="X" aria-pressed="false">X</button><button type="button" data-s="2" aria-pressed="false">2</button></div><div class="gol2"><input class="gol" type="number" min="0" max="19" inputmode="numeric" aria-label="gol Lazio"><span class="tra">&ndash;</span><input class="gol" type="number" min="0" max="19" inputmode="numeric" aria-label="gol Milan"></div></div><div class="riga" data-p="P04"><div><b>Sassuolo &ndash; Juventus</b><small>13/09/2026 &middot; 20:45</small></div><div class="tre"><button type="button" data-s="1" aria-pressed="false">1</button><button type="button" data-s="X" aria-pressed="false">X</button><button type="button" data-s="2" aria-pressed="false">2</button></div><div class="gol2"><input class="gol" type="number" min="0" max="19" inputmode="numeric" aria-label="gol Sassuolo"><span class="tra">&ndash;</span><input class="gol" type="number" min="0" max="19" inputmode="numeric" aria-label="gol Juventus"></div></div><div class="riga" data-p="P05"><div><b>Atalanta &ndash; Cagliari</b><small>12/09/2026 &middot; 20:45</small></div><div class="tre"><button type="button" data-s="1" aria-pressed="false">1</button><button type="button" data-s="X" aria-pressed="false">X</button><button type="button" data-s="2" aria-pressed="false">2</button></div><div class="gol2"><input class="gol" type="number" min="0" max="19" inputmode="numeric" aria-label="gol Atalanta"><span class="tra">&ndash;</span><input class="gol" type="number" min="0" max="19" inputmode="numeric" aria-label="gol Cagliari"></div></div><div class="riga" data-p="P06"><div><b>Torino &ndash; Roma</b><small>14/09/2026 &middot; 18:30</small></div><div class="tre"><button type="button" data-s="1" aria-pressed="false">1</button><button type="button" data-s="X" aria-pressed="false">X</button><button type="button" data-s="2" aria-pressed="false">2</button></div><div class="gol2"><input class="gol" type="number" min="0" max="19" inputmode="numeric" aria-label="gol Torino"><span class="tra">&ndash;</span><input class="gol" type="number" min="0" max="19" inputmode="numeric" aria-label="gol Roma"></div></div><div class="riga" data-p="P07"><div><b>Como &ndash; Parma</b><small>14/09/2026 &middot; 18:30</small></div><div class="tre"><button type="button" data-s="1" aria-pressed="false">1</button><button type="button" data-s="X" aria-pressed="false">X</button><button type="button" data-s="2" aria-pressed="false">2</button></div><div class="gol2"><input class="gol" type="number" min="0" max="19" inputmode="numeric" aria-label="gol Como"><span class="tra">&ndash;</span><input class="gol" type="number" min="0" max="19" inputmode="numeric" aria-label="gol Parma"></div></div><div class="riga" data-p="P08"><div><b>Lecce &ndash; Monza</b><small>13/09/2026 &middot; 15:00</small></div><div class="tre"><button type="button" data-s="1" aria-pressed="false">1</button><button type="button" data-s="X" aria-pressed="false">X</button><button type="button" data-s="2" aria-pressed="false">2</button></div><div class="gol2"><input class="gol" type="number" min="0" max="19" inputmode="numeric" aria-label="gol Lecce"><span class="tra">&ndash;</span><input class="gol" type="number" min="0" max="19" inputmode="numeric" aria-label="gol Monza"></div></div><div class="riga" data-p="P09"><div><b>Napoli &ndash; Bologna</b><small>13/09/2026 &middot; 18:00</small></div><div class="tre"><button type="button" data-s="1" aria-pressed="false">1</button><button type="button" data-s="X" aria-pressed="false">X</button><button type="button" data-s="2" aria-pressed="false">2</button></div><div class="gol2"><input class="gol" type="number" min="0" max="19" inputmode="numeric" aria-label="gol Napoli"><span class="tra">&ndash;</span><input class="gol" type="number" min="0" max="19" inputmode="numeric" aria-label="gol Bologna"></div></div><div class="riga" data-p="P10"><div><b>Inter &ndash; Udinese</b><small>14/09/2026 &middot; 20:45</small></div><div class="tre"><button type="button" data-s="1" aria-pressed="false">1</button><button type="button" data-s="X" aria-pressed="false">X</button><button type="button" data-s="2" aria-pressed="false">2</button></div><div class="gol2"><input class="gol" type="number" min="0" max="19" inputmode="numeric" aria-label="gol Inter"><span class="tra">&ndash;</span><input class="gol" type="number" min="0" max="19" inputmode="numeric" aria-label="gol Udinese"></div></div>
         <p style="margin:14px 0 0">
           <button type="submit" class="go" id="invia">Invia i pronostici</button>
           <button type="button" class="no" id="annulla">Annulla</button>
@@ -366,6 +368,8 @@ details.g[open] > summary{border-bottom:1px solid var(--line)}
         4 &egrave; arrivata. Non si pu&ograve; pi&ugrave; cambiare: si svela a tutti al primo
         calcio d&rsquo;inizio, 11/09 alle 20:45.</p>
         <button type="button" class="no" id="esci" style="margin-left:0">Esci</button>
+        <p class="cta-note">Esce dal tuo nome su questo telefono: per rientrare serve di
+        nuovo il codice. La schedina che hai mandato resta valida.</p>
       </div>
     </div>
     </section>
@@ -582,7 +586,7 @@ details.g[open] > summary{border-bottom:1px solid var(--line)}
         <article class="match" data-mid="G02-09"><header><div class="meta"><span class="num">09</span><span class="ris">0&ndash;4 <span class="sg sg-2">2</span></span></div><h3>Lecce <span class="v">&ndash;</span> Roma</h3></header><div class="picks"><div class="pick pk2" data-chi="Berta"><span class="who">Berta</span><span class="sg sg-2">2</span><span class="sc">0&ndash;3</span><span class="pts">1</span></div><div class="pick pk2" data-chi="Super Gulp"><span class="who">Super Gulp</span><span class="sg sg-2">2</span><span class="sc">0&ndash;3</span><span class="pts">1</span></div><div class="pick" data-chi="Lenzuolo"><span class="who">Lenzuolo</span><span class="sg sg-x">X</span><span class="sc">2&ndash;2</span><span class="pts">0</span></div><div class="pick pk2" data-chi="Just Lele"><span class="who">Just Lele</span><span class="sg sg-2">2</span><span class="sc">1&ndash;4</span><span class="pts">1</span></div><div class="pick pk2" data-chi="Lippi"><span class="who">Lippi</span><span class="sg sg-2">2</span><span class="sc">0&ndash;2</span><span class="pts">1</span></div></div></article>
         <article class="match" data-mid="G02-10"><header><div class="meta"><span class="num">10</span><span class="ris">1&ndash;0 <span class="sg sg-1">1</span></span></div><h3>Atalanta <span class="v">&ndash;</span> Bologna</h3></header><p class="unan">tutti e cinque sullo stesso segno</p><div class="picks"><div class="pick pk2" data-chi="Berta"><span class="who">Berta</span><span class="sg sg-1">1</span><span class="sc">2&ndash;1</span><span class="pts">1</span></div><div class="pick pk2" data-chi="Super Gulp"><span class="who">Super Gulp</span><span class="sg sg-1">1</span><span class="sc">2&ndash;1</span><span class="pts">1</span></div><div class="pick pk2" data-chi="Lenzuolo"><span class="who">Lenzuolo</span><span class="sg sg-1">1</span><span class="sc">3&ndash;0</span><span class="pts">1</span></div><div class="pick pk2" data-chi="Just Lele"><span class="who">Just Lele</span><span class="sg sg-1">1</span><span class="sc">2&ndash;1</span><span class="pts">1</span></div><div class="pick pk2" data-chi="Lippi"><span class="who">Lippi</span><span class="sg sg-1">1</span><span class="sc">2&ndash;1</span><span class="pts">1</span></div></div></article></div></details></div></section>
 
-  <p class="fine">Dati aggiornati il 10/09/2026 alle 15:18<span id="controllato"></span></p>
+  <p class="fine">Dati aggiornati il 10/09/2026 alle 20:53<span id="controllato"></span></p>
 </div>
 
 <script>(function(){
@@ -602,7 +606,7 @@ details.g[open] > summary{border-bottom:1px solid var(--line)}
     (vecchie.length === 1 ? ' e finita' : ' sono finite') + ' da un pezzo ma il risultato non e ancora arrivato: l\'aggiornamento automatico potrebbe essersi fermato. I dati qui sotto sono gli ultimi buoni.';
   box.hidden = false;
 })();(function(){
-  var MIA = "Dati aggiornati il 10/09/2026 alle 15:18";
+  var MIA = "Dati aggiornati il 10/09/2026 alle 20:53";
   var OGNI = 5 * 60 * 1000;
   function stoCompilando(){
     var f = document.getElementById('schedina');
@@ -747,24 +751,8 @@ details.g[open] > summary{border-bottom:1px solid var(--line)}
       ('0' + ora.getHours()).slice(-2) + ':' + ('0' + ora.getMinutes()).slice(-2);
   }
 
-  function disegnaConsegne(consegne){
-    var riga = document.getElementById('chiHaMandato');
-    if(!riga) return;
-    var g = riga.dataset.giornata;
-    var chi = consegne[g] || [];
-    var mancano = D.giocatori.filter(function(p){ return chi.indexOf(p) < 0 });
-    function elenco(xs){ return xs.length === 1 ? xs[0] : xs.slice(0,-1).join(', ') + ' e ' + xs[xs.length-1] }
-    spunte(g, chi);
-    if(!chi.length){ riga.textContent = 'Non ha ancora mandato nessuno.'; return }
-    if(!mancano.length){
-      riga.textContent = 'Hanno mandato tutti e cinque.'; return;
-    }
-    riga.textContent = 'Hanno gia\u2019 mandato ' + elenco(chi) + '. Mancano ' + elenco(mancano) +
-      '. Di loro si sa solo che hanno consegnato: i pronostici restano coperti.';
-  }
-
   // le spunte accanto ai nomi, nella schedina ancora coperta: chi ha consegnato
-  // deve comparire subito come la riga qui sopra, non al giro successivo
+  // deve comparire subito come la riga qui sotto, non al giro successivo
   function spunte(giornata, chi){
     document.querySelectorAll('[data-coperta="' + giornata + '"]').forEach(function(carta){
       D.giocatori.forEach(function(g){
@@ -778,6 +766,34 @@ details.g[open] > summary{border-bottom:1px solid var(--line)}
         cella.classList.toggle('attesa-p', !mandato);
       });
     });
+  }
+
+  // Le stesse identiche parole di _chi() in schedina.py: singolare quando ha
+  // mandato una persona sola, plurale quando sono di piu'. Se le due versioni
+  // divergono, la riga cambia da sola sotto gli occhi appena arriva la diretta.
+  function disegnaConsegne(consegne){
+    var riga = document.getElementById('chiHaMandato');
+    if(!riga) return;
+    var g = riga.dataset.giornata;
+    var chi = D.giocatori.filter(function(p){ return (consegne[g] || []).indexOf(p) >= 0 });
+    var mancano = D.giocatori.filter(function(p){ return chi.indexOf(p) < 0 });
+    function elenco(xs){
+      return xs.length === 1 ? xs[0] : xs.slice(0,-1).join(', ') + ' e ' + xs[xs.length-1];
+    }
+    spunte(g, chi);
+    if(!chi.length){ riga.textContent = 'Non ha ancora mandato nessuno.'; return }
+    if(!mancano.length){
+      riga.textContent = chi.length === 5 ? 'Hanno mandato tutti e cinque.' : 'Hanno mandato tutti.';
+      return;
+    }
+    var testa = chi.length === 1
+      ? chi[0] + ' ha già mandato.'
+      : 'Hanno già mandato ' + elenco(chi) + '.';
+    var coda = mancano.length === 1
+      ? 'Manca solo ' + mancano[0] + '.'
+      : 'Mancano ' + elenco(mancano) + '.';
+    riga.textContent = testa + ' ' + coda +
+      ' Si sa solo chi ha consegnato: i pronostici restano coperti.';
   }
 
   function chiedi(){

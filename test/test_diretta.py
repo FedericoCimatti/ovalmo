@@ -132,3 +132,15 @@ def test_anche_le_spunte_si_aggiornano_in_diretta():
     assert "spunte(g, chi)" in html
     assert "data-coperta=" in html
     assert "sg-lock" in html and "sg-tbd" in html
+
+
+def test_la_diretta_usa_le_stesse_parole_del_generatore():
+    """La riga la scrivono in due: Python quando rigenera la pagina, la diretta
+    quando arriva qualcuno di nuovo. Se dicessero parole diverse, la frase
+    cambierebbe da sola sotto gli occhi di chi guarda."""
+    js = diretta.blocco(DATI, adesso=LONTANO, endpoint=ENDPOINT)
+    for pezzo in ["Non ha ancora mandato nessuno.", "Hanno mandato tutti e cinque.",
+                  "Hanno mandato tutti.", "ha già mandato.", "Hanno già mandato ",
+                  "Manca solo ", "Mancano ",
+                  "Si sa solo chi ha consegnato: i pronostici restano coperti."]:
+        assert pezzo in js, pezzo
