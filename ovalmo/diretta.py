@@ -40,7 +40,7 @@ PRIMA_ORE = 1
 DOPO_ORE = 3
 
 
-def blocco(dati, conti=None, adesso=None, endpoint=None):
+def blocco(dati, conti=None, adesso=None, endpoint=None, medaglie=None):
     """Lo <script> della diretta.
 
     Gira sempre, non solo durante le partite: anche a campionato fermo tiene
@@ -98,6 +98,7 @@ def blocco(dati, conti=None, adesso=None, endpoint=None):
         "picks": picks,
         "squadre": mappa,
         "coraggioDa": CORAGGIO_DA,
+        "medaglie": medaglie or {},
     }, ensure_ascii=False)
     return "<script>" + _script(cfg) + "</script>"
 
@@ -213,9 +214,9 @@ def _script(cfg):
   function disegnaPunto(mid, chi, valore){
     var cella = document.querySelector('[data-mid="' + mid + '"] [data-chi="' + chi + '"]');
     if(!cella) return;
-    cella.classList.remove('pk3', 'pk2');
-    if(valore >= 3) cella.classList.add('pk3');       // 3, o 6 se era da solo
-    else if(valore > 0) cella.classList.add('pk2');   // 1, o 2 se era da solo
+    Object.keys(D.medaglie).forEach(function(p){ cella.classList.remove(D.medaglie[p]) });
+    var metallo = D.medaglie[valore];                 // 1 rame, 2 bronzo, 3 argento, 6 oro
+    if(metallo) cella.classList.add(metallo);
     var pts = cella.querySelector('.pts');
     if(!pts){ pts = document.createElement('span'); pts.className = 'pts'; cella.appendChild(pts) }
     pts.textContent = valore;

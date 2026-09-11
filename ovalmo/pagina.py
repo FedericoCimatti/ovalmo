@@ -16,8 +16,8 @@ import json
 
 from . import diretta, grafico, orari, schedina
 from .dati import id_partita
-from .punteggio import (calcola, punti_partita, re_della_giornata, segno,
-                        segno_pronosticato)
+from .punteggio import (CORAGGIO_ESATTO, CORAGGIO_SEGNO, calcola, punti_partita,
+                        re_della_giornata, segno, segno_pronosticato)
 
 MODULO = "https://forms.gle/vuZK5rm6N8b8Z2Zc7"
 # indirizzo pubblico della pagina: serve all'anteprima del link su WhatsApp.
@@ -35,6 +35,21 @@ ORE_PER_GIOCARE = 3
 GIORNI_DI_UNA_GIORNATA = 5
 
 E = html.escape
+
+# I punti diventano un metallo: la casella si colora di quello. I nomi delle
+# classi vivono nel foglio di stile, i valori qui arrivano da punteggio.py, cosi'
+# cambiando quanto vale un punto coraggio non resta una medaglia orfana.
+MEDAGLIE = {
+    1: "m-rame",
+    CORAGGIO_SEGNO: "m-bronzo",
+    3: "m-argento",
+    CORAGGIO_ESATTO: "m-oro",
+}
+
+
+def medaglia(punti):
+    """La classe della casella per quei punti. Stringa vuota se non ha preso niente."""
+    return MEDAGLIE.get(punti or 0, "")
 
 
 def _giorn(n):
@@ -204,7 +219,7 @@ def genera(dati, template, adesso=None, aggiornato=None):
                 s = segno_pronosticato(pr)
                 _, ph, pa = (pr or [None, None, None])
                 pts = valori.get(p_) if ris else None
-                klass = (" pk3" if (pts or 0) >= 3 else (" pk2" if pts else ""))
+                klass = (" " + medaglia(pts)) if medaglia(pts) else ""
                 if s is None:
                     klass += " attesa-p"
                 if nascosta:
@@ -356,7 +371,9 @@ def genera(dati, template, adesso=None, aggiornato=None):
     # resta chiuso finche' non finisce
     modulo = schedina.blocco(dati, adesso=adesso, endpoint=endpoint, modulo_google=MODULO,
                              in_corso=si_gioca)
-    in_diretta = diretta.blocco(dati, conti=conti, adesso=adesso, endpoint=endpoint)
+    # la mappa dei metalli la passa la pagina: cosi' esiste in un posto solo
+    in_diretta = diretta.blocco(dati, conti=conti, adesso=adesso, endpoint=endpoint,
+                                medaglie=MEDAGLIE)
     avviso = _script_avviso(calendario, risultati, giornate) + _script_freschezza(aggiornato)
     # Due informazioni diverse, e servono tutte e due:
     #   la data dice quando i DATI sono cambiati l'ultima volta. Non si tocca a

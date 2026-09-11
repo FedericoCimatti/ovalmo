@@ -160,3 +160,14 @@ def test_la_diretta_sa_da_che_giornata_valgono_i_punti_coraggio():
     assert "function puntiPartita(" in html
     assert "giornata >= D.coraggioDa" in html
     assert cfg(html)["coraggioDa"] == CORAGGIO_DA
+
+
+def test_la_diretta_colora_le_caselle_con_gli_stessi_metalli_della_pagina():
+    """La mappa dei metalli viaggia nella configurazione: se pagina e diretta ne
+    tenessero due copie, durante le partite una casella potrebbe cambiare colore
+    e poi tornare indietro al primo aggiornamento del sito."""
+    from ovalmo.pagina import MEDAGLIE
+
+    html = diretta.blocco(DATI, adesso=DURANTE, endpoint=ENDPOINT, medaglie=MEDAGLIE)
+    assert cfg(html)["medaglie"] == {str(k): v for k, v in MEDAGLIE.items()}
+    assert "D.medaglie[valore]" in html

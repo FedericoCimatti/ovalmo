@@ -454,3 +454,36 @@ def test_il_numero_non_resta_da_solo_in_fondo_alla_riga():
     assert "1&nbsp;giornata conclusa" in html
     assert "2026/27<br>1&nbsp;giornata" in html      # a capo, e senza punto in mezzo
     assert "2026/27 &middot;" not in html
+
+
+def test_i_punti_diventano_metalli():
+    """1 rame, 2 bronzo, 3 argento, 6 oro: la casella prende la classe del suo
+    metallo, e chi non ha preso niente non prende nessuna classe."""
+    from ovalmo.pagina import medaglia
+
+    assert (medaglia(1), medaglia(2), medaglia(3), medaglia(6)) == (
+        "m-rame", "m-bronzo", "m-argento", "m-oro")
+    assert medaglia(0) == "" and medaglia(None) == ""
+
+    dati = dict(DATI, pronostici={
+        "G07-01": {"Berta": ["1", 3, 0], "Lippi": ["1", 2, 0], "Lenzuolo": ["2", 0, 1]},
+        "G07-02": {"Berta": ["1", 2, 0], "Lippi": ["2", 0, 1], "Lenzuolo": ["X", 2, 2]},
+    }, risultati={"G07-01": [3, 0], "G07-02": [1, 1]})
+    html = genera(dati, DOPO)
+    assert 'class="pick m-oro"' in html          # esatto da solo
+    assert 'class="pick m-rame"' in html         # segno in compagnia
+    assert 'class="pick m-bronzo"' in html       # segno da solo
+    assert "pk3" not in html and "pk2" not in html
+
+
+def test_i_quattro_metalli_hanno_un_colore_nel_modello():
+    import os
+
+    with open(os.path.join(QUI, "template.html"), encoding="utf-8") as f:
+        modello = f.read()
+    for metallo in ("rame", "bronzo", "argento", "oro"):
+        assert f".pick.m-{metallo}{{background:var(--{metallo})}}" in modello
+        assert f"--{metallo}-i:" in modello
+    # la corona sta solo sull'oro, ed e' una maschera: prende il colore del tema
+    assert ".pick.m-oro::before" in modello
+    assert modello.count("::before{\n  content:\"\"; position:absolute; top:-7px") == 1
