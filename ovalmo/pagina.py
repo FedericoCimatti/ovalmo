@@ -38,7 +38,9 @@ E = html.escape
 
 
 def _giorn(n):
-    return "1 giornata conclusa" if n == 1 else f"{n} giornate concluse"
+    # lo spazio unificatore tiene il numero attaccato alla parola: senza, il
+    # sottotitolo va a capo dopo il "2" e lo lascia solo in fondo alla riga
+    return "1&nbsp;giornata conclusa" if n == 1 else f"{n}&nbsp;giornate concluse"
 
 
 def _inizio_giornata(calendario, g):
@@ -336,7 +338,9 @@ def genera(dati, template, adesso=None, aggiornato=None):
                                 giornata_viva=si_gioca)
 
     tag = f"Giornata {g_show}" + (" &middot; in attesa dei risultati" if giocate_g.get(g_show, 0) == 0 else "")
-    sub = "Serie A 2026/27 &middot; " + (_giorn(len(concluse)) if concluse else "si comincia dalla seconda")
+    # due righe pulite, senza il punto in mezzo: "Serie A 2026/27" e sotto
+    # "2 giornate concluse", col numero attaccato alla sua parola
+    sub = "Serie A 2026/27<br>" + (_giorn(len(concluse)) if concluse else "si comincia dalla seconda")
 
     # riga che compare nell'anteprima del link (WhatsApp, Telegram, iMessage)
     if giocate_tot == 0:

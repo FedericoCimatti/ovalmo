@@ -337,6 +337,9 @@ details.g[open] > summary{border-bottom:1px solid var(--line)}
 .live{
   display:inline-block; font-family:var(--ff-m); font-size:11px; letter-spacing:.04em;
   color:var(--accent); margin:0 0 6px}
+/* senza questa riga resta un pallino solo, sospeso sopra la classifica: il
+   display qui sopra batte l'attributo hidden, che da solo non nasconde piu' niente */
+.live[hidden]{display:none}
 .live::before{content:"\25CF"; margin-right:5px; animation:pulsa 2s infinite}
 @keyframes pulsa{0%,100%{opacity:1}50%{opacity:.25}}
 .ris .live{margin:0}

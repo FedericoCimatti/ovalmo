@@ -434,3 +434,23 @@ def test_mentre_si_gioca_sparisce_anche_l_invito_a_compilare():
     assert 'id="invito"' in prima
     assert 'id="invito"' not in durante
     assert "La schedina &mdash; giornata 7" in durante            # la giornata resta in cima
+
+
+def test_senza_diretta_non_resta_un_pallino_sospeso():
+    """La riga "In diretta" nasce vuota e nascosta, ma .live ha un display suo
+    che batte l'attributo hidden: senza la regola apposta, sopra la classifica
+    restava un pallino verde senza niente accanto."""
+    import os
+
+    with open(os.path.join(QUI, "template.html"), encoding="utf-8") as f:
+        assert ".live[hidden]{display:none}" in f.read()
+
+
+def test_il_numero_non_resta_da_solo_in_fondo_alla_riga():
+    """"Serie A 2026/27 - 2" e a capo "giornate concluse" si legge male: il
+    numero e la parola vanno a capo insieme."""
+    dati = dict(DATI, risultati={"G07-01": [2, 1], "G07-02": [0, 0]})
+    html = genera(dati, DOPO)
+    assert "1&nbsp;giornata conclusa" in html
+    assert "2026/27<br>1&nbsp;giornata" in html      # a capo, e senza punto in mezzo
+    assert "2026/27 &middot;" not in html
