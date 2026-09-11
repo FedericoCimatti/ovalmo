@@ -314,7 +314,7 @@ def test_se_la_giornata_dopo_e_vicina_il_modulo_si_apre_lo_stesso():
     assert 'id="chisei"' in html
 
 
-def test_i_punti_del_solitario_si_vedono_nelle_caselle():
+def test_i_punti_coraggio_si_vedono_nelle_caselle():
     """Un 6 e un 2 nelle caselle, e la riga che li spiega sotto la classifica.
 
     Senza la spiegazione un 6 sembra un errore di conto.
@@ -328,4 +328,5 @@ def test_i_punti_del_solitario_si_vedono_nelle_caselle():
     html = genera(dati, DOPO)
     assert '<span class="pts">6</span>' in html      # esatto, e da solo
     assert '<span class="pts">2</span>' in html      # segno giusto, e da solo
+    assert "Punti coraggio" in html
     assert "chi indovina da solo vale doppio" in html

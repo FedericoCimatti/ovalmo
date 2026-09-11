@@ -106,7 +106,7 @@ def test_i_conti_in_diretta_coincidono_con_quelli_veri():
     gol = [2, 1]        # com'e' finita davvero Inter-Milan
 
     # quello che farebbe la diretta nel browser: base + i punti di adesso,
-    # solitario compreso (siamo in giornata 7, la regola e' in vigore)
+    # punti coraggio compresi (siamo in giornata 7, la regola e' in vigore)
     adesso_g = punti_partita(d["picks"]["G07-01"], gol, 7, DATI["players"])
     live = {g: d["base"][g]["pt"] + adesso_g[g] for g in DATI["players"]}
 
@@ -116,7 +116,7 @@ def test_i_conti_in_diretta_coincidono_con_quelli_veri():
 
     # Berta aveva scritto 2-1 e nessun altro: risultato esatto da solo, 6
     assert live == vero == {"Berta": 6, "Lippi": 0}
-    assert d["solitarioDa"] == 5
+    assert d["coraggioDa"] == 5
 
 
 def test_c_e_la_prova_di_vita_in_fondo_alla_pagina():
@@ -149,14 +149,14 @@ def test_la_diretta_usa_le_stesse_parole_del_generatore():
         assert pezzo in js, pezzo
 
 
-def test_la_diretta_sa_da_che_giornata_vale_il_solitario():
-    """La regola del solitario e' scritta due volte: in punteggio.py per i conti
+def test_la_diretta_sa_da_che_giornata_valgono_i_punti_coraggio():
+    """La regola dei punti coraggio e' scritta due volte: in punteggio.py per i conti
     veri e dentro la diretta per quelli in corso. Se si tocca una, va toccata
     l'altra - e almeno la giornata di partenza qui viene dalla stessa costante,
     non da un numero ricopiato a mano."""
-    from ovalmo.punteggio import SOLITARIO_DA
+    from ovalmo.punteggio import CORAGGIO_DA
 
     html = diretta.blocco(DATI, adesso=DURANTE, endpoint=ENDPOINT)
     assert "function puntiPartita(" in html
-    assert "giornata >= D.solitarioDa" in html
-    assert cfg(html)["solitarioDa"] == SOLITARIO_DA
+    assert "giornata >= D.coraggioDa" in html
+    assert cfg(html)["coraggioDa"] == CORAGGIO_DA

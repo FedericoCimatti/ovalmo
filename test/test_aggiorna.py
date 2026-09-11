@@ -50,11 +50,11 @@ def test_l_excel_si_rifa_anche_quando_cambiano_solo_le_regole(tmp_path, monkeypa
     prima = aggiorna.impronta_excel(uniti)
 
     regola = tmp_path / "punteggio.py"
-    regola.write_text("SOLITARIO_DA = 5\n", encoding="utf-8")
+    regola.write_text("CORAGGIO_DA = 5\n", encoding="utf-8")
     monkeypatch.setattr(aggiorna, "FILE_DELLE_REGOLE", [str(regola)])
     assert aggiorna.impronta_excel(uniti) != prima
 
-    regola.write_text("SOLITARIO_DA = 9\n", encoding="utf-8")
+    regola.write_text("CORAGGIO_DA = 9\n", encoding="utf-8")
     dopo = aggiorna.impronta_excel(uniti)
-    regola.write_text("SOLITARIO_DA = 5\n", encoding="utf-8")
+    regola.write_text("CORAGGIO_DA = 5\n", encoding="utf-8")
     assert aggiorna.impronta_excel(uniti) != dopo

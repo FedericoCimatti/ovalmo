@@ -29,7 +29,7 @@ import json
 
 from . import orari, squadre
 from .dati import id_partita
-from .punteggio import SOLITARIO_DA, calcola
+from .punteggio import CORAGGIO_DA, calcola
 
 # ogni quanto la pagina richiede notizie, in secondi: fitto mentre si gioca,
 # piu' rado quando c'e' solo da vedere chi ha consegnato
@@ -97,7 +97,7 @@ def blocco(dati, conti=None, adesso=None, endpoint=None):
         "partite": da_seguire,
         "picks": picks,
         "squadre": mappa,
-        "solitarioDa": SOLITARIO_DA,
+        "coraggioDa": CORAGGIO_DA,
     }, ensure_ascii=False)
     return "<script>" + _script(cfg) + "</script>"
 
@@ -140,8 +140,8 @@ def _script(cfg):
     return segnoDi(pronostico) === segno(gol[0], gol[1]) ? 1 : 0;
   }
 
-  // il solitario: chi ha indovinato da solo vale doppio, dalla giornata
-  // D.solitarioDa in poi. Stessa regola di punti_partita in punteggio.py.
+  // il punto coraggio: chi ha indovinato da solo vale doppio, dalla giornata
+  // D.coraggioDa in poi. Stessa regola di punti_partita in punteggio.py.
   function puntiPartita(picks, gol, giornata){
     var quantiSegno = {}, quantiPunteggio = {}, fuori = {};
     D.giocatori.forEach(function(g){
@@ -150,7 +150,7 @@ def _script(cfg):
       var pg = punteggioDi(picks[g]);
       if(pg) quantiPunteggio[pg] = (quantiPunteggio[pg] || 0) + 1;
     });
-    var raddoppia = giornata >= D.solitarioDa;
+    var raddoppia = giornata >= D.coraggioDa;
     D.giocatori.forEach(function(g){
       var base = punti(picks[g], gol), valore = base;
       if(base === 3 && raddoppia && quantiPunteggio[punteggioDi(picks[g])] === 1) valore = 6;

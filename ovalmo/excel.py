@@ -22,7 +22,7 @@ from openpyxl.chart.marker import Marker
 from openpyxl.formatting.rule import CellIsRule, DataBarRule, ColorScaleRule
 
 # le regole di gioco stanno in un posto solo: qui si leggono, non si riscrivono
-from .punteggio import SOLITARIO_DA, SOLITARIO_ESATTO as SOL_ESATTO, SOLITARIO_SEGNO as SOL_SEGNO
+from .punteggio import CORAGGIO_DA, CORAGGIO_ESATTO as SOL_ESATTO, CORAGGIO_SEGNO as SOL_SEGNO
 
 
 def genera(DATA, OUT):
@@ -148,7 +148,7 @@ def genera(DATA, OUT):
         cl.cell(row=r, column=2, value=f"=Config!$A${6+i}")
         cl.cell(row=r, column=3, value=f"=SUM(Punti!${pc}${R0}:${pc}${RN})")
         colonna = f"Punti!${pc}${R0}:${pc}${RN}"
-        # i segni giusti sono quattro casi: 1 e 3 di sempre, 2 e 6 del solitario
+        # i segni giusti sono quattro casi: 1 e 3 di sempre, 2 e 6 dei punti coraggio
         cl.cell(row=r, column=4, value="=" + "+".join(
             f"COUNTIF({colonna},Config!$D${d})" for d in (7, 6, 10, 9)))
         cl.cell(row=r, column=5, value=f"=COUNTIF({colonna},Config!$D$6)+COUNTIF({colonna},Config!$D$9)")
@@ -391,7 +391,7 @@ def genera(DATA, OUT):
             pn.cell(row=r, column=2, value=f"=Partite!$B{r}")
             pn.cell(row=r, column=3, value=f'=IF(Partite!$E{r}="","",Partite!$E{r}&"  -  "&Partite!$F{r})')
             segni, punteggi = SEGNI.format(r=r), PUNTEGGI.format(r=r)
-            # il solitario vale solo dalla giornata scritta in Config
+            # il punto coraggio vale solo dalla giornata scritta in Config
             da_solo = f'$B{r}>=Config!$D$17'
             for i in range(NP):
                 sc, hc, ac = CL(5+i*3), CL(6+i*3), CL(7+i*3)
@@ -448,18 +448,18 @@ def genera(DATA, OUT):
     for i, (lab, val) in enumerate([("Risultato esatto (segno + gol)", 3),
                                     ("Solo segno 1X2 corretto", 1),
                                     ("Sbagliato o pronostico mancante", 0),
-                                    ("Risultato esatto, e nessun altro lo aveva scritto", SOL_ESATTO),
-                                    ("Segno giusto, e nessun altro lo aveva scelto", SOL_SEGNO)]):
+                                    ("CORAGGIO - risultato esatto, e nessun altro lo aveva scritto", SOL_ESATTO),
+                                    ("CORAGGIO - segno giusto, e nessun altro lo aveva scelto", SOL_SEGNO)]):
         s(cf.cell(row=6+i, column=3, value=lab), sz=10, bg=WHITE if i % 2 == 0 else PANEL, box=BOX)
         inp(cf.cell(row=6+i, column=4, value=val), sz=11)
     s(cf["C11"], sz=8, fg=MUTE, it=True)
-    cf["C11"] = "Il risultato esatto non si somma al segno. Gli ultimi due sono il solitario: valgono il doppio."
+    cf["C11"] = "Il risultato esatto non si somma al segno. Gli ultimi due sono i punti coraggio: chi indovina da solo prende il doppio."
 
     s(cf["C13"], b=True, sz=12, fg=NAVY); cf["C13"] = "PARAMETRI"
     for i, (lab, val) in enumerate([("Stagione", "Serie A 2026/27"),
                                     ("Prima giornata in gioco", GIORNATE[0]),
                                     ("Partite per giornata", MPG),
-                                    ("Il solitario vale dalla giornata", SOLITARIO_DA)]):
+                                    ("I punti coraggio valgono dalla giornata", CORAGGIO_DA)]):
         s(cf.cell(row=14+i, column=3, value=lab), sz=10, bg=WHITE if i % 2 == 0 else PANEL, box=BOX)
         inp(cf.cell(row=14+i, column=4, value=val))
 
@@ -468,7 +468,7 @@ def genera(DATA, OUT):
      "1.  Pronostici entro il primo fischio della giornata: dopo non valgono piu'.",
      "2.  Chi non manda i pronostici prende 0 su quella giornata, che conta comunque.",
      "3.  Si puo' dare solo il segno 1/X/2: vale 1 punto se corretto, senza bonus risultato.",
-     f"4.  Dalla giornata {SOLITARIO_DA} chi indovina da solo vale doppio: {SOL_SEGNO} il segno, {SOL_ESATTO} il risultato esatto.",
+     f"4.  Punti coraggio, dalla giornata {CORAGGIO_DA}: chi indovina da solo vale doppio, {SOL_SEGNO} il segno e {SOL_ESATTO} il risultato esatto.",
      "5.  Parita' in classifica generale: passa avanti chi ha piu' risultati esatti.",
      "6.  Re della giornata = chi fa piu' punti in quella giornata (solo giornate complete).",
     ]):
@@ -504,7 +504,7 @@ def genera(DATA, OUT):
             elif j == 5: s(c, sz=9, fg=MUTE, it=True, box=BOX)
             else: s(c, b=True, sz=9, bg=PCOL[i], box=BOX)
     s(cf["A43"], sz=8, fg=MUTE, it=True)
-    cf["A43"] = (f"Esempio dalla giornata {SOLITARIO_DA} in poi. Se il segno giusto lo avesse scelto una "
+    cf["A43"] = (f"Esempio dalla giornata {CORAGGIO_DA} in poi. Se il segno giusto lo avesse scelto una "
                  f"persona sola, a lei varrebbe {SOL_SEGNO} punti invece di 1.")
 
     s(cf["A45"], sz=8, fg=MUTE, it=True)

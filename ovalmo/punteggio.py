@@ -6,7 +6,7 @@ Regole:
   1 punto  solo il segno giusto (NON si somma ai 3)
   0 punti  segno sbagliato, oppure pronostico non inviato
 
-IL SOLITARIO, dalla giornata 5 in poi
+I PUNTI CORAGGIO, dalla giornata 5 in poi
   Chi indovina da solo vale il doppio:
     6 punti  risultato esatto che nessun altro dei cinque aveva scritto
     2 punti  segno giusto che nessun altro dei cinque aveva scelto
@@ -14,7 +14,7 @@ IL SOLITARIO, dalla giornata 5 in poi
   per i 2 punti conta il segno (1, X o 2), per i 6 punti il punteggio scritto.
   Chi non manda non ha scelto niente, quindi non fa compagnia a nessuno.
 
-  Vale dalla giornata SOLITARIO_DA: le giornate precedenti restano com'erano,
+  Vale dalla giornata CORAGGIO_DA: le giornate precedenti restano com'erano,
   perche' la regola e' arrivata a giornata 4 gia' cominciata e i punti gia'
   assegnati non si toccano.
 
@@ -27,10 +27,10 @@ da non rompere.
 """
 from .dati import id_partita
 
-# la prima giornata in cui il solitario vale, e quanto vale
-SOLITARIO_DA = 5
-SOLITARIO_ESATTO = 6
-SOLITARIO_SEGNO = 2
+# la prima giornata in cui il punto coraggio vale, e quanto vale
+CORAGGIO_DA = 5
+CORAGGIO_ESATTO = 6
+CORAGGIO_SEGNO = 2
 
 
 def segno(gol_casa, gol_ospite):
@@ -57,7 +57,7 @@ def segno_pronosticato(pronostico):
 def punti(pronostico, risultato):
     """Punti di un singolo pronostico, senza guardare cosa hanno fatto gli altri.
 
-    E' il punteggio base: 3, 1 o 0. Il raddoppio del solitario si decide in
+    E' il punteggio base: 3, 1 o 0. Il raddoppio dei punti coraggio si decide in
     `punti_partita`, che e' l'unico posto che vede tutti e cinque insieme.
     """
     if not risultato:
@@ -76,20 +76,20 @@ def punteggio_scritto(pronostico):
 
 
 def punti_partita(picks, risultato, giornata, giocatori=None):
-    """{giocatore: punti} per una partita, solitario compreso.
+    """{giocatore: punti} per una partita, punti coraggio compresi.
 
     E' l'unico posto dove si decide chi era da solo: la pagina, la diretta e il
     file Excel devono dare lo stesso numero, e l'unico modo di esserne sicuri e'
     che ci sia una sola regola scritta una volta sola.
 
     picks      {giocatore: pronostico} di quella partita
-    giornata   serve solo a sapere se il solitario e' gia' in vigore
+    giornata   serve solo a sapere se il punto coraggio e' gia' in vigore
     """
     giocatori = list(giocatori if giocatori is not None else picks)
     if not risultato:
         return {p: 0 for p in giocatori}
 
-    raddoppia = giornata >= SOLITARIO_DA
+    raddoppia = giornata >= CORAGGIO_DA
     quanti_segno, quanti_punteggio = {}, {}
     for p in giocatori:
         sg = segno_pronosticato(picks.get(p))
@@ -104,9 +104,9 @@ def punti_partita(picks, risultato, giornata, giocatori=None):
         pronostico = picks.get(p)
         base = punti(pronostico, risultato)
         if base == 3 and raddoppia and quanti_punteggio[punteggio_scritto(pronostico)] == 1:
-            base = SOLITARIO_ESATTO
+            base = CORAGGIO_ESATTO
         elif base == 1 and raddoppia and quanti_segno[segno_pronosticato(pronostico)] == 1:
-            base = SOLITARIO_SEGNO
+            base = CORAGGIO_SEGNO
         fuori[p] = base
     return fuori
 
@@ -144,7 +144,7 @@ def calcola(dati):
             picks = pronostici.get(mid) or {}
             valori = punti_partita(picks, risultato, g, giocatori)
             for p in giocatori:
-                # segni ed esatti si contano sul punteggio base: il solitario
+                # segni ed esatti si contano sul punteggio base: il punto coraggio
                 # raddoppia i punti, non trasforma un segno in un risultato esatto
                 base = punti(picks.get(p), risultato)
                 if base == 3:

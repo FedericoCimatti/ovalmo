@@ -1,16 +1,16 @@
 # -*- coding: utf-8 -*-
-"""Il solitario: chi indovina da solo vale il doppio.
+"""Il punto coraggio: chi indovina da solo vale il doppio.
 
 La regola e' arrivata a stagione cominciata, quindi ci sono due epoche: prima
-della giornata SOLITARIO_DA si contano 3/1/0, da li' in poi anche 6/2. Le due
+della giornata CORAGGIO_DA si contano 3/1/0, da li' in poi anche 6/2. Le due
 epoche devono convivere nello stesso file senza che i punti gia' assegnati
 cambino: e' la ragione per cui meta' di questi test guardano una giornata
 vecchia e meta' una nuova.
 """
-from ovalmo.punteggio import SOLITARIO_DA, calcola, punti_partita
+from ovalmo.punteggio import CORAGGIO_DA, calcola, punti_partita
 
-PRIMA = SOLITARIO_DA - 1
-DOPO = SOLITARIO_DA
+PRIMA = CORAGGIO_DA - 1
+DOPO = CORAGGIO_DA
 
 
 def _dati(giornata, pronostici, risultati):
@@ -85,7 +85,7 @@ def test_senza_risultato_nessuno_prende_niente():
 # ------------------------------------------------------------- e la classifica
 
 def test_in_classifica_il_sei_conta_come_un_risultato_esatto_non_come_due():
-    """Il solitario raddoppia i punti, non i risultati esatti: se li contasse
+    """Il punto coraggio raddoppia i punti, non i risultati esatti: se li contasse
     doppi, lo spareggio a pari punti mentirebbe."""
     dati = _dati(DOPO, {f"G{DOPO:02d}-01": {"Ada": ["1", 2, 1], "Bea": ["1", 3, 0],
                                             "Cid": ["1", 4, 0]}},
