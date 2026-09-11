@@ -28,6 +28,11 @@ ORE_PRIMA_DI_INSOSPETTIRSI = 4
 # dopo quante ore dal calcio d'inizio una partita si considera finita: oltre,
 # se manca il risultato, e' la giornata a essere bloccata e non un rinvio
 ORE_PER_GIOCARE = 3
+# quanto dura una giornata di campionato, dal primo calcio d'inizio: l'anticipo
+# del venerdi' e il posticipo del lunedi' stanno dentro cinque giorni. Una
+# partita fissata oltre questo termine non e' "non ancora giocata": e' un
+# recupero, e non deve tenere ferma la giornata (vedi _mancanti)
+GIORNI_DI_UNA_GIORNATA = 5
 
 E = html.escape
 
@@ -36,20 +41,43 @@ def _giorn(n):
     return "1 giornata conclusa" if n == 1 else f"{n} giornate concluse"
 
 
+def _inizio_giornata(calendario, g):
+    """Il primo calcio d'inizio della giornata: da li' si contano i cinque giorni.
+
+    Si prende il piu' presto e non la data della prima partita in elenco perche'
+    l'elenco non cambia mai ordine, mentre gli orari si spostano di continuo.
+    """
+    return min(orari.quando(data, ora) for data, ora, _, _ in calendario[g])
+
+
 def _mancanti(calendario, risultati, g, adesso):
-    """Le partite della giornata senza risultato, divise fra quelle che si
-    sarebbero gia' dovute giocare e quelle ancora da giocare."""
-    scadute, future = [], []
+    """Le partite senza risultato, in tre gruppi.
+
+      scadute     dovevano essere finite e il risultato non e' arrivato
+      da_giocare  si giocano in questi giorni: la giornata non e' finita
+      recuperi    spostate oltre la fine della giornata: non la tengono ferma
+
+    La distinzione fra le ultime due e' la ragione per cui questa funzione
+    esiste. Prima non c'era, e il venerdi' sera bastava l'anticipo per far
+    sembrare conclusa una giornata di cui restavano nove partite: il sito
+    passava alla giornata dopo e metteva in archivio quella in corso.
+    """
+    fine = _inizio_giornata(calendario, g) + datetime.timedelta(days=GIORNI_DI_UNA_GIORNATA)
+    scadute, da_giocare, recuperi = [], [], []
     for n in range(1, len(calendario[g]) + 1):
         mid = id_partita(g, n)
         if risultati.get(mid):
             continue
         data, ora, casa, ospite = calendario[g][n - 1]
         inizio = orari.quando(data, ora)
-        finita_da = (adesso - inizio).total_seconds() / 3600
-        (scadute if finita_da > ORE_PER_GIOCARE else future).append(
-            {"mid": mid, "casa": casa, "ospite": ospite, "data": data, "ora": ora})
-    return scadute, future
+        partita = {"mid": mid, "casa": casa, "ospite": ospite, "data": data, "ora": ora}
+        if (adesso - inizio).total_seconds() / 3600 > ORE_PER_GIOCARE:
+            scadute.append(partita)
+        elif inizio > fine:
+            recuperi.append(partita)
+        else:
+            da_giocare.append(partita)
+    return scadute, da_giocare, recuperi
 
 
 def _scadute(calendario, risultati, g, adesso):
@@ -57,9 +85,23 @@ def _scadute(calendario, risultati, g, adesso):
     return _mancanti(calendario, risultati, g, adesso)[0]
 
 
-def _da_recuperare(calendario, risultati, g, adesso):
-    """Partite della giornata rimandate a una data futura."""
+def _da_giocare(calendario, risultati, g, adesso):
+    """Partite di questa giornata ancora in programma nei prossimi giorni."""
     return _mancanti(calendario, risultati, g, adesso)[1]
+
+
+def _da_recuperare(calendario, risultati, g, adesso):
+    """Partite della giornata rimandate ben oltre la fine della giornata."""
+    return _mancanti(calendario, risultati, g, adesso)[2]
+
+
+def _iniziate_non_finite(calendario, risultati, g, adesso):
+    """Quante partite possono ancora dare punti adesso: quelle senza risultato
+    il cui calcio d'inizio e' gia' passato."""
+    scadute, da_giocare, recuperi = _mancanti(calendario, risultati, g, adesso)
+    iniziate = [p for p in da_giocare + recuperi
+                if orari.quando(p["data"], p["ora"]) <= adesso]
+    return len(scadute) + len(iniziate)
 
 
 def _etichetta_recuperi(partite):
@@ -197,9 +239,13 @@ def genera(dati, template, adesso=None, aggiornato=None):
     # sito fermo su quella giornata per settimane.
     da_recuperare = {g: _da_recuperare(calendario, risultati, g, adesso) for g in giornate}
     scadute = {g: _scadute(calendario, risultati, g, adesso) for g in giornate}
+    da_giocare = {g: _da_giocare(calendario, risultati, g, adesso) for g in giornate}
 
     def chiusa(g):
-        return giocate_g[g] > 0 and not scadute[g]
+        # finita davvero: qualcosa si e' giocato, non manca nessun risultato e
+        # non c'e' altro in programma. Un recupero fra tre settimane non conta:
+        # se contasse, una giornata resterebbe in cima al sito fino ad allora
+        return giocate_g[g] > 0 and not scadute[g] and not da_giocare[g]
 
     aperte = [g for g in giornate if not chiusa(g)]
     g_feat = min(aperte) if aperte else None
@@ -283,9 +329,7 @@ def genera(dati, template, adesso=None, aggiornato=None):
     # "si gioca" vuol dire che il primo calcio d'inizio e' passato, non che c'e'
     # gia' un risultato: fra il fischio e il primo gol passa un'ora buona
     si_gioca = g_feat if (g_feat is not None and not coperta.get(g_feat, True)) else None
-    aperte_ora = sum(len(_mancanti(calendario, risultati, g, adesso)[0]) +
-                     sum(1 for p in _mancanti(calendario, risultati, g, adesso)[1]
-                         if orari.quando(p["data"], p["ora"]) <= adesso)
+    aperte_ora = sum(_iniziate_non_finite(calendario, risultati, g, adesso)
                      for g in giornate)
     andamento = grafico.disegna(conti, giocatori, aperte_ora=aperte_ora,
                                 giornata_viva=si_gioca)

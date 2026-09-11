@@ -364,3 +364,62 @@ def test_i_colori_del_sito_non_sono_cambiati():
     for colore in ("--accent:#0F6E4C", "--brass:#96701C", "--paper:#EDF0EC",   # chiaro
                    "--accent:#48AC81", "--brass:#D0A24E", "--paper:#0C1310"):  # scuro
         assert colore in modello, f"colore cambiato o sparito: {colore}"
+
+
+# -------------------------------------------- il venerdi' sera non chiude niente
+WEEKEND = {
+    "players": ["Berta", "Lippi"],
+    "partite_per_giornata": 3,
+    "calendario": {"7": [["10/10/2026", "20:45", "Inter", "Milan"],      # anticipo
+                         ["11/10/2026", "15:00", "Roma", "Lazio"],
+                         ["12/10/2026", "20:45", "Genoa", "Como"]],      # posticipo
+                   "8": [["17/10/2026", "20:45", "Napoli", "Como"],
+                         ["18/10/2026", "15:00", "Genoa", "Parma"],
+                         ["18/10/2026", "18:00", "Lecce", "Monza"]]},
+    "risultati": {"G07-01": [2, 1]},                                     # solo l'anticipo
+    "pronostici": {"G07-01": {"Berta": ["1", 2, 1], "Lippi": ["2", 0, 1]}},
+    "consegne": {"7": {"Berta": "x", "Lippi": "x"}},
+}
+VENERDI_SERA = orari.quando("10/10/2026", "23:00")     # anticipo finito, il resto da giocare
+
+
+def test_l_anticipo_del_venerdi_non_manda_la_giornata_in_archivio():
+    """Il guaio visto dal vivo l'11 settembre 2026: finito l'anticipo, il sito
+    metteva in cima la giornata dopo e spediva in archivio quella in corso,
+    con le altre nove partite etichettate "da recuperare". Non erano da
+    recuperare: si giocavano il giorno dopo."""
+    html = genera(WEEKEND, VENERDI_SERA)
+    assert "La schedina &mdash; giornata 7" in html
+    archivio = html[html.index("Giornate precedenti"):] if "Giornate precedenti" in html else ""
+    assert "Giornata 7" not in archivio
+    assert "da recuperare" not in html
+
+
+def test_a_weekend_finito_la_giornata_si_chiude():
+    dati = dict(WEEKEND, risultati={"G07-01": [2, 1], "G07-02": [1, 1], "G07-03": [0, 2]})
+    html = genera(dati, orari.quando("12/10/2026", "23:30"))
+    assert "La schedina &mdash; giornata 8" in html
+    assert "re della giornata" in html[html.index("Giornate precedenti"):]
+
+
+def test_una_partita_fuori_dai_cinque_giorni_e_un_recupero_non_una_da_giocare():
+    """E' il confine fra le due cose: dentro la finestra tiene aperta la
+    giornata, fuori no. Senza un limite, non c'e' modo di distinguere il
+    posticipo del lunedi' da una partita rinviata di tre settimane."""
+    dentro = dict(WEEKEND, calendario={**WEEKEND["calendario"],
+        "7": [["10/10/2026", "20:45", "Inter", "Milan"],
+              ["11/10/2026", "15:00", "Roma", "Lazio"],
+              ["14/10/2026", "20:45", "Genoa", "Como"]]})      # quattro giorni dopo
+    fuori = dict(WEEKEND, calendario={**WEEKEND["calendario"],
+        "7": [["10/10/2026", "20:45", "Inter", "Milan"],
+              ["11/10/2026", "15:00", "Roma", "Lazio"],
+              ["24/10/2026", "20:45", "Genoa", "Como"]]})      # due settimane dopo
+    subito_dopo = orari.quando("11/10/2026", "18:00")
+    risultati = {"G07-01": [2, 1], "G07-02": [1, 1]}
+
+    html = genera(dict(dentro, risultati=risultati), subito_dopo)
+    assert "La schedina &mdash; giornata 7" in html            # si aspetta il posticipo
+
+    html = genera(dict(fuori, risultati=risultati), subito_dopo)
+    assert "La schedina &mdash; giornata 8" in html            # il recupero non blocca
+    assert "da recuperare" in html
