@@ -428,7 +428,8 @@ def test_una_partita_fuori_dai_cinque_giorni_e_un_recupero_non_una_da_giocare():
 def test_mentre_si_gioca_sparisce_anche_l_invito_a_compilare():
     """Il modulo e' chiuso durante la giornata: se l'invito restasse, chi lo
     tocca finirebbe su una schermata che gli dice di riprovare dopo."""
-    dati = dict(WEEKEND, risultati={})
+    dati = dict(WEEKEND, risultati={},
+                endpoint_pronostici="https://script.google.com/macros/s/ABC/exec")
     prima = genera(dati, orari.quando("10/10/2026", "12:00"))     # non e' ancora cominciata
     durante = genera(dati, orari.quando("10/10/2026", "21:30"))   # si gioca l'anticipo
     assert 'id="invito"' in prima
