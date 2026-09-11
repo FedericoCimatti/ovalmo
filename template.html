@@ -12,8 +12,11 @@
 <meta property="og:title" content="Trofeo Ovalmo">
 <meta property="og:description" content="__OG__">
 <meta property="og:url" content="__URL__">
+<meta property="og:image" content="__URL__palladino.jpg">
+<meta name="twitter:card" content="summary">
 <link rel="canonical" href="__URL__">
-<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='6' fill='%230F6E4C'/><text x='16' y='23' font-family='Arial Narrow,Arial' font-weight='700' font-size='19' fill='%23EDF0EC' text-anchor='middle'>TO</text></svg>">
+<link rel="icon" href="palladino-64.jpg" type="image/jpeg">
+<link rel="apple-touch-icon" href="palladino-180.jpg">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700&family=IBM+Plex+Mono:wght@500;600&family=IBM+Plex+Sans:wght@400;500;600&display=swap">
@@ -57,7 +60,20 @@ a{color:var(--accent)}
 :focus-visible{outline:2px solid var(--accent); outline-offset:2px; border-radius:3px}
 
 /* ---------- masthead ---------- */
-.mast{border-bottom:2px solid var(--ink); padding-bottom:12px; margin-bottom:6px}
+.mast{
+  border-bottom:2px solid var(--ink); padding-bottom:12px; margin-bottom:6px;
+  display:grid; grid-template-columns:1fr auto; column-gap:16px; align-items:center;
+  grid-template-areas:"tag tag" "titolo faccia" "sub faccia";
+}
+.mast .tag{grid-area:tag; justify-self:start}
+.mast h1{grid-area:titolo}
+.mast .sub{grid-area:sub}
+.faccia{
+  grid-area:faccia; width:132px; height:132px; border-radius:50%; object-fit:cover;
+  border:2px solid var(--brass);
+}
+/* sui telefoni stretti il titolo viene prima: la faccia si fa da parte */
+@media (max-width:360px){ .faccia{width:104px; height:104px} }
 .mast h1{
   font-family:var(--ff-d); font-weight:700; font-size:clamp(44px,13vw,86px);
   line-height:.88; letter-spacing:-.015em; margin:0; text-transform:uppercase;
@@ -358,6 +374,8 @@ details.g[open] > summary{border-bottom:1px solid var(--line)}
   <div id="avviso" class="avviso" hidden></div>
 
   <header class="mast">
+    <img class="faccia" src="palladino.jpg" width="132" height="132"
+         alt="Raffaele Palladino" fetchpriority="high">
     <span class="tag">__TAG__</span>
     <h1>Trofeo<br>Ovalmo</h1>
     <p class="sub">__SUB__</p>

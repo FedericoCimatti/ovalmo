@@ -330,3 +330,37 @@ def test_i_punti_coraggio_si_vedono_nelle_caselle():
     assert '<span class="pts">2</span>' in html      # segno giusto, e da solo
     assert "Punti coraggio" in html
     assert "chi indovina da solo vale doppio" in html
+
+
+def test_il_ritratto_e_le_icone_stanno_nella_pagina():
+    """La faccia nella testata, e le tre immagini che le fanno da icona.
+
+    Se un giorno uno rinomina un file dentro docs/ senza accorgersene, la pagina
+    resta con il riquadro rotto e nessuno se ne accorge finche' non la apre
+    qualcuno: qui i nomi sono controllati, e i file esistono davvero.
+    """
+    import os
+
+    html = genera(DATI, DOPO)
+    assert '<img class="faccia" src="palladino.jpg"' in html
+    assert 'alt="Raffaele Palladino"' in html           # non e' un'immagine muta
+    assert '<link rel="apple-touch-icon" href="palladino-180.jpg">' in html
+    assert 'rel="icon" href="palladino-64.jpg"' in html
+    assert 'og:image" content="https://federicocimatti.github.io/ovalmo/palladino.jpg"' in html
+
+    for nome in ("palladino.jpg", "palladino-180.jpg", "palladino-64.jpg"):
+        percorso = os.path.join(QUI, "docs", nome)
+        assert os.path.exists(percorso), f"manca docs/{nome}, la pagina lo cerca"
+        assert os.path.getsize(percorso) > 1000, f"docs/{nome} e' vuoto o quasi"
+
+
+def test_i_colori_del_sito_non_sono_cambiati():
+    """La foto non doveva portarsi dietro un'estetica nuova: il verde, l'ottone e
+    la carta sono quelli di prima."""
+    import os
+
+    with open(os.path.join(QUI, "template.html"), encoding="utf-8") as f:
+        modello = f.read()
+    for colore in ("--accent:#0F6E4C", "--brass:#96701C", "--paper:#EDF0EC",   # chiaro
+                   "--accent:#48AC81", "--brass:#D0A24E", "--paper:#0C1310"):  # scuro
+        assert colore in modello, f"colore cambiato o sparito: {colore}"
