@@ -277,6 +277,10 @@ def genera(dati, template, adesso=None, aggiornato=None):
         lede = (f'Dopo {giocate_tot} partite'
                 + (f' e {_giorn(len(concluse))}' if concluse else '') + '.')
 
+    # "si gioca" vuol dire che il primo calcio d'inizio e' passato, non che c'e'
+    # gia' un risultato: fra il fischio e il primo gol passa un'ora buona
+    si_gioca = g_feat if (g_feat is not None and not coperta.get(g_feat, True)) else None
+
     # ---------- blocco giornata in corso ----------
     if g_feat is not None:
         mancanti = [p_ for p_ in giocatori if not ha_consegnato(g_feat, p_)]
@@ -290,10 +294,14 @@ def genera(dati, template, adesso=None, aggiornato=None):
         if coperta.get(g_feat):
             occhiello += (" Nessuno vede i pronostici degli altri: il segno di chi ha gi&agrave; mandato resta "
                           "coperto con una spunta e si svela al primo calcio d&rsquo;inizio.")
+        # Mentre si gioca il modulo e' chiuso: invitare a compilarlo manderebbe
+        # la gente a sbattere contro una schermata che dice di riprovare dopo.
+        invito = '' if si_gioca else (
+            f'<div id="invito"><a class="cta" href="#modulo">Manda i tuoi pronostici</a>'
+            '<p class="cta-note">Si compila qui sotto, direttamente in questa pagina.</p></div>')
         featured = (f'<h2>La schedina &mdash; giornata {g_feat}</h2>'
                     f'<p class="lede">{occhiello}</p>'
-                    + (f'<div id="invito"><a class="cta" href="#modulo">Manda i tuoi pronostici</a>'
-                       '<p class="cta-note">Si compila qui sotto, direttamente in questa pagina.</p></div>'
+                    + (invito
                        if endpoint else
                        f'<a class="cta" href="{MODULO}" target="_blank" rel="noopener">Manda i tuoi pronostici</a>'
                        '<p class="cta-note">Nel modulo trovi le stesse dieci partite, nello stesso ordine. '
@@ -326,9 +334,6 @@ def genera(dati, template, adesso=None, aggiornato=None):
     else:
         archivio_html = ''
 
-    # "si gioca" vuol dire che il primo calcio d'inizio e' passato, non che c'e'
-    # gia' un risultato: fra il fischio e il primo gol passa un'ora buona
-    si_gioca = g_feat if (g_feat is not None and not coperta.get(g_feat, True)) else None
     aperte_ora = sum(_iniziate_non_finite(calendario, risultati, g, adesso)
                      for g in giornate)
     andamento = grafico.disegna(conti, giocatori, aperte_ora=aperte_ora,
