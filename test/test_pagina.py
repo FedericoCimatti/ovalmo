@@ -90,12 +90,14 @@ def test_le_giornate_in_archivio_si_vedono_sempre_per_intero():
     assert "re della giornata" in archivio
 
 
-def test_l_unanimita_non_si_annuncia_mentre_e_coperta():
+def test_l_unanimita_non_si_annuncia_piu():
+    """Toglierla e' stata una scelta: la riga compariva su meta' delle partite e
+    non diceva niente che non si vedesse gia' guardando le cinque caselle."""
     tutti_uguali = dict(DATI, pronostici={
         "G07-01": {p: ["1", 1, 0] for p in DATI["players"]},
         "G07-02": {p: ["1", 1, 0] for p in DATI["players"]}})
     assert "stesso segno" not in genera(tutti_uguali, PRIMA)
-    assert "stesso segno" in genera(tutti_uguali, DOPO)
+    assert "stesso segno" not in genera(tutti_uguali, DOPO)
 
 
 def test_avviso_dati_fermi_solo_se_ci_sono_partite_senza_risultato():
@@ -315,10 +317,8 @@ def test_se_la_giornata_dopo_e_vicina_il_modulo_si_apre_lo_stesso():
 
 
 def test_i_punti_coraggio_si_vedono_nelle_caselle():
-    """Un 6 e un 2 nelle caselle, e la riga che li spiega sotto la classifica.
-
-    Senza la spiegazione un 6 sembra un errore di conto.
-    """
+    """Un 6 e un 2 nelle caselle. La riga che li spiegava sotto la classifica
+    non c'e' piu': a dirlo sono il numero e il colore della casella."""
     dati = dict(DATI, pronostici={
         # Inter-Milan finisce 3-0: Berta ha scritto proprio 3-0 e nessun altro
         "G07-01": {"Berta": ["1", 3, 0], "Lippi": ["1", 2, 0], "Lenzuolo": ["1", 1, 0]},
@@ -328,8 +328,7 @@ def test_i_punti_coraggio_si_vedono_nelle_caselle():
     html = genera(dati, DOPO)
     assert '<span class="pts">6</span>' in html      # esatto, e da solo
     assert '<span class="pts">2</span>' in html      # segno giusto, e da solo
-    assert "Punti coraggio" in html
-    assert "chi indovina da solo vale doppio" in html
+    assert "chi indovina da solo vale doppio" not in html
 
 
 def test_il_ritratto_e_le_icone_stanno_nella_pagina():

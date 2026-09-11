@@ -16,8 +16,8 @@ import json
 
 from . import diretta, grafico, orari, schedina
 from .dati import id_partita
-from .punteggio import (CORAGGIO_DA, calcola, punti_partita, re_della_giornata,
-                        segno, segno_pronosticato)
+from .punteggio import (calcola, punti_partita, re_della_giornata, segno,
+                        segno_pronosticato)
 
 MODULO = "https://forms.gle/vuZK5rm6N8b8Z2Zc7"
 # indirizzo pubblico della pagina: serve all'anteprima del link su WhatsApp.
@@ -190,8 +190,6 @@ def genera(dati, template, adesso=None, aggiornato=None):
             mid = id_partita(g, m)
             data, ora, casa, osp = calendario[g][m - 1]
             picks = pronostici.get(mid) or {}
-            sgs = [segno_pronosticato(picks.get(p_)) for p_ in giocatori]
-            unanime = (not nascosta) and all(sgs) and len(set(sgs)) == 1
             ris = risultati.get(mid)
             esito = (f'<span class="ris">{ris[0]}&ndash;{ris[1]} {chip(segno(*ris))}</span>' if ris
                      else f'<span class="ora">{quando_si_gioca(data, ora, adesso)}</span>')
@@ -226,7 +224,6 @@ def genera(dati, template, adesso=None, aggiornato=None):
                 + (f' data-coperta="{g}"' if nascosta else '') + '><header>'
                 f'<div class="meta"><span class="num">{m:02d}</span>{esito}</div>'
                 f'<h3>{E(casa)} <span class="v">&ndash;</span> {E(osp)}</h3></header>'
-                + ('<p class="unan">tutti e cinque sullo stesso segno</p>' if unanime else '')
                 + f'<div class="picks">{"".join(celle)}</div></article>')
         return out
 
@@ -272,8 +269,7 @@ def genera(dati, template, adesso=None, aggiornato=None):
                    '<div class="tw"><table id="classifica"><thead><tr><th></th><th>Giocatore</th>'
                    '<th class="num-pt">Punti</th><th class="num">Segni</th>'
                    '<th class="num">Esatti</th></tr></thead><tbody>'
-                   + "".join(righe) + '</tbody></table></div>'
-                   + _nota_coraggio())
+                   + "".join(righe) + '</tbody></table></div>')
         lede = (f'Dopo {giocate_tot} partite'
                 + (f' e {_giorn(len(concluse))}' if concluse else '') + '.')
 
@@ -380,18 +376,6 @@ def genera(dati, template, adesso=None, aggiornato=None):
              if k in page]
     assert not resti, f"segnaposto non sostituiti: {resti}"
     return page
-
-
-def _nota_coraggio():
-    """La riga che spiega il punto coraggio sotto la classifica.
-
-    Serve perche' un 6 o un 2 in una casella, senza spiegazione, sembrano un
-    errore di conto.
-    """
-    return (f'<p class="cta-note"><strong>Punti coraggio</strong>, dalla giornata {CORAGGIO_DA}: '
-            'chi indovina da solo vale doppio. <strong>2 punti</strong> per un segno che nessun '
-            'altro aveva scelto, <strong>6</strong> per un risultato esatto che nessun altro '
-            'aveva scritto.</p>')
 
 
 def _script_freschezza(aggiornato):
