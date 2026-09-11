@@ -376,7 +376,7 @@ details.g[open] > summary{border-bottom:1px solid var(--line)}
   <header class="mast">
     <img class="faccia" src="palladino.jpg" width="132" height="132"
          alt="Raffaele Palladino" fetchpriority="high">
-    <span class="tag">Giornata 5 &middot; in attesa dei risultati</span>
+    <span class="tag">Giornata 4</span>
     <h1>Trofeo<br>Ovalmo</h1>
     <p class="sub">Serie A 2026/27 &middot; 2 giornate concluse</p>
   </header>
@@ -446,295 +446,22 @@ details.g[open] > summary{border-bottom:1px solid var(--line)}
 </script>
   </section>
 
-  <section id="modulo">
-    <h2>Manda i tuoi pronostici &mdash; giornata 5</h2>
-    <p class="lede">Si chiude al primo calcio d&rsquo;inizio, 18/09 alle 20:45. Basta il segno, il
-    risultato esatto vale di piu&rsquo;. <strong>Una volta inviata la schedina non si pu&ograve;
-    pi&ugrave; cambiare</strong>, quindi controllala prima di mandarla. Gli altri vedono che hai
-    mandato, non che cosa hai scritto.</p>
-    <p class="lede" id="chiHaMandato" data-giornata="5">Non ha ancora mandato nessuno.</p>
-    <div class="mod">
-      <div id="chisei">
-        <p class="lede" style="margin-top:0">Chi sei?</p>
-        <div class="chi"><button type="button" data-nome="Berta" aria-pressed="false">Berta</button><button type="button" data-nome="Super Gulp" aria-pressed="false">Super Gulp</button><button type="button" data-nome="Lenzuolo" aria-pressed="false">Lenzuolo</button><button type="button" data-nome="Just Lele" aria-pressed="false">Just Lele</button><button type="button" data-nome="Lippi" aria-pressed="false">Lippi</button></div>
-        <div class="cod">
-          <input type="tel" id="codice" inputmode="numeric" maxlength="4" placeholder="codice">
-          <button type="button" class="go" id="entra">Entra</button>
-        </div>
-        <p class="esito" id="esito1"></p>
-      </div>
-      <form id="schedina" hidden>
-        <p class="lede" style="margin-top:0">Ciao <b id="ciao"></b></p>
-        <div class="riga" data-p="P01"><div><b>Monza &ndash; Sassuolo</b><small>18/09/2026 &middot; 20:45</small></div><div class="tre"><button type="button" data-s="1" aria-pressed="false">1</button><button type="button" data-s="X" aria-pressed="false">X</button><button type="button" data-s="2" aria-pressed="false">2</button></div><div class="gol2"><input class="gol" type="number" min="0" max="19" inputmode="numeric" aria-label="gol Monza"><span class="tra">&ndash;</span><input class="gol" type="number" min="0" max="19" inputmode="numeric" aria-label="gol Sassuolo"></div></div><div class="riga" data-p="P02"><div><b>Bologna &ndash; Torino</b><small>19/09/2026 &middot; 15:00</small></div><div class="tre"><button type="button" data-s="1" aria-pressed="false">1</button><button type="button" data-s="X" aria-pressed="false">X</button><button type="button" data-s="2" aria-pressed="false">2</button></div><div class="gol2"><input class="gol" type="number" min="0" max="19" inputmode="numeric" aria-label="gol Bologna"><span class="tra">&ndash;</span><input class="gol" type="number" min="0" max="19" inputmode="numeric" aria-label="gol Torino"></div></div><div class="riga" data-p="P03"><div><b>Udinese &ndash; Cagliari</b><small>19/09/2026 &middot; 15:00</small></div><div class="tre"><button type="button" data-s="1" aria-pressed="false">1</button><button type="button" data-s="X" aria-pressed="false">X</button><button type="button" data-s="2" aria-pressed="false">2</button></div><div class="gol2"><input class="gol" type="number" min="0" max="19" inputmode="numeric" aria-label="gol Udinese"><span class="tra">&ndash;</span><input class="gol" type="number" min="0" max="19" inputmode="numeric" aria-label="gol Cagliari"></div></div><div class="riga" data-p="P04"><div><b>Roma &ndash; Inter</b><small>19/09/2026 &middot; 18:00</small></div><div class="tre"><button type="button" data-s="1" aria-pressed="false">1</button><button type="button" data-s="X" aria-pressed="false">X</button><button type="button" data-s="2" aria-pressed="false">2</button></div><div class="gol2"><input class="gol" type="number" min="0" max="19" inputmode="numeric" aria-label="gol Roma"><span class="tra">&ndash;</span><input class="gol" type="number" min="0" max="19" inputmode="numeric" aria-label="gol Inter"></div></div><div class="riga" data-p="P05"><div><b>Venezia &ndash; Lazio</b><small>19/09/2026 &middot; 20:45</small></div><div class="tre"><button type="button" data-s="1" aria-pressed="false">1</button><button type="button" data-s="X" aria-pressed="false">X</button><button type="button" data-s="2" aria-pressed="false">2</button></div><div class="gol2"><input class="gol" type="number" min="0" max="19" inputmode="numeric" aria-label="gol Venezia"><span class="tra">&ndash;</span><input class="gol" type="number" min="0" max="19" inputmode="numeric" aria-label="gol Lazio"></div></div><div class="riga" data-p="P06"><div><b>Fiorentina &ndash; Napoli</b><small>20/09/2026 &middot; 12:30</small></div><div class="tre"><button type="button" data-s="1" aria-pressed="false">1</button><button type="button" data-s="X" aria-pressed="false">X</button><button type="button" data-s="2" aria-pressed="false">2</button></div><div class="gol2"><input class="gol" type="number" min="0" max="19" inputmode="numeric" aria-label="gol Fiorentina"><span class="tra">&ndash;</span><input class="gol" type="number" min="0" max="19" inputmode="numeric" aria-label="gol Napoli"></div></div><div class="riga" data-p="P07"><div><b>Frosinone &ndash; Como</b><small>20/09/2026 &middot; 15:00</small></div><div class="tre"><button type="button" data-s="1" aria-pressed="false">1</button><button type="button" data-s="X" aria-pressed="false">X</button><button type="button" data-s="2" aria-pressed="false">2</button></div><div class="gol2"><input class="gol" type="number" min="0" max="19" inputmode="numeric" aria-label="gol Frosinone"><span class="tra">&ndash;</span><input class="gol" type="number" min="0" max="19" inputmode="numeric" aria-label="gol Como"></div></div><div class="riga" data-p="P08"><div><b>Parma &ndash; Genoa</b><small>20/09/2026 &middot; 15:00</small></div><div class="tre"><button type="button" data-s="1" aria-pressed="false">1</button><button type="button" data-s="X" aria-pressed="false">X</button><button type="button" data-s="2" aria-pressed="false">2</button></div><div class="gol2"><input class="gol" type="number" min="0" max="19" inputmode="numeric" aria-label="gol Parma"><span class="tra">&ndash;</span><input class="gol" type="number" min="0" max="19" inputmode="numeric" aria-label="gol Genoa"></div></div><div class="riga" data-p="P09"><div><b>Juventus &ndash; Atalanta</b><small>20/09/2026 &middot; 18:00</small></div><div class="tre"><button type="button" data-s="1" aria-pressed="false">1</button><button type="button" data-s="X" aria-pressed="false">X</button><button type="button" data-s="2" aria-pressed="false">2</button></div><div class="gol2"><input class="gol" type="number" min="0" max="19" inputmode="numeric" aria-label="gol Juventus"><span class="tra">&ndash;</span><input class="gol" type="number" min="0" max="19" inputmode="numeric" aria-label="gol Atalanta"></div></div><div class="riga" data-p="P10"><div><b>Milan &ndash; Lecce</b><small>20/09/2026 &middot; 20:45</small></div><div class="tre"><button type="button" data-s="1" aria-pressed="false">1</button><button type="button" data-s="X" aria-pressed="false">X</button><button type="button" data-s="2" aria-pressed="false">2</button></div><div class="gol2"><input class="gol" type="number" min="0" max="19" inputmode="numeric" aria-label="gol Milan"><span class="tra">&ndash;</span><input class="gol" type="number" min="0" max="19" inputmode="numeric" aria-label="gol Lecce"></div></div>
-        <p style="margin:14px 0 0">
-          <button type="submit" class="go" id="invia">Invia i pronostici</button>
-          <button type="button" class="no" id="annulla">Annulla</button>
-        </p>
-        <p class="esito" id="esito2"></p>
-      </form>
-    </div>
-    </section>
-    <script>
-(function(){
-  var CFG = {"endpoint": "https://script.google.com/macros/s/AKfycbw_IHxapFTGiaAkzCtNIE2ewb0VvJnl5TXRuNI2QUA2hZeF3Sy2gjVpRDPyxKk0FUBm/exec", "giornata": 5, "giocatori": ["Berta", "Super Gulp", "Lenzuolo", "Just Lele", "Lippi"], "scadenza": "2026-09-18T20:45:00+02:00"}, PARTITE = [{"k": "P01", "n": "Monza - Sassuolo"}, {"k": "P02", "n": "Bologna - Torino"}, {"k": "P03", "n": "Udinese - Cagliari"}, {"k": "P04", "n": "Roma - Inter"}, {"k": "P05", "n": "Venezia - Lazio"}, {"k": "P06", "n": "Fiorentina - Napoli"}, {"k": "P07", "n": "Frosinone - Como"}, {"k": "P08", "n": "Parma - Genoa"}, {"k": "P09", "n": "Juventus - Atalanta"}, {"k": "P10", "n": "Milan - Lecce"}];
-  var IO = 'ovalmo-io', BOZZA = 'ovalmo-g' + CFG.giornata;
-  var $ = function(id){ return document.getElementById(id) };
-  var chisei = $('chisei'), schedina = $('schedina');
-  function chiaveInviato(nome){ return 'ovalmo-inviato-g' + CFG.giornata + '-' + nome }
-  var scelto = null;
-
-  function leggi(chiave){ try { return JSON.parse(localStorage.getItem(chiave)) } catch(e){ return null } }
-  function scrivi(chiave, v){ try { localStorage.setItem(chiave, JSON.stringify(v)) } catch(e){} }
-
-  // ---- chi sei ----
-  chisei.querySelectorAll('.chi button').forEach(function(b){
-    b.onclick = function(){
-      chisei.querySelectorAll('.chi button').forEach(function(x){ x.setAttribute('aria-pressed','false') });
-      b.setAttribute('aria-pressed','true'); scelto = b.dataset.nome;
-    };
-  });
-  // Il codice si verifica QUI, non al momento dell'invio: altrimenti chiunque
-  // potrebbe aprire la schedina di chiunque, e scoprirebbe di aver sbagliato
-  // solo dopo aver compilato tutto.
-  function sbagliato(testo){
-    var campo = $('codice');
-    campo.classList.remove('sbagliato');
-    void campo.offsetWidth;                 // riavvia l'animazione
-    campo.classList.add('sbagliato');
-    campo.select();
-    messaggio('esito1', testo, 'ko');
-  }
-
-  // Chi ha gia' mandato non ha piu' niente da fare qui: la sezione sparisce
-  // tutta, e ricompare da sola alla giornata successiva.
-  // Sparisce la sezione del modulo E l'invito a compilarla che sta dentro la
-  // schedina: sono la stessa cosa detta in due punti, e chi ha gia' mandato
-  // non deve trovarsi ne' l'una ne' l'altro.
-  function chiudiModulo(){ mostraModulo(true) }
-  function apriModulo(){ mostraModulo(false) }
-  function mostraModulo(chiuso){
-    ['modulo', 'invito'].forEach(function(id){
-      var pezzo = document.getElementById(id);
-      if(pezzo) pezzo.hidden = chiuso;
-    });
-  }
-
-  // Nella schedina coperta, al posto della propria spunta si mette il proprio
-  // pronostico: uno deve poter rivedere che cosa ha mandato. Degli altri resta
-  // la spunta, come prima. I pronostici vengono dalla memoria di questo
-  // telefono: nel sito non ci sono, e lo script in Google non li restituisce.
-  function mostraMie(){
-    var io = leggi(IO);
-    if(!io || !io.nome) return;
-    var bozza = leggi(BOZZA) || {};
-    var gg = ('0' + CFG.giornata).slice(-2);
-    PARTITE.forEach(function(p){
-      var testo = bozza[p.k];
-      if(!testo) return;
-      var cella = document.querySelector(
-        '[data-mid="G' + gg + '-' + p.k.slice(1) + '"] [data-chi="' + io.nome + '"]');
-      if(!cella || !cella.closest('[data-coperta]')) return;
-      var seg = (testo.match(/([12X])/) || [])[1] || '';
-      var gol = testo.match(/(\d+)-(\d+)/);
-      var chip = cella.querySelector('.sg'), punteggio = cella.querySelector('.sc');
-      if(chip && seg){ chip.className = 'sg sg-' + seg.toLowerCase(); chip.textContent = seg }
-      if(punteggio && gol){ punteggio.innerHTML = gol[1] + '&ndash;' + gol[2] }
-      cella.classList.remove('attesa-p');
-      cella.dataset.mio = '1';        // la diretta non deve ricoprirlo con la spunta
-    });
-  }
-
-  function verifica(nome, codice){
-    return fetch(CFG.endpoint, {
-      method: 'POST', redirect: 'follow',
-      headers: {'Content-Type': 'text/plain;charset=utf-8'},
-      body: JSON.stringify({azione: 'controlla', giocatore: nome, codice: codice})
-    }).then(function(r){ return r.json() }).then(function(esito){ return !!(esito && esito.ok) });
-  }
-
-  $('entra').onclick = function(){
-    var codice = $('codice').value.trim();
-    if(!scelto){ return messaggio('esito1','Scegli il tuo nome.','ko') }
-    if(!/^[0-9]{4}$/.test(codice)){ return sbagliato('Il codice è di quattro cifre.') }
-    var bottone = $('entra');
-    bottone.disabled = true;
-    messaggio('esito1','Controllo...','');
-    verifica(scelto, codice).then(function(giusto){
-      bottone.disabled = false;
-      if(giusto){
-        messaggio('esito1','');
-        $('codice').classList.remove('sbagliato');
-        scrivi(IO, {nome: scelto, codice: codice});
-        entra();
-      } else {
-        sbagliato('Codice sbagliato.');
-      }
-    }).catch(function(){
-      bottone.disabled = false;
-      sbagliato('Non riesco a verificare il codice: controlla la connessione e riprova.');
-    });
-  };
-  // Annulla: si torna indietro e per rientrare serve di nuovo il codice.
-  // Serve su un telefono che passa di mano, e perche' la schedina non resti
-  // aperta per giorni. Vale solo prima di mandare: dopo, la sezione sparisce.
-  function esci(){
-    try { localStorage.removeItem(IO) } catch(e){}
-    apriModulo();
-    schedina.hidden = true; chisei.hidden = false;
-    $('codice').value = ''; scelto = null;
-    chisei.querySelectorAll('.chi button').forEach(function(x){ x.setAttribute('aria-pressed','false') });
-    messaggio('esito1',''); messaggio('esito2','');
-  }
-  $('annulla').onclick = esci;
-
-  function entra(){
-    var io = leggi(IO);
-    if(!io || !io.nome) return;
-    $('ciao').textContent = io.nome;
-    chisei.hidden = true;
-    if(leggi(chiaveInviato(io.nome))){      // ha gia' mandato: niente da cambiare
-      schedina.hidden = true;
-      mostraMie(); chiudiModulo();
-      return;
-    }
-    apriModulo();
-    schedina.hidden = false;
-    var bozza = leggi(BOZZA) || {};
-    PARTITE.forEach(function(p){
-      var testo = bozza[p.k]; if(!testo) return;
-      var riga = schedina.querySelector('[data-p="' + p.k + '"]');
-      var seg = (testo.match(/^([12X])/) || [])[1];
-      if(seg){ riga.querySelectorAll('.tre button').forEach(function(b){
-        b.setAttribute('aria-pressed', b.dataset.s === seg ? 'true' : 'false') }) }
-      var gol = testo.match(/(\d+)-(\d+)/);
-      if(gol){ var caselle = riga.querySelectorAll('.gol');
-        caselle[0].value = gol[1]; caselle[1].value = gol[2] }
-    });
-  }
-
-  // ---- segni ----
-  schedina.querySelectorAll('.riga').forEach(function(riga){
-    riga.querySelectorAll('.tre button').forEach(function(b){
-      b.onclick = function(){
-        var gia = b.getAttribute('aria-pressed') === 'true';
-        riga.querySelectorAll('.tre button').forEach(function(x){ x.setAttribute('aria-pressed','false') });
-        b.setAttribute('aria-pressed', gia ? 'false' : 'true');
-      };
-    });
-  });
-
-  function raccogli(){
-    var fuori = {}, quanti = 0;
-    PARTITE.forEach(function(p){
-      var riga = schedina.querySelector('[data-p="' + p.k + '"]');
-      var premuto = riga.querySelector('.tre button[aria-pressed="true"]');
-      var caselle = riga.querySelectorAll('.gol');
-      var casa = caselle[0].value.trim(), osp = caselle[1].value.trim();
-      var testo = '';
-      if(premuto) testo = premuto.dataset.s;
-      if(casa !== '' && osp !== '') testo = (testo ? testo + ' ' : '') + casa + '-' + osp;
-      if(testo){ fuori[p.k] = testo; quanti++ }
-    });
-    return {pronostici: fuori, quanti: quanti};
-  }
-
-  function messaggio(id, testo, classe){
-    var e = $(id); e.textContent = testo; e.className = 'esito ' + (classe || '');
-  }
-
-  schedina.onsubmit = function(ev){
-    ev.preventDefault();
-    var io = leggi(IO); if(!io) return;
-    if(new Date() >= new Date(CFG.scadenza)){
-      return messaggio('esito2','I pronostici di questa giornata sono chiusi: si è già cominciato.','ko');
-    }
-    var raccolto = raccogli();
-    if(!raccolto.quanti){ return messaggio('esito2','Non hai messo nessun pronostico.','ko') }
-    scrivi(BOZZA, raccolto.pronostici);
-    var invia = $('invia'); invia.disabled = true;
-    messaggio('esito2','Sto mandando...','');
-    fetch(CFG.endpoint, {
-      method: 'POST', redirect: 'follow',
-      headers: {'Content-Type': 'text/plain;charset=utf-8'},
-      body: JSON.stringify({
-        giocatore: io.nome, codice: io.codice,
-        giornata: CFG.giornata, pronostici: raccolto.pronostici
-      })
-    }).then(function(r){ return r.json() }).then(function(esito){
-      invia.disabled = false;
-      if(esito && esito.ok){
-        scrivi(chiaveInviato(io.nome), true);
-        schedina.hidden = true;
-        mostraMie(); chiudiModulo();
-      } else if(esito && esito.errore === 'codice sbagliato'){
-        messaggio('esito2','Codice sbagliato.','ko');
-      } else {
-        messaggio('esito2','Non ha funzionato: ' + ((esito && esito.errore) || 'errore') +
-          '. Riprova fra un minuto.','ko');
-      }
-    }).catch(function(){
-      invia.disabled = false;
-      messaggio('esito2','Non sono riuscito a mandarli: controlla la connessione e riprova. ' +
-        'Quello che hai scritto resta qui.','ko');
-    });
-  };
-
-  // All'apertura non ci si fida di quello che il telefono si ricorda: il codice
-  // viene ricontrollato. Senza, chi fosse entrato una volta con un codice
-  // sbagliato resterebbe dentro per sempre.
-  // Lo <script> del modulo sta piu' in alto delle schede delle partite: al
-  // caricamento quelle schede non esistono ancora, e mostraMie() non troverebbe
-  // le caselle da riempire. Si aspetta che la pagina sia finita.
-  function avvia(){
-  var io = leggi(IO);
-  if(io && io.nome && leggi(chiaveInviato(io.nome))){
-    // ha gia' mandato: non c'e' niente da aprire e quindi niente da verificare.
-    // Chiedere il codice a Google servirebbe solo a lasciare la sezione aperta
-    // quando la rete non risponde, che e' peggio di non chiederlo.
-    entra();
-  } else if(io && io.nome){
-    messaggio('esito1','Controllo...','');
-    verifica(io.nome, io.codice).then(function(giusto){
-      messaggio('esito1','');
-      if(giusto) entra(); else esci();
-    }).catch(function(){
-      messaggio('esito1','Non riesco a verificare il codice: controlla la connessione.','ko');
-    });
-  }
-  }
-
-  if(document.readyState === 'loading'){
-    document.addEventListener('DOMContentLoaded', avvia);
-  } else {
-    avvia();
-  }
-})();
-</script>
+  <section id="modulo"><h2>Manda i tuoi pronostici</h2><p class="lede">Si sta giocando la giornata 4. La schedina della giornata 5 si apre appena finisce.</p></section>
 
   <section>
-    <h2>La schedina &mdash; giornata 5</h2><p class="lede">Nessuno ha ancora mandato i pronostici. Le caselle TBD si riempiono man mano. Nessuno vede i pronostici degli altri: il segno di chi ha gi&agrave; mandato resta coperto con una spunta e si svela al primo calcio d&rsquo;inizio.</p><div id="invito"><a class="cta" href="#modulo">Manda i tuoi pronostici</a><p class="cta-note">Si compila qui sotto, direttamente in questa pagina.</p></div><div class="matches"><article class="match" data-mid="G05-01" data-coperta="5"><header><div class="meta"><span class="num">01</span><span class="ora">18/09 20:45</span></div><h3>Monza <span class="v">&ndash;</span> Sassuolo</h3></header><div class="picks"><div class="pick attesa-p" data-chi="Berta"><span class="who">Berta</span><span class="sg sg-tbd">TBD</span><span class="sc">&nbsp;</span></div><div class="pick attesa-p" data-chi="Super Gulp"><span class="who">Super Gulp</span><span class="sg sg-tbd">TBD</span><span class="sc">&nbsp;</span></div><div class="pick attesa-p" data-chi="Lenzuolo"><span class="who">Lenzuolo</span><span class="sg sg-tbd">TBD</span><span class="sc">&nbsp;</span></div><div class="pick attesa-p" data-chi="Just Lele"><span class="who">Just Lele</span><span class="sg sg-tbd">TBD</span><span class="sc">&nbsp;</span></div><div class="pick attesa-p" data-chi="Lippi"><span class="who">Lippi</span><span class="sg sg-tbd">TBD</span><span class="sc">&nbsp;</span></div></div></article>
-      <article class="match" data-mid="G05-02" data-coperta="5"><header><div class="meta"><span class="num">02</span><span class="ora">19/09 15:00</span></div><h3>Bologna <span class="v">&ndash;</span> Torino</h3></header><div class="picks"><div class="pick attesa-p" data-chi="Berta"><span class="who">Berta</span><span class="sg sg-tbd">TBD</span><span class="sc">&nbsp;</span></div><div class="pick attesa-p" data-chi="Super Gulp"><span class="who">Super Gulp</span><span class="sg sg-tbd">TBD</span><span class="sc">&nbsp;</span></div><div class="pick attesa-p" data-chi="Lenzuolo"><span class="who">Lenzuolo</span><span class="sg sg-tbd">TBD</span><span class="sc">&nbsp;</span></div><div class="pick attesa-p" data-chi="Just Lele"><span class="who">Just Lele</span><span class="sg sg-tbd">TBD</span><span class="sc">&nbsp;</span></div><div class="pick attesa-p" data-chi="Lippi"><span class="who">Lippi</span><span class="sg sg-tbd">TBD</span><span class="sc">&nbsp;</span></div></div></article>
-      <article class="match" data-mid="G05-03" data-coperta="5"><header><div class="meta"><span class="num">03</span><span class="ora">19/09 15:00</span></div><h3>Udinese <span class="v">&ndash;</span> Cagliari</h3></header><div class="picks"><div class="pick attesa-p" data-chi="Berta"><span class="who">Berta</span><span class="sg sg-tbd">TBD</span><span class="sc">&nbsp;</span></div><div class="pick attesa-p" data-chi="Super Gulp"><span class="who">Super Gulp</span><span class="sg sg-tbd">TBD</span><span class="sc">&nbsp;</span></div><div class="pick attesa-p" data-chi="Lenzuolo"><span class="who">Lenzuolo</span><span class="sg sg-tbd">TBD</span><span class="sc">&nbsp;</span></div><div class="pick attesa-p" data-chi="Just Lele"><span class="who">Just Lele</span><span class="sg sg-tbd">TBD</span><span class="sc">&nbsp;</span></div><div class="pick attesa-p" data-chi="Lippi"><span class="who">Lippi</span><span class="sg sg-tbd">TBD</span><span class="sc">&nbsp;</span></div></div></article>
-      <article class="match" data-mid="G05-04" data-coperta="5"><header><div class="meta"><span class="num">04</span><span class="ora">19/09 18:00</span></div><h3>Roma <span class="v">&ndash;</span> Inter</h3></header><div class="picks"><div class="pick attesa-p" data-chi="Berta"><span class="who">Berta</span><span class="sg sg-tbd">TBD</span><span class="sc">&nbsp;</span></div><div class="pick attesa-p" data-chi="Super Gulp"><span class="who">Super Gulp</span><span class="sg sg-tbd">TBD</span><span class="sc">&nbsp;</span></div><div class="pick attesa-p" data-chi="Lenzuolo"><span class="who">Lenzuolo</span><span class="sg sg-tbd">TBD</span><span class="sc">&nbsp;</span></div><div class="pick attesa-p" data-chi="Just Lele"><span class="who">Just Lele</span><span class="sg sg-tbd">TBD</span><span class="sc">&nbsp;</span></div><div class="pick attesa-p" data-chi="Lippi"><span class="who">Lippi</span><span class="sg sg-tbd">TBD</span><span class="sc">&nbsp;</span></div></div></article>
-      <article class="match" data-mid="G05-05" data-coperta="5"><header><div class="meta"><span class="num">05</span><span class="ora">19/09 20:45</span></div><h3>Venezia <span class="v">&ndash;</span> Lazio</h3></header><div class="picks"><div class="pick attesa-p" data-chi="Berta"><span class="who">Berta</span><span class="sg sg-tbd">TBD</span><span class="sc">&nbsp;</span></div><div class="pick attesa-p" data-chi="Super Gulp"><span class="who">Super Gulp</span><span class="sg sg-tbd">TBD</span><span class="sc">&nbsp;</span></div><div class="pick attesa-p" data-chi="Lenzuolo"><span class="who">Lenzuolo</span><span class="sg sg-tbd">TBD</span><span class="sc">&nbsp;</span></div><div class="pick attesa-p" data-chi="Just Lele"><span class="who">Just Lele</span><span class="sg sg-tbd">TBD</span><span class="sc">&nbsp;</span></div><div class="pick attesa-p" data-chi="Lippi"><span class="who">Lippi</span><span class="sg sg-tbd">TBD</span><span class="sc">&nbsp;</span></div></div></article>
-      <article class="match" data-mid="G05-06" data-coperta="5"><header><div class="meta"><span class="num">06</span><span class="ora">20/09 12:30</span></div><h3>Fiorentina <span class="v">&ndash;</span> Napoli</h3></header><div class="picks"><div class="pick attesa-p" data-chi="Berta"><span class="who">Berta</span><span class="sg sg-tbd">TBD</span><span class="sc">&nbsp;</span></div><div class="pick attesa-p" data-chi="Super Gulp"><span class="who">Super Gulp</span><span class="sg sg-tbd">TBD</span><span class="sc">&nbsp;</span></div><div class="pick attesa-p" data-chi="Lenzuolo"><span class="who">Lenzuolo</span><span class="sg sg-tbd">TBD</span><span class="sc">&nbsp;</span></div><div class="pick attesa-p" data-chi="Just Lele"><span class="who">Just Lele</span><span class="sg sg-tbd">TBD</span><span class="sc">&nbsp;</span></div><div class="pick attesa-p" data-chi="Lippi"><span class="who">Lippi</span><span class="sg sg-tbd">TBD</span><span class="sc">&nbsp;</span></div></div></article>
-      <article class="match" data-mid="G05-07" data-coperta="5"><header><div class="meta"><span class="num">07</span><span class="ora">20/09 15:00</span></div><h3>Frosinone <span class="v">&ndash;</span> Como</h3></header><div class="picks"><div class="pick attesa-p" data-chi="Berta"><span class="who">Berta</span><span class="sg sg-tbd">TBD</span><span class="sc">&nbsp;</span></div><div class="pick attesa-p" data-chi="Super Gulp"><span class="who">Super Gulp</span><span class="sg sg-tbd">TBD</span><span class="sc">&nbsp;</span></div><div class="pick attesa-p" data-chi="Lenzuolo"><span class="who">Lenzuolo</span><span class="sg sg-tbd">TBD</span><span class="sc">&nbsp;</span></div><div class="pick attesa-p" data-chi="Just Lele"><span class="who">Just Lele</span><span class="sg sg-tbd">TBD</span><span class="sc">&nbsp;</span></div><div class="pick attesa-p" data-chi="Lippi"><span class="who">Lippi</span><span class="sg sg-tbd">TBD</span><span class="sc">&nbsp;</span></div></div></article>
-      <article class="match" data-mid="G05-08" data-coperta="5"><header><div class="meta"><span class="num">08</span><span class="ora">20/09 15:00</span></div><h3>Parma <span class="v">&ndash;</span> Genoa</h3></header><div class="picks"><div class="pick attesa-p" data-chi="Berta"><span class="who">Berta</span><span class="sg sg-tbd">TBD</span><span class="sc">&nbsp;</span></div><div class="pick attesa-p" data-chi="Super Gulp"><span class="who">Super Gulp</span><span class="sg sg-tbd">TBD</span><span class="sc">&nbsp;</span></div><div class="pick attesa-p" data-chi="Lenzuolo"><span class="who">Lenzuolo</span><span class="sg sg-tbd">TBD</span><span class="sc">&nbsp;</span></div><div class="pick attesa-p" data-chi="Just Lele"><span class="who">Just Lele</span><span class="sg sg-tbd">TBD</span><span class="sc">&nbsp;</span></div><div class="pick attesa-p" data-chi="Lippi"><span class="who">Lippi</span><span class="sg sg-tbd">TBD</span><span class="sc">&nbsp;</span></div></div></article>
-      <article class="match" data-mid="G05-09" data-coperta="5"><header><div class="meta"><span class="num">09</span><span class="ora">20/09 18:00</span></div><h3>Juventus <span class="v">&ndash;</span> Atalanta</h3></header><div class="picks"><div class="pick attesa-p" data-chi="Berta"><span class="who">Berta</span><span class="sg sg-tbd">TBD</span><span class="sc">&nbsp;</span></div><div class="pick attesa-p" data-chi="Super Gulp"><span class="who">Super Gulp</span><span class="sg sg-tbd">TBD</span><span class="sc">&nbsp;</span></div><div class="pick attesa-p" data-chi="Lenzuolo"><span class="who">Lenzuolo</span><span class="sg sg-tbd">TBD</span><span class="sc">&nbsp;</span></div><div class="pick attesa-p" data-chi="Just Lele"><span class="who">Just Lele</span><span class="sg sg-tbd">TBD</span><span class="sc">&nbsp;</span></div><div class="pick attesa-p" data-chi="Lippi"><span class="who">Lippi</span><span class="sg sg-tbd">TBD</span><span class="sc">&nbsp;</span></div></div></article>
-      <article class="match" data-mid="G05-10" data-coperta="5"><header><div class="meta"><span class="num">10</span><span class="ora">20/09 20:45</span></div><h3>Milan <span class="v">&ndash;</span> Lecce</h3></header><div class="picks"><div class="pick attesa-p" data-chi="Berta"><span class="who">Berta</span><span class="sg sg-tbd">TBD</span><span class="sc">&nbsp;</span></div><div class="pick attesa-p" data-chi="Super Gulp"><span class="who">Super Gulp</span><span class="sg sg-tbd">TBD</span><span class="sc">&nbsp;</span></div><div class="pick attesa-p" data-chi="Lenzuolo"><span class="who">Lenzuolo</span><span class="sg sg-tbd">TBD</span><span class="sc">&nbsp;</span></div><div class="pick attesa-p" data-chi="Just Lele"><span class="who">Just Lele</span><span class="sg sg-tbd">TBD</span><span class="sc">&nbsp;</span></div><div class="pick attesa-p" data-chi="Lippi"><span class="who">Lippi</span><span class="sg sg-tbd">TBD</span><span class="sc">&nbsp;</span></div></div></article></div>
+    <h2>La schedina &mdash; giornata 4</h2><p class="lede">Tutti e cinque hanno mandato. Il segno grande &egrave; l&rsquo;esito, sotto il risultato esatto.</p><div id="invito"><a class="cta" href="#modulo">Manda i tuoi pronostici</a><p class="cta-note">Si compila qui sotto, direttamente in questa pagina.</p></div><div class="matches"><article class="match" data-mid="G04-01"><header><div class="meta"><span class="num">01</span><span class="ris">2&ndash;4 <span class="sg sg-2">2</span></span></div><h3>Venezia <span class="v">&ndash;</span> Fiorentina</h3></header><div class="picks"><div class="pick" data-chi="Berta"><span class="who">Berta</span><span class="sg sg-x">X</span><span class="sc">1&ndash;1</span><span class="pts">0</span></div><div class="pick pk2" data-chi="Super Gulp"><span class="who">Super Gulp</span><span class="sg sg-2">2</span><span class="sc">1&ndash;2</span><span class="pts">1</span></div><div class="pick pk2" data-chi="Lenzuolo"><span class="who">Lenzuolo</span><span class="sg sg-2">2</span><span class="sc">0&ndash;2</span><span class="pts">1</span></div><div class="pick pk2" data-chi="Just Lele"><span class="who">Just Lele</span><span class="sg sg-2">2</span><span class="sc">1&ndash;2</span><span class="pts">1</span></div><div class="pick pk2" data-chi="Lippi"><span class="who">Lippi</span><span class="sg sg-2">2</span><span class="sc">0&ndash;1</span><span class="pts">1</span></div></div></article>
+      <article class="match" data-mid="G04-02"><header><div class="meta"><span class="num">02</span><span class="ora">Domani 15:00</span></div><h3>Genoa <span class="v">&ndash;</span> Frosinone</h3></header><div class="picks"><div class="pick" data-chi="Berta"><span class="who">Berta</span><span class="sg sg-1">1</span><span class="sc">2&ndash;1</span></div><div class="pick" data-chi="Super Gulp"><span class="who">Super Gulp</span><span class="sg sg-1">1</span><span class="sc">2&ndash;1</span></div><div class="pick" data-chi="Lenzuolo"><span class="who">Lenzuolo</span><span class="sg sg-1">1</span><span class="sc">2&ndash;1</span></div><div class="pick" data-chi="Just Lele"><span class="who">Just Lele</span><span class="sg sg-x">X</span><span class="sc">1&ndash;1</span></div><div class="pick" data-chi="Lippi"><span class="who">Lippi</span><span class="sg sg-1">1</span><span class="sc">1&ndash;0</span></div></div></article>
+      <article class="match" data-mid="G04-03"><header><div class="meta"><span class="num">03</span><span class="ora">Domani 18:00</span></div><h3>Lazio <span class="v">&ndash;</span> Milan</h3></header><div class="picks"><div class="pick" data-chi="Berta"><span class="who">Berta</span><span class="sg sg-2">2</span><span class="sc">0&ndash;2</span></div><div class="pick" data-chi="Super Gulp"><span class="who">Super Gulp</span><span class="sg sg-2">2</span><span class="sc">0&ndash;2</span></div><div class="pick" data-chi="Lenzuolo"><span class="who">Lenzuolo</span><span class="sg sg-x">X</span><span class="sc">1&ndash;1</span></div><div class="pick" data-chi="Just Lele"><span class="who">Just Lele</span><span class="sg sg-2">2</span><span class="sc">0&ndash;1</span></div><div class="pick" data-chi="Lippi"><span class="who">Lippi</span><span class="sg sg-x">X</span><span class="sc">1&ndash;1</span></div></div></article>
+      <article class="match" data-mid="G04-04"><header><div class="meta"><span class="num">04</span><span class="ora">13/09 20:45</span></div><h3>Sassuolo <span class="v">&ndash;</span> Juventus</h3></header><div class="picks"><div class="pick" data-chi="Berta"><span class="who">Berta</span><span class="sg sg-x">X</span><span class="sc">1&ndash;1</span></div><div class="pick" data-chi="Super Gulp"><span class="who">Super Gulp</span><span class="sg sg-2">2</span><span class="sc">0&ndash;2</span></div><div class="pick" data-chi="Lenzuolo"><span class="who">Lenzuolo</span><span class="sg sg-2">2</span><span class="sc">1&ndash;2</span></div><div class="pick" data-chi="Just Lele"><span class="who">Just Lele</span><span class="sg sg-2">2</span><span class="sc">1&ndash;3</span></div><div class="pick" data-chi="Lippi"><span class="who">Lippi</span><span class="sg sg-2">2</span><span class="sc">1&ndash;2</span></div></div></article>
+      <article class="match" data-mid="G04-05"><header><div class="meta"><span class="num">05</span><span class="ora">Domani 20:45</span></div><h3>Atalanta <span class="v">&ndash;</span> Cagliari</h3></header><p class="unan">tutti e cinque sullo stesso segno</p><div class="picks"><div class="pick" data-chi="Berta"><span class="who">Berta</span><span class="sg sg-1">1</span><span class="sc">2&ndash;0</span></div><div class="pick" data-chi="Super Gulp"><span class="who">Super Gulp</span><span class="sg sg-1">1</span><span class="sc">2&ndash;0</span></div><div class="pick" data-chi="Lenzuolo"><span class="who">Lenzuolo</span><span class="sg sg-1">1</span><span class="sc">2&ndash;0</span></div><div class="pick" data-chi="Just Lele"><span class="who">Just Lele</span><span class="sg sg-1">1</span><span class="sc">3&ndash;0</span></div><div class="pick" data-chi="Lippi"><span class="who">Lippi</span><span class="sg sg-1">1</span><span class="sc">2&ndash;0</span></div></div></article>
+      <article class="match" data-mid="G04-06"><header><div class="meta"><span class="num">06</span><span class="ora">14/09 18:30</span></div><h3>Torino <span class="v">&ndash;</span> Roma</h3></header><p class="unan">tutti e cinque sullo stesso segno</p><div class="picks"><div class="pick" data-chi="Berta"><span class="who">Berta</span><span class="sg sg-2">2</span><span class="sc">1&ndash;2</span></div><div class="pick" data-chi="Super Gulp"><span class="who">Super Gulp</span><span class="sg sg-2">2</span><span class="sc">0&ndash;2</span></div><div class="pick" data-chi="Lenzuolo"><span class="who">Lenzuolo</span><span class="sg sg-2">2</span><span class="sc">0&ndash;2</span></div><div class="pick" data-chi="Just Lele"><span class="who">Just Lele</span><span class="sg sg-2">2</span><span class="sc">1&ndash;3</span></div><div class="pick" data-chi="Lippi"><span class="who">Lippi</span><span class="sg sg-2">2</span><span class="sc">0&ndash;1</span></div></div></article>
+      <article class="match" data-mid="G04-07"><header><div class="meta"><span class="num">07</span><span class="ora">14/09 18:30</span></div><h3>Como <span class="v">&ndash;</span> Parma</h3></header><p class="unan">tutti e cinque sullo stesso segno</p><div class="picks"><div class="pick" data-chi="Berta"><span class="who">Berta</span><span class="sg sg-1">1</span><span class="sc">2&ndash;0</span></div><div class="pick" data-chi="Super Gulp"><span class="who">Super Gulp</span><span class="sg sg-1">1</span><span class="sc">3&ndash;0</span></div><div class="pick" data-chi="Lenzuolo"><span class="who">Lenzuolo</span><span class="sg sg-1">1</span><span class="sc">3&ndash;1</span></div><div class="pick" data-chi="Just Lele"><span class="who">Just Lele</span><span class="sg sg-1">1</span><span class="sc">4&ndash;0</span></div><div class="pick" data-chi="Lippi"><span class="who">Lippi</span><span class="sg sg-1">1</span><span class="sc">2&ndash;1</span></div></div></article>
+      <article class="match" data-mid="G04-08"><header><div class="meta"><span class="num">08</span><span class="ora">13/09 15:00</span></div><h3>Lecce <span class="v">&ndash;</span> Monza</h3></header><div class="picks"><div class="pick" data-chi="Berta"><span class="who">Berta</span><span class="sg sg-2">2</span><span class="sc">1&ndash;2</span></div><div class="pick" data-chi="Super Gulp"><span class="who">Super Gulp</span><span class="sg sg-x">X</span><span class="sc">1&ndash;1</span></div><div class="pick" data-chi="Lenzuolo"><span class="who">Lenzuolo</span><span class="sg sg-x">X</span><span class="sc">1&ndash;1</span></div><div class="pick" data-chi="Just Lele"><span class="who">Just Lele</span><span class="sg sg-x">X</span><span class="sc">1&ndash;1</span></div><div class="pick" data-chi="Lippi"><span class="who">Lippi</span><span class="sg sg-x">X</span><span class="sc">1&ndash;1</span></div></div></article>
+      <article class="match" data-mid="G04-09"><header><div class="meta"><span class="num">09</span><span class="ora">13/09 18:00</span></div><h3>Napoli <span class="v">&ndash;</span> Bologna</h3></header><p class="unan">tutti e cinque sullo stesso segno</p><div class="picks"><div class="pick" data-chi="Berta"><span class="who">Berta</span><span class="sg sg-1">1</span><span class="sc">2&ndash;1</span></div><div class="pick" data-chi="Super Gulp"><span class="who">Super Gulp</span><span class="sg sg-1">1</span><span class="sc">1&ndash;0</span></div><div class="pick" data-chi="Lenzuolo"><span class="who">Lenzuolo</span><span class="sg sg-1">1</span><span class="sc">2&ndash;0</span></div><div class="pick" data-chi="Just Lele"><span class="who">Just Lele</span><span class="sg sg-1">1</span><span class="sc">1&ndash;0</span></div><div class="pick" data-chi="Lippi"><span class="who">Lippi</span><span class="sg sg-1">1</span><span class="sc">1&ndash;0</span></div></div></article>
+      <article class="match" data-mid="G04-10"><header><div class="meta"><span class="num">10</span><span class="ora">14/09 20:45</span></div><h3>Inter <span class="v">&ndash;</span> Udinese</h3></header><p class="unan">tutti e cinque sullo stesso segno</p><div class="picks"><div class="pick" data-chi="Berta"><span class="who">Berta</span><span class="sg sg-1">1</span><span class="sc">3&ndash;0</span></div><div class="pick" data-chi="Super Gulp"><span class="who">Super Gulp</span><span class="sg sg-1">1</span><span class="sc">3&ndash;1</span></div><div class="pick" data-chi="Lenzuolo"><span class="who">Lenzuolo</span><span class="sg sg-1">1</span><span class="sc">3&ndash;0</span></div><div class="pick" data-chi="Just Lele"><span class="who">Just Lele</span><span class="sg sg-1">1</span><span class="sc">3&ndash;1</span></div><div class="pick" data-chi="Lippi"><span class="who">Lippi</span><span class="sg sg-1">1</span><span class="sc">2&ndash;0</span></div></div></article></div>
   </section>
 
-  <section><h2>Giornate precedenti</h2><p class="lede">Tocca una giornata per riaprire la schedina completa, con i punti assegnati.</p><div class="arch"><details class="g"><summary><span class="gname">Giornata 4</span><span class="gre">9 partite da recuperare<br>il re della giornata si sapr&agrave; allora</span><span class="caret">&rsaquo;</span></summary><div class="gbody"><article class="match" data-mid="G04-01"><header><div class="meta"><span class="num">01</span><span class="ris">2&ndash;4 <span class="sg sg-2">2</span></span></div><h3>Venezia <span class="v">&ndash;</span> Fiorentina</h3></header><div class="picks"><div class="pick" data-chi="Berta"><span class="who">Berta</span><span class="sg sg-x">X</span><span class="sc">1&ndash;1</span><span class="pts">0</span></div><div class="pick pk2" data-chi="Super Gulp"><span class="who">Super Gulp</span><span class="sg sg-2">2</span><span class="sc">1&ndash;2</span><span class="pts">1</span></div><div class="pick pk2" data-chi="Lenzuolo"><span class="who">Lenzuolo</span><span class="sg sg-2">2</span><span class="sc">0&ndash;2</span><span class="pts">1</span></div><div class="pick pk2" data-chi="Just Lele"><span class="who">Just Lele</span><span class="sg sg-2">2</span><span class="sc">1&ndash;2</span><span class="pts">1</span></div><div class="pick pk2" data-chi="Lippi"><span class="who">Lippi</span><span class="sg sg-2">2</span><span class="sc">0&ndash;1</span><span class="pts">1</span></div></div></article>
-        <article class="match" data-mid="G04-02"><header><div class="meta"><span class="num">02</span><span class="ora">Domani 15:00</span></div><h3>Genoa <span class="v">&ndash;</span> Frosinone</h3></header><div class="picks"><div class="pick" data-chi="Berta"><span class="who">Berta</span><span class="sg sg-1">1</span><span class="sc">2&ndash;1</span></div><div class="pick" data-chi="Super Gulp"><span class="who">Super Gulp</span><span class="sg sg-1">1</span><span class="sc">2&ndash;1</span></div><div class="pick" data-chi="Lenzuolo"><span class="who">Lenzuolo</span><span class="sg sg-1">1</span><span class="sc">2&ndash;1</span></div><div class="pick" data-chi="Just Lele"><span class="who">Just Lele</span><span class="sg sg-x">X</span><span class="sc">1&ndash;1</span></div><div class="pick" data-chi="Lippi"><span class="who">Lippi</span><span class="sg sg-1">1</span><span class="sc">1&ndash;0</span></div></div></article>
-        <article class="match" data-mid="G04-03"><header><div class="meta"><span class="num">03</span><span class="ora">Domani 18:00</span></div><h3>Lazio <span class="v">&ndash;</span> Milan</h3></header><div class="picks"><div class="pick" data-chi="Berta"><span class="who">Berta</span><span class="sg sg-2">2</span><span class="sc">0&ndash;2</span></div><div class="pick" data-chi="Super Gulp"><span class="who">Super Gulp</span><span class="sg sg-2">2</span><span class="sc">0&ndash;2</span></div><div class="pick" data-chi="Lenzuolo"><span class="who">Lenzuolo</span><span class="sg sg-x">X</span><span class="sc">1&ndash;1</span></div><div class="pick" data-chi="Just Lele"><span class="who">Just Lele</span><span class="sg sg-2">2</span><span class="sc">0&ndash;1</span></div><div class="pick" data-chi="Lippi"><span class="who">Lippi</span><span class="sg sg-x">X</span><span class="sc">1&ndash;1</span></div></div></article>
-        <article class="match" data-mid="G04-04"><header><div class="meta"><span class="num">04</span><span class="ora">13/09 20:45</span></div><h3>Sassuolo <span class="v">&ndash;</span> Juventus</h3></header><div class="picks"><div class="pick" data-chi="Berta"><span class="who">Berta</span><span class="sg sg-x">X</span><span class="sc">1&ndash;1</span></div><div class="pick" data-chi="Super Gulp"><span class="who">Super Gulp</span><span class="sg sg-2">2</span><span class="sc">0&ndash;2</span></div><div class="pick" data-chi="Lenzuolo"><span class="who">Lenzuolo</span><span class="sg sg-2">2</span><span class="sc">1&ndash;2</span></div><div class="pick" data-chi="Just Lele"><span class="who">Just Lele</span><span class="sg sg-2">2</span><span class="sc">1&ndash;3</span></div><div class="pick" data-chi="Lippi"><span class="who">Lippi</span><span class="sg sg-2">2</span><span class="sc">1&ndash;2</span></div></div></article>
-        <article class="match" data-mid="G04-05"><header><div class="meta"><span class="num">05</span><span class="ora">Domani 20:45</span></div><h3>Atalanta <span class="v">&ndash;</span> Cagliari</h3></header><p class="unan">tutti e cinque sullo stesso segno</p><div class="picks"><div class="pick" data-chi="Berta"><span class="who">Berta</span><span class="sg sg-1">1</span><span class="sc">2&ndash;0</span></div><div class="pick" data-chi="Super Gulp"><span class="who">Super Gulp</span><span class="sg sg-1">1</span><span class="sc">2&ndash;0</span></div><div class="pick" data-chi="Lenzuolo"><span class="who">Lenzuolo</span><span class="sg sg-1">1</span><span class="sc">2&ndash;0</span></div><div class="pick" data-chi="Just Lele"><span class="who">Just Lele</span><span class="sg sg-1">1</span><span class="sc">3&ndash;0</span></div><div class="pick" data-chi="Lippi"><span class="who">Lippi</span><span class="sg sg-1">1</span><span class="sc">2&ndash;0</span></div></div></article>
-        <article class="match" data-mid="G04-06"><header><div class="meta"><span class="num">06</span><span class="ora">14/09 18:30</span></div><h3>Torino <span class="v">&ndash;</span> Roma</h3></header><p class="unan">tutti e cinque sullo stesso segno</p><div class="picks"><div class="pick" data-chi="Berta"><span class="who">Berta</span><span class="sg sg-2">2</span><span class="sc">1&ndash;2</span></div><div class="pick" data-chi="Super Gulp"><span class="who">Super Gulp</span><span class="sg sg-2">2</span><span class="sc">0&ndash;2</span></div><div class="pick" data-chi="Lenzuolo"><span class="who">Lenzuolo</span><span class="sg sg-2">2</span><span class="sc">0&ndash;2</span></div><div class="pick" data-chi="Just Lele"><span class="who">Just Lele</span><span class="sg sg-2">2</span><span class="sc">1&ndash;3</span></div><div class="pick" data-chi="Lippi"><span class="who">Lippi</span><span class="sg sg-2">2</span><span class="sc">0&ndash;1</span></div></div></article>
-        <article class="match" data-mid="G04-07"><header><div class="meta"><span class="num">07</span><span class="ora">14/09 18:30</span></div><h3>Como <span class="v">&ndash;</span> Parma</h3></header><p class="unan">tutti e cinque sullo stesso segno</p><div class="picks"><div class="pick" data-chi="Berta"><span class="who">Berta</span><span class="sg sg-1">1</span><span class="sc">2&ndash;0</span></div><div class="pick" data-chi="Super Gulp"><span class="who">Super Gulp</span><span class="sg sg-1">1</span><span class="sc">3&ndash;0</span></div><div class="pick" data-chi="Lenzuolo"><span class="who">Lenzuolo</span><span class="sg sg-1">1</span><span class="sc">3&ndash;1</span></div><div class="pick" data-chi="Just Lele"><span class="who">Just Lele</span><span class="sg sg-1">1</span><span class="sc">4&ndash;0</span></div><div class="pick" data-chi="Lippi"><span class="who">Lippi</span><span class="sg sg-1">1</span><span class="sc">2&ndash;1</span></div></div></article>
-        <article class="match" data-mid="G04-08"><header><div class="meta"><span class="num">08</span><span class="ora">13/09 15:00</span></div><h3>Lecce <span class="v">&ndash;</span> Monza</h3></header><div class="picks"><div class="pick" data-chi="Berta"><span class="who">Berta</span><span class="sg sg-2">2</span><span class="sc">1&ndash;2</span></div><div class="pick" data-chi="Super Gulp"><span class="who">Super Gulp</span><span class="sg sg-x">X</span><span class="sc">1&ndash;1</span></div><div class="pick" data-chi="Lenzuolo"><span class="who">Lenzuolo</span><span class="sg sg-x">X</span><span class="sc">1&ndash;1</span></div><div class="pick" data-chi="Just Lele"><span class="who">Just Lele</span><span class="sg sg-x">X</span><span class="sc">1&ndash;1</span></div><div class="pick" data-chi="Lippi"><span class="who">Lippi</span><span class="sg sg-x">X</span><span class="sc">1&ndash;1</span></div></div></article>
-        <article class="match" data-mid="G04-09"><header><div class="meta"><span class="num">09</span><span class="ora">13/09 18:00</span></div><h3>Napoli <span class="v">&ndash;</span> Bologna</h3></header><p class="unan">tutti e cinque sullo stesso segno</p><div class="picks"><div class="pick" data-chi="Berta"><span class="who">Berta</span><span class="sg sg-1">1</span><span class="sc">2&ndash;1</span></div><div class="pick" data-chi="Super Gulp"><span class="who">Super Gulp</span><span class="sg sg-1">1</span><span class="sc">1&ndash;0</span></div><div class="pick" data-chi="Lenzuolo"><span class="who">Lenzuolo</span><span class="sg sg-1">1</span><span class="sc">2&ndash;0</span></div><div class="pick" data-chi="Just Lele"><span class="who">Just Lele</span><span class="sg sg-1">1</span><span class="sc">1&ndash;0</span></div><div class="pick" data-chi="Lippi"><span class="who">Lippi</span><span class="sg sg-1">1</span><span class="sc">1&ndash;0</span></div></div></article>
-        <article class="match" data-mid="G04-10"><header><div class="meta"><span class="num">10</span><span class="ora">14/09 20:45</span></div><h3>Inter <span class="v">&ndash;</span> Udinese</h3></header><p class="unan">tutti e cinque sullo stesso segno</p><div class="picks"><div class="pick" data-chi="Berta"><span class="who">Berta</span><span class="sg sg-1">1</span><span class="sc">3&ndash;0</span></div><div class="pick" data-chi="Super Gulp"><span class="who">Super Gulp</span><span class="sg sg-1">1</span><span class="sc">3&ndash;1</span></div><div class="pick" data-chi="Lenzuolo"><span class="who">Lenzuolo</span><span class="sg sg-1">1</span><span class="sc">3&ndash;0</span></div><div class="pick" data-chi="Just Lele"><span class="who">Just Lele</span><span class="sg sg-1">1</span><span class="sc">3&ndash;1</span></div><div class="pick" data-chi="Lippi"><span class="who">Lippi</span><span class="sg sg-1">1</span><span class="sc">2&ndash;0</span></div></div></article></div></details>
-      <details class="g"><summary><span class="gname">Giornata 3</span><span class="gre">Berta<br>re della giornata &middot; 11 punti</span><span class="caret">&rsaquo;</span></summary><div class="gbody"><article class="match" data-mid="G03-01"><header><div class="meta"><span class="num">01</span><span class="ris">1&ndash;4 <span class="sg sg-2">2</span></span></div><h3>Genoa <span class="v">&ndash;</span> Como</h3></header><p class="unan">tutti e cinque sullo stesso segno</p><div class="picks"><div class="pick pk2" data-chi="Berta"><span class="who">Berta</span><span class="sg sg-2">2</span><span class="sc">0&ndash;2</span><span class="pts">1</span></div><div class="pick pk2" data-chi="Super Gulp"><span class="who">Super Gulp</span><span class="sg sg-2">2</span><span class="sc">1&ndash;2</span><span class="pts">1</span></div><div class="pick pk2" data-chi="Lenzuolo"><span class="who">Lenzuolo</span><span class="sg sg-2">2</span><span class="sc">0&ndash;2</span><span class="pts">1</span></div><div class="pick pk2" data-chi="Just Lele"><span class="who">Just Lele</span><span class="sg sg-2">2</span><span class="sc">0&ndash;3</span><span class="pts">1</span></div><div class="pick pk2" data-chi="Lippi"><span class="who">Lippi</span><span class="sg sg-2">2</span><span class="sc">1&ndash;2</span><span class="pts">1</span></div></div></article>
+  <section><h2>Giornate precedenti</h2><p class="lede">Tocca una giornata per riaprire la schedina completa, con i punti assegnati.</p><div class="arch"><details class="g"><summary><span class="gname">Giornata 3</span><span class="gre">Berta<br>re della giornata &middot; 11 punti</span><span class="caret">&rsaquo;</span></summary><div class="gbody"><article class="match" data-mid="G03-01"><header><div class="meta"><span class="num">01</span><span class="ris">1&ndash;4 <span class="sg sg-2">2</span></span></div><h3>Genoa <span class="v">&ndash;</span> Como</h3></header><p class="unan">tutti e cinque sullo stesso segno</p><div class="picks"><div class="pick pk2" data-chi="Berta"><span class="who">Berta</span><span class="sg sg-2">2</span><span class="sc">0&ndash;2</span><span class="pts">1</span></div><div class="pick pk2" data-chi="Super Gulp"><span class="who">Super Gulp</span><span class="sg sg-2">2</span><span class="sc">1&ndash;2</span><span class="pts">1</span></div><div class="pick pk2" data-chi="Lenzuolo"><span class="who">Lenzuolo</span><span class="sg sg-2">2</span><span class="sc">0&ndash;2</span><span class="pts">1</span></div><div class="pick pk2" data-chi="Just Lele"><span class="who">Just Lele</span><span class="sg sg-2">2</span><span class="sc">0&ndash;3</span><span class="pts">1</span></div><div class="pick pk2" data-chi="Lippi"><span class="who">Lippi</span><span class="sg sg-2">2</span><span class="sc">1&ndash;2</span><span class="pts">1</span></div></div></article>
         <article class="match" data-mid="G03-02"><header><div class="meta"><span class="num">02</span><span class="ris">1&ndash;2 <span class="sg sg-2">2</span></span></div><h3>Fiorentina <span class="v">&ndash;</span> Torino</h3></header><div class="picks"><div class="pick" data-chi="Berta"><span class="who">Berta</span><span class="sg sg-1">1</span><span class="sc">1&ndash;0</span><span class="pts">0</span></div><div class="pick" data-chi="Super Gulp"><span class="who">Super Gulp</span><span class="sg sg-1">1</span><span class="sc">2&ndash;1</span><span class="pts">0</span></div><div class="pick" data-chi="Lenzuolo"><span class="who">Lenzuolo</span><span class="sg sg-x">X</span><span class="sc">1&ndash;1</span><span class="pts">0</span></div><div class="pick" data-chi="Just Lele"><span class="who">Just Lele</span><span class="sg sg-1">1</span><span class="sc">2&ndash;1</span><span class="pts">0</span></div><div class="pick" data-chi="Lippi"><span class="who">Lippi</span><span class="sg sg-1">1</span><span class="sc">2&ndash;1</span><span class="pts">0</span></div></div></article>
         <article class="match" data-mid="G03-03"><header><div class="meta"><span class="num">03</span><span class="ris">3&ndash;2 <span class="sg sg-1">1</span></span></div><h3>Inter <span class="v">&ndash;</span> Napoli</h3></header><div class="picks"><div class="pick pk2" data-chi="Berta"><span class="who">Berta</span><span class="sg sg-1">1</span><span class="sc">4&ndash;1</span><span class="pts">1</span></div><div class="pick pk2" data-chi="Super Gulp"><span class="who">Super Gulp</span><span class="sg sg-1">1</span><span class="sc">2&ndash;0</span><span class="pts">1</span></div><div class="pick" data-chi="Lenzuolo"><span class="who">Lenzuolo</span><span class="sg sg-2">2</span><span class="sc">0&ndash;1</span><span class="pts">0</span></div><div class="pick pk2" data-chi="Just Lele"><span class="who">Just Lele</span><span class="sg sg-1">1</span><span class="sc">1&ndash;0</span><span class="pts">1</span></div><div class="pick pk2" data-chi="Lippi"><span class="who">Lippi</span><span class="sg sg-1">1</span><span class="sc">2&ndash;0</span><span class="pts">1</span></div></div></article>
         <article class="match" data-mid="G03-04"><header><div class="meta"><span class="num">04</span><span class="ris">2&ndash;1 <span class="sg sg-1">1</span></span></div><h3>Roma <span class="v">&ndash;</span> Atalanta</h3></header><p class="unan">tutti e cinque sullo stesso segno</p><div class="picks"><div class="pick pk3" data-chi="Berta"><span class="who">Berta</span><span class="sg sg-1">1</span><span class="sc">2&ndash;1</span><span class="pts">3</span></div><div class="pick pk2" data-chi="Super Gulp"><span class="who">Super Gulp</span><span class="sg sg-1">1</span><span class="sc">2&ndash;0</span><span class="pts">1</span></div><div class="pick pk3" data-chi="Lenzuolo"><span class="who">Lenzuolo</span><span class="sg sg-1">1</span><span class="sc">2&ndash;1</span><span class="pts">3</span></div><div class="pick pk2" data-chi="Just Lele"><span class="who">Just Lele</span><span class="sg sg-1">1</span><span class="sc">3&ndash;1</span><span class="pts">1</span></div><div class="pick pk2" data-chi="Lippi"><span class="who">Lippi</span><span class="sg sg-1">1</span><span class="sc">2&ndash;0</span><span class="pts">1</span></div></div></article>
@@ -755,7 +482,7 @@ details.g[open] > summary{border-bottom:1px solid var(--line)}
         <article class="match" data-mid="G02-09"><header><div class="meta"><span class="num">09</span><span class="ris">0&ndash;4 <span class="sg sg-2">2</span></span></div><h3>Lecce <span class="v">&ndash;</span> Roma</h3></header><div class="picks"><div class="pick pk2" data-chi="Berta"><span class="who">Berta</span><span class="sg sg-2">2</span><span class="sc">0&ndash;3</span><span class="pts">1</span></div><div class="pick pk2" data-chi="Super Gulp"><span class="who">Super Gulp</span><span class="sg sg-2">2</span><span class="sc">0&ndash;3</span><span class="pts">1</span></div><div class="pick" data-chi="Lenzuolo"><span class="who">Lenzuolo</span><span class="sg sg-x">X</span><span class="sc">2&ndash;2</span><span class="pts">0</span></div><div class="pick pk2" data-chi="Just Lele"><span class="who">Just Lele</span><span class="sg sg-2">2</span><span class="sc">1&ndash;4</span><span class="pts">1</span></div><div class="pick pk2" data-chi="Lippi"><span class="who">Lippi</span><span class="sg sg-2">2</span><span class="sc">0&ndash;2</span><span class="pts">1</span></div></div></article>
         <article class="match" data-mid="G02-10"><header><div class="meta"><span class="num">10</span><span class="ris">1&ndash;0 <span class="sg sg-1">1</span></span></div><h3>Atalanta <span class="v">&ndash;</span> Bologna</h3></header><p class="unan">tutti e cinque sullo stesso segno</p><div class="picks"><div class="pick pk2" data-chi="Berta"><span class="who">Berta</span><span class="sg sg-1">1</span><span class="sc">2&ndash;1</span><span class="pts">1</span></div><div class="pick pk2" data-chi="Super Gulp"><span class="who">Super Gulp</span><span class="sg sg-1">1</span><span class="sc">2&ndash;1</span><span class="pts">1</span></div><div class="pick pk2" data-chi="Lenzuolo"><span class="who">Lenzuolo</span><span class="sg sg-1">1</span><span class="sc">3&ndash;0</span><span class="pts">1</span></div><div class="pick pk2" data-chi="Just Lele"><span class="who">Just Lele</span><span class="sg sg-1">1</span><span class="sc">2&ndash;1</span><span class="pts">1</span></div><div class="pick pk2" data-chi="Lippi"><span class="who">Lippi</span><span class="sg sg-1">1</span><span class="sc">2&ndash;1</span><span class="pts">1</span></div></div></article></div></details></div></section>
 
-  <p class="fine">Dati aggiornati il 11/09/2026 alle 23:03<span id="controllato"></span></p>
+  <p class="fine">Dati aggiornati il 11/09/2026 alle 23:07<span id="controllato"></span></p>
 </div>
 
 <script>(function(){
@@ -775,7 +502,7 @@ details.g[open] > summary{border-bottom:1px solid var(--line)}
     (vecchie.length === 1 ? ' e finita' : ' sono finite') + ' da un pezzo ma il risultato non e ancora arrivato: l\'aggiornamento automatico potrebbe essersi fermato. I dati qui sotto sono gli ultimi buoni.';
   box.hidden = false;
 })();(function(){
-  var MIA = "Dati aggiornati il 11/09/2026 alle 23:03";
+  var MIA = "Dati aggiornati il 11/09/2026 alle 23:07";
   var OGNI = 5 * 60 * 1000;
   function stoCompilando(){
     var f = document.getElementById('schedina');
