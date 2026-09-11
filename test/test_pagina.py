@@ -482,8 +482,11 @@ def test_i_quattro_metalli_hanno_un_colore_nel_modello():
     with open(os.path.join(QUI, "template.html"), encoding="utf-8") as f:
         modello = f.read()
     for metallo in ("rame", "bronzo", "argento", "oro"):
-        assert f".pick.m-{metallo}{{background:var(--{metallo})}}" in modello
+        # ogni medaglia dichiara fondo e inchiostro; la luce sopra e' una regola sola
+        assert f".pick.m-{metallo}{{--fondo:var(--{metallo}); --inchiostro:var(--{metallo}-i)}}" in modello
         assert f"--{metallo}-i:" in modello
+    assert 'rgba(255,255,255,var(--luce))' in modello
+    assert modello.count("--luce:") == 3        # chiaro, scuro, e il terzo blocco del tema
     # la corona sta solo sull'oro, ed e' una maschera: prende il colore del tema
     assert ".pick.m-oro::before" in modello
     assert modello.count("::before{\n  content:\"\"; position:absolute; top:-7px") == 1
