@@ -11,7 +11,8 @@ Cosa fa, in ordine:
   2. scarica i pronostici dal foglio Google pubblicato    (serve FOGLIO_CSV)
   3. ricalcola punti e classifica
   4. riscrive docs/index.html, ma solo se e' davvero cambiata
-  5. rigenera docs/Trofeo_Ovalmo.xlsx, ma solo se i dati sono cambiati
+  5. rigenera docs/Trofeo_Ovalmo.xlsx, ma solo se sono cambiati i dati o le
+     regole con cui e' costruito
   6. stampa un riepilogo di cosa e' successo
 
 Senza le due variabili d'ambiente il programma non si ferma: salta il pezzo che
@@ -47,6 +48,19 @@ def impronta_pagina(html):
     return impronta(DATA_IN_FONDO.sub("Dati aggiornati il --", html))
 
 
+# il file Excel dipende dai dati, ma anche dalle regole con cui e' costruito:
+# se cambia il modo di contare i punti va rifatto anche a risultati fermi
+FILE_DELLE_REGOLE = [os.path.join(QUI, "ovalmo", f) for f in ("excel.py", "punteggio.py")]
+
+
+def impronta_excel(uniti):
+    pezzi = [json.dumps(uniti, ensure_ascii=False, sort_keys=True)]
+    for percorso in FILE_DELLE_REGOLE:
+        with open(percorso, encoding="utf-8") as f:
+            pezzi.append(f.read())
+    return impronta("".join(pezzi))
+
+
 def leggi_stato():
     if os.path.exists(STATO):
         with open(STATO, encoding="utf-8") as f:
@@ -64,7 +78,7 @@ def giro(token=None, foglio_csv=None):
     riepilogo = []
     stagione, pronostici = dati.carica()
     stato = leggi_stato()
-    impronta_dati_prima = stato.get("impronta_dati")
+    impronta_excel_prima = stato.get("impronta_excel")
     adesso = orari.adesso()
 
     # ---- 1. calendario e risultati ----
@@ -109,9 +123,9 @@ def giro(token=None, foglio_csv=None):
 
     # ---- 4. l'Excel ----
     # il file .xlsx cambia byte per byte a ogni generazione (contiene degli
-    # orari suoi), quindi si confrontano i dati, non il file
-    con_dati = impronta(json.dumps(uniti, ensure_ascii=False, sort_keys=True))
-    if con_dati != impronta_dati_prima or not os.path.exists(XLSX):
+    # orari suoi), quindi si confronta cio' da cui nasce: i dati e il codice
+    con_dati = impronta_excel(uniti)
+    if con_dati != impronta_excel_prima or not os.path.exists(XLSX):
         from ovalmo import excel
         os.makedirs(DOCS, exist_ok=True)
         excel.genera(uniti, XLSX)
@@ -121,13 +135,13 @@ def giro(token=None, foglio_csv=None):
         riepilogo.append("dati invariati: Excel lasciato com'e'")
 
     stato.update({
-        "impronta_dati": con_dati,
+        "impronta_excel": con_dati,
         "impronta_pagina": nuova,
         "ultimo_aggiornamento": f"{adesso:%d/%m/%Y %H:%M}",
     })
     # lo stato si salva solo se e' cambiato qualcosa d'altro, altrimenti
     # basterebbe lui a produrre un commit all'ora
-    if nuova != vecchia or con_dati != impronta_dati_prima:
+    if nuova != vecchia or con_dati != impronta_excel_prima:
         scrivi_stato(stato)
     return riepilogo
 

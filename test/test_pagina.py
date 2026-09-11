@@ -114,8 +114,9 @@ def test_nessun_segnaposto_rimasto():
 def test_classifica_in_cima_alla_pagina():
     dati = dict(DATI, risultati={"G07-01": [3, 0], "G07-02": [1, 1]})
     html = genera(dati, DOPO)
-    # Berta: 3 + 3 = 6 punti, in testa
-    assert "in testa Berta con 6 punti" in html
+    # Berta indovina tutti e due i risultati esatti, e in tutti e due e' l'unica
+    # ad averli scritti: siamo in giornata 7, quindi 6 + 6
+    assert "in testa Berta con 12 punti" in html
 
 
 def test_le_giornate_in_archivio_sono_tutte_chiuse():
@@ -311,3 +312,20 @@ def test_se_la_giornata_dopo_e_vicina_il_modulo_si_apre_lo_stesso():
     html = genera(dati, orari.quando("11/10/2026", "20:00"))
     assert "Manda i tuoi pronostici &mdash; giornata 8" in html
     assert 'id="chisei"' in html
+
+
+def test_i_punti_del_solitario_si_vedono_nelle_caselle():
+    """Un 6 e un 2 nelle caselle, e la riga che li spiega sotto la classifica.
+
+    Senza la spiegazione un 6 sembra un errore di conto.
+    """
+    dati = dict(DATI, pronostici={
+        # Inter-Milan finisce 3-0: Berta ha scritto proprio 3-0 e nessun altro
+        "G07-01": {"Berta": ["1", 3, 0], "Lippi": ["1", 2, 0], "Lenzuolo": ["1", 1, 0]},
+        # Roma-Lazio finisce 1-1: sul pareggio c'e' solo Lenzuolo
+        "G07-02": {"Berta": ["1", 2, 0], "Lippi": ["2", 0, 1], "Lenzuolo": ["X", 2, 2]},
+    }, risultati={"G07-01": [3, 0], "G07-02": [1, 1]})
+    html = genera(dati, DOPO)
+    assert '<span class="pts">6</span>' in html      # esatto, e da solo
+    assert '<span class="pts">2</span>' in html      # segno giusto, e da solo
+    assert "chi indovina da solo vale doppio" in html

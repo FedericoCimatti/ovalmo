@@ -1,10 +1,22 @@
 # -*- coding: utf-8 -*-
 """Il calcolo dei punti e della classifica.
 
-Regole, invariate dal primo giorno:
+Regole:
   3 punti  segno + risultato esatto
   1 punto  solo il segno giusto (NON si somma ai 3)
   0 punti  segno sbagliato, oppure pronostico non inviato
+
+IL SOLITARIO, dalla giornata 5 in poi
+  Chi indovina da solo vale il doppio:
+    6 punti  risultato esatto che nessun altro dei cinque aveva scritto
+    2 punti  segno giusto che nessun altro dei cinque aveva scelto
+  "Da solo" si guarda dentro la singola partita, e solo fra chi ha mandato:
+  per i 2 punti conta il segno (1, X o 2), per i 6 punti il punteggio scritto.
+  Chi non manda non ha scelto niente, quindi non fa compagnia a nessuno.
+
+  Vale dalla giornata SOLITARIO_DA: le giornate precedenti restano com'erano,
+  perche' la regola e' arrivata a giornata 4 gia' cominciata e i punti gia'
+  assegnati non si toccano.
 
 In classifica, a pari punti passa avanti chi ha piu' risultati esatti.
 "Re della giornata" = chi ha fatto piu' punti in quella giornata.
@@ -14,6 +26,11 @@ restituisce numeri. E' la parte piu' facile da testare e la piu' importante
 da non rompere.
 """
 from .dati import id_partita
+
+# la prima giornata in cui il solitario vale, e quanto vale
+SOLITARIO_DA = 5
+SOLITARIO_ESATTO = 6
+SOLITARIO_SEGNO = 2
 
 
 def segno(gol_casa, gol_ospite):
@@ -38,7 +55,11 @@ def segno_pronosticato(pronostico):
 
 
 def punti(pronostico, risultato):
-    """Punti di un singolo pronostico su una singola partita."""
+    """Punti di un singolo pronostico, senza guardare cosa hanno fatto gli altri.
+
+    E' il punteggio base: 3, 1 o 0. Il raddoppio del solitario si decide in
+    `punti_partita`, che e' l'unico posto che vede tutti e cinque insieme.
+    """
     if not risultato:
         return 0
     gol_casa, gol_ospite = risultato
@@ -46,6 +67,48 @@ def punti(pronostico, risultato):
     if casa is not None and ospite is not None and casa == gol_casa and ospite == gol_ospite:
         return 3
     return 1 if segno_pronosticato(pronostico) == segno(gol_casa, gol_ospite) else 0
+
+
+def punteggio_scritto(pronostico):
+    """(gol casa, gol ospite) se il pronostico contiene un punteggio, altrimenti None."""
+    _, casa, ospite = (pronostico or [None, None, None])
+    return None if casa is None or ospite is None else (casa, ospite)
+
+
+def punti_partita(picks, risultato, giornata, giocatori=None):
+    """{giocatore: punti} per una partita, solitario compreso.
+
+    E' l'unico posto dove si decide chi era da solo: la pagina, la diretta e il
+    file Excel devono dare lo stesso numero, e l'unico modo di esserne sicuri e'
+    che ci sia una sola regola scritta una volta sola.
+
+    picks      {giocatore: pronostico} di quella partita
+    giornata   serve solo a sapere se il solitario e' gia' in vigore
+    """
+    giocatori = list(giocatori if giocatori is not None else picks)
+    if not risultato:
+        return {p: 0 for p in giocatori}
+
+    raddoppia = giornata >= SOLITARIO_DA
+    quanti_segno, quanti_punteggio = {}, {}
+    for p in giocatori:
+        sg = segno_pronosticato(picks.get(p))
+        if sg:
+            quanti_segno[sg] = quanti_segno.get(sg, 0) + 1
+        pg = punteggio_scritto(picks.get(p))
+        if pg:
+            quanti_punteggio[pg] = quanti_punteggio.get(pg, 0) + 1
+
+    fuori = {}
+    for p in giocatori:
+        pronostico = picks.get(p)
+        base = punti(pronostico, risultato)
+        if base == 3 and raddoppia and quanti_punteggio[punteggio_scritto(pronostico)] == 1:
+            base = SOLITARIO_ESATTO
+        elif base == 1 and raddoppia and quanti_segno[segno_pronosticato(pronostico)] == 1:
+            base = SOLITARIO_SEGNO
+        fuori[p] = base
+    return fuori
 
 
 def calcola(dati):
@@ -78,17 +141,19 @@ def calcola(dati):
             if not risultato:
                 continue
             giocate_g[g] += 1
-            atteso = segno(*risultato)
+            picks = pronostici.get(mid) or {}
+            valori = punti_partita(picks, risultato, g, giocatori)
             for p in giocatori:
-                pronostico = (pronostici.get(mid) or {}).get(p)
-                v = punti(pronostico, risultato)
-                if v == 3:
+                # segni ed esatti si contano sul punteggio base: il solitario
+                # raddoppia i punti, non trasforma un segno in un risultato esatto
+                base = punti(picks.get(p), risultato)
+                if base == 3:
                     stats[p]["esatti"] += 1
                     stats[p]["segni"] += 1
-                elif v == 1:
+                elif base == 1:
                     stats[p]["segni"] += 1
-                stats[p]["pt"] += v
-                per_g[g][p] += v
+                stats[p]["pt"] += valori[p]
+                per_g[g][p] += valori[p]
 
     ordine = sorted(giocatori, key=lambda p: (-stats[p]["pt"], -stats[p]["esatti"], p))
     pos = {}

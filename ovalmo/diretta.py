@@ -29,7 +29,7 @@ import json
 
 from . import orari, squadre
 from .dati import id_partita
-from .punteggio import calcola
+from .punteggio import SOLITARIO_DA, calcola
 
 # ogni quanto la pagina richiede notizie, in secondi: fitto mentre si gioca,
 # piu' rado quando c'e' solo da vedere chi ha consegnato
@@ -97,6 +97,7 @@ def blocco(dati, conti=None, adesso=None, endpoint=None):
         "partite": da_seguire,
         "picks": picks,
         "squadre": mappa,
+        "solitarioDa": SOLITARIO_DA,
     }, ensure_ascii=False)
     return "<script>" + _script(cfg) + "</script>"
 
@@ -120,12 +121,43 @@ def _script(cfg):
 
   // stesse regole di punteggio.py: 3 segno e risultato, 1 solo il segno, 0 il resto
   function segno(a, b){ return a > b ? '1' : (a === b ? 'X' : '2') }
+  function segnoDi(pronostico){
+    if(!pronostico) return null;
+    var s = pronostico[0], casa = pronostico[1], osp = pronostico[2];
+    if(s) return String(s).toUpperCase();
+    if(casa === null || osp === null || casa === undefined || osp === undefined) return null;
+    return segno(casa, osp);
+  }
+  function punteggioDi(pronostico){
+    if(!pronostico) return null;
+    var casa = pronostico[1], osp = pronostico[2];
+    if(casa === null || osp === null || casa === undefined || osp === undefined) return null;
+    return casa + '-' + osp;
+  }
   function punti(pronostico, gol){
     if(!pronostico) return 0;
-    var s = pronostico[0], casa = pronostico[1], osp = pronostico[2];
-    if(casa !== null && osp !== null && casa === gol[0] && osp === gol[1]) return 3;
-    if(!s && casa !== null && osp !== null) s = segno(casa, osp);
-    return s === segno(gol[0], gol[1]) ? 1 : 0;
+    if(punteggioDi(pronostico) === gol[0] + '-' + gol[1]) return 3;
+    return segnoDi(pronostico) === segno(gol[0], gol[1]) ? 1 : 0;
+  }
+
+  // il solitario: chi ha indovinato da solo vale doppio, dalla giornata
+  // D.solitarioDa in poi. Stessa regola di punti_partita in punteggio.py.
+  function puntiPartita(picks, gol, giornata){
+    var quantiSegno = {}, quantiPunteggio = {}, fuori = {};
+    D.giocatori.forEach(function(g){
+      var sg = segnoDi(picks[g]);
+      if(sg) quantiSegno[sg] = (quantiSegno[sg] || 0) + 1;
+      var pg = punteggioDi(picks[g]);
+      if(pg) quantiPunteggio[pg] = (quantiPunteggio[pg] || 0) + 1;
+    });
+    var raddoppia = giornata >= D.solitarioDa;
+    D.giocatori.forEach(function(g){
+      var base = punti(picks[g], gol), valore = base;
+      if(base === 3 && raddoppia && quantiPunteggio[punteggioDi(picks[g])] === 1) valore = 6;
+      else if(base === 1 && raddoppia && quantiSegno[segnoDi(picks[g])] === 1) valore = 2;
+      fuori[g] = {pt: valore, esatto: base === 3};
+    });
+    return fuori;
   }
 
   function aggiorna(stato){
@@ -149,11 +181,11 @@ def _script(cfg):
       disegnaPartita(mid, viva);
       var picks = D.picks[mid];
       if(!picks) return;
+      var conto = puntiPartita(picks, viva.gol, a.g);
       D.giocatori.forEach(function(g){
-        var v = punti(picks[g], viva.gol);
-        extra[g] += v;
-        if(v === 3) esatti[g]++;
-        disegnaPunto(mid, g, v);
+        extra[g] += conto[g].pt;
+        if(conto[g].esatto) esatti[g]++;
+        disegnaPunto(mid, g, conto[g].pt);
       });
     });
 
@@ -182,8 +214,8 @@ def _script(cfg):
     var cella = document.querySelector('[data-mid="' + mid + '"] [data-chi="' + chi + '"]');
     if(!cella) return;
     cella.classList.remove('pk3', 'pk2');
-    if(valore === 3) cella.classList.add('pk3');
-    if(valore === 1) cella.classList.add('pk2');
+    if(valore >= 3) cella.classList.add('pk3');       // 3, o 6 se era da solo
+    else if(valore > 0) cella.classList.add('pk2');   // 1, o 2 se era da solo
     var pts = cella.querySelector('.pts');
     if(!pts){ pts = document.createElement('span'); pts.className = 'pts'; cella.appendChild(pts) }
     pts.textContent = valore;

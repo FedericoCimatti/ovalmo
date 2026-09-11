@@ -40,3 +40,21 @@ def test_l_excel_si_genera_e_si_riapre_senza_formule_rotte(tmp_path):
     esito = excel.verifica(percorso)
     assert esito["formule"] > 100
     assert "Classifica" in esito["fogli"]
+
+
+def test_l_excel_si_rifa_anche_quando_cambiano_solo_le_regole(tmp_path, monkeypatch):
+    """Il 12 settembre 2026 e' cambiato il modo di contare i punti a risultati
+    fermi: senza questo, il file da scaricare sarebbe rimasto alle regole
+    vecchie fino al primo gol della settimana dopo."""
+    uniti = dati.unisci(*dati.carica())
+    prima = aggiorna.impronta_excel(uniti)
+
+    regola = tmp_path / "punteggio.py"
+    regola.write_text("SOLITARIO_DA = 5\n", encoding="utf-8")
+    monkeypatch.setattr(aggiorna, "FILE_DELLE_REGOLE", [str(regola)])
+    assert aggiorna.impronta_excel(uniti) != prima
+
+    regola.write_text("SOLITARIO_DA = 9\n", encoding="utf-8")
+    dopo = aggiorna.impronta_excel(uniti)
+    regola.write_text("SOLITARIO_DA = 5\n", encoding="utf-8")
+    assert aggiorna.impronta_excel(uniti) != dopo
