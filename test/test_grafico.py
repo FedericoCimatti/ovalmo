@@ -94,3 +94,45 @@ def test_le_tacche_cadono_su_numeri_tondi():
         assert scala >= massimo
         assert scala % grafico._passo(scala) == 0
         assert grafico._passo(scala) in (5, 10, 20, 50, 100, 200)
+
+
+def test_la_locandina_si_puo_davvero_nascondere():
+    """.bolla ha un display suo, e senza la regola apposta batte l'attributo
+    hidden: la locandina restava aperta anche col cursore fuori dal grafico,
+    coprendo le linee che avrebbe dovuto spiegare. Stessa trappola di .live."""
+    import os
+    qui = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+    with open(os.path.join(qui, "template.html"), encoding="utf-8") as f:
+        assert ".bolla[hidden]{display:none}" in f.read()
+
+
+def test_il_mirino_si_spegne_davvero():
+    """Su un elemento SVG l'attributo hidden non fa niente: il mirino restava
+    disegnato dove l'avevi lasciato. Si accende con una classe."""
+    import os
+    qui = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+    with open(os.path.join(qui, "template.html"), encoding="utf-8") as f:
+        modello = f.read()
+    assert "#andamento .mirino.acceso{display:inline}" in modello
+    assert "stroke-dasharray:3 3; display:none}" in modello
+    js = grafico._script()
+    assert "mirino.classList.add('acceso')" in js
+    assert "mirino.classList.remove('acceso')" in js
+    assert "mirino.hidden" not in js
+    # e la riga del mirino non nasce col trucco che non funzionava
+    # (la locandina invece e' un div, e li' hidden va benissimo)
+    disegno = grafico.disegna(calcola(DATI), GIOCATORI)
+    riga = re.search(r"<line class=\"mirino\"[^>]*>", disegno).group(0)
+    assert "hidden" not in riga
+    assert 'id="bolla" hidden' in disegno
+
+
+def test_fuori_dal_riquadro_la_locandina_si_chiude():
+    """Il cursore nel bianco intorno al disegno non sta su nessuna giornata:
+    la locandina non deve aprirsi, e se e' aperta deve chiudersi."""
+    js = grafico._script()
+    assert "nascondi();" in js                      # dentro mostra(), non solo sull'uscita
+    assert "G.y0 + SOTTO_ASSE" in js                # il bordo di sotto, asse compreso
+    assert "G.xs[G.xs.length - 1] + LARGO" in js    # quello di destra
+    for evento in ("pointerleave", "pointercancel"):
+        assert evento in js

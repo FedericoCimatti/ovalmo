@@ -311,12 +311,22 @@ details.g[open] > summary{border-bottom:1px solid var(--line)}
 #andamento .tacca{fill:var(--mute); font-family:var(--ff-m); font-size:11px}
 #andamento .linea{fill:none; stroke-width:2; stroke-linejoin:round; stroke-linecap:round}
 #andamento .punta{stroke:var(--card); stroke-width:2}
-#andamento .mirino{stroke:var(--mute); stroke-width:1; stroke-dasharray:3 3}
+/* Il mirino e' un elemento SVG, e su un SVG l'attributo hidden non serve a
+   niente: non esiste la proprieta' .hidden che lo riscriva, e la regola
+   [hidden] dell'HTML non arriva fin qui. Risultato: una riga tratteggiata
+   piantata sul grafico per sempre, dove l'avevi lasciata. Si accende e si
+   spegne con una classe, che sull'SVG funziona. */
+#andamento .mirino{stroke:var(--mute); stroke-width:1; stroke-dasharray:3 3; display:none}
+#andamento .mirino.acceso{display:inline}
 .bolla{
   position:absolute; top:0; transform:translateX(-50%); pointer-events:none;
   background:var(--paper); border:1px solid var(--line); border-radius:9px;
   padding:7px 10px; box-shadow:var(--shadow); font-size:12.5px; line-height:1.5;
   display:flex; flex-direction:column; white-space:nowrap}
+/* Senza questa riga la locandina non se ne va piu': il display qui sopra batte
+   l'attributo hidden, e il JavaScript che la nasconde non ottiene niente.
+   Stessa trappola del pallino della diretta, vedi .live[hidden]. */
+.bolla[hidden]{display:none}
 .bolla > b{font-family:var(--ff-m); font-size:11px; color:var(--mute);
   letter-spacing:.04em; margin-bottom:3px}
 .bolla span{display:flex; justify-content:space-between; gap:14px; color:var(--ink2)}

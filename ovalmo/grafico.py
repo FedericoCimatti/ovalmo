@@ -137,7 +137,7 @@ def disegna(conti, giocatori, aperte_ora=0, giornata_viva=None):
           <svg id="andamento" data-cfg="{cfg}" viewBox="0 0 {LARGHEZZA} {ALTEZZA}" role="img"
                aria-label="Punti accumulati da ogni giocatore, giornata per giornata">
             {"".join(pezzi)}
-            <line class="mirino" x1="0" y1="{SOPRA}" x2="0" y2="{ALTEZZA - SOTTO}" hidden/>
+            <line class="mirino" x1="0" y1="{SOPRA}" x2="0" y2="{ALTEZZA - SOTTO}"/>
           </svg>
           <div class="bolla" id="bolla" hidden></div>
         </div>
@@ -156,6 +156,9 @@ def _script():
   if(!svg || !bolla) return;
   function config(){ try { return JSON.parse(svg.dataset.cfg) } catch(e){ return null } }
   var mirino = svg.querySelector('.mirino');
+  // quanto si puo' sbordare dal riquadro e contare lo stesso, in unita' del
+  // disegno (che e' largo 720): un dito non e' preciso al pixel
+  var LARGO = 14, SOTTO_ASSE = 30;
 
   function vicino(G, px){
     var quale = 0, minimo = Infinity;
@@ -170,11 +173,24 @@ def _script():
     var G = config();
     if(!G) return;
     var r = svg.getBoundingClientRect();
-    var px = (ev.clientX - r.left) / r.width * svg.viewBox.baseVal.width;
+    var vb = svg.viewBox.baseVal;
+    var px = (ev.clientX - r.left) / r.width * vb.width;
+    var py = (ev.clientY - r.top) / r.height * vb.height;
+    // Solo dentro il disegno. Il riquadro va dal primo all'ultimo punto e dalla
+    // tacca piu' alta all'asse, piu' la striscia dei numeri delle giornate
+    // sotto: li' il cursore sta ancora su una giornata. Nel bianco intorno no,
+    // e una locandina che resta aperta dove non c'e' niente da leggere copre
+    // il grafico invece di spiegarlo.
+    var cima = G.y0 - G.dentroY;
+    if(px < G.xs[0] - LARGO || px > G.xs[G.xs.length - 1] + LARGO ||
+       py < cima - LARGO || py > G.y0 + SOTTO_ASSE){
+      nascondi();
+      return;
+    }
     var i = vicino(G, px);
     mirino.setAttribute('x1', G.xs[i]);
     mirino.setAttribute('x2', G.xs[i]);
-    mirino.hidden = false;
+    mirino.classList.add('acceso');
     var righe = G.giocatori.map(function(p){
       return {chi: p, pt: G.serie[p][i]};
     }).sort(function(a, b){ return b.pt - a.pt });
@@ -184,7 +200,7 @@ def _script():
     bolla.style.left = Math.min(Math.max(G.xs[i] / svg.viewBox.baseVal.width * 100, 12), 88) + '%';
   }
 
-  function nascondi(){ mirino.hidden = true; bolla.hidden = true }
+  function nascondi(){ mirino.classList.remove('acceso'); bolla.hidden = true }
 
   svg.addEventListener('pointermove', mostra);
   svg.addEventListener('pointerdown', mostra);
