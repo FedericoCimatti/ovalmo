@@ -5,8 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Trofeo Ovalmo</title>
 <meta name="description" content="__OG__">
-<meta name="theme-color" content="#EDF0EC" media="(prefers-color-scheme:light)">
-<meta name="theme-color" content="#0C1310" media="(prefers-color-scheme:dark)">
+<meta name="theme-color" content="#0C1310">
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="Trofeo Ovalmo">
 <meta property="og:title" content="Trofeo Ovalmo">
@@ -22,40 +21,28 @@
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700&family=IBM+Plex+Mono:wght@500;600&family=IBM+Plex+Sans:wght@400;500;600&display=swap">
 <style>
 :root{
-  --paper:#EDF0EC; --card:#FFFFFF; --ink:#101B17; --ink2:#3B4A43; --mute:#6D7F77;
-  --line:#D4DBD6; --line2:#E4E9E5; --accent:#0F6E4C; --brass:#96701C;
-  --s1:#0F6E4C; --s1b:#DAECE2; --sx:#4E5A63; --s2:#255579;
-  --avviso:#F2ECD9; --pkline:#C9D6CF;
-  --rame:#FBD1AE; --rame-i:#84421D; --bronzo:#DCA279; --bronzo-i:#66280A;
-  --argento:#D5DCE2; --argento-i:#333A40; --oro:#F2CE3E; --oro-i:#574200;
-  --luce:.62;
-  --gr1:#2a78d6; --gr2:#eb6834; --gr3:#1baf7a; --gr4:#eda100; --gr5:#e87ba4;
-  --shadow:0 1px 2px rgba(16,27,23,.05), 0 10px 24px -16px rgba(16,27,23,.25);
+  /* Il sito ha un tema solo, quello della sera: non segue piu' l'ora del
+     telefono. color-scheme lo dice anche al browser, cosi' barre di
+     scorrimento e caselle di sistema nascono scure invece di lampeggiare
+     bianche al primo caricamento. */
+  color-scheme:dark;
+  --paper:#0C1310; --card:#151E1A; --ink:#E5ECE8; --ink2:#B2C1B9; --mute:#81948A;
+  --line:#26332D; --line2:#1E2924; --accent:#48AC81; --brass:#D0A24E;
+  --s1:#5CBE93; --s1b:#15332A; --sx:#9FB0BB; --s2:#80B3DD;
+  --avviso:#2B2917; --pkline:#2C3A34;
+  /* Le medaglie non sono colori pieni ma vetri colorati: di ognuna si dichiara
+     la tinta (in numeri, perche' serve a farne anche il bordo) e quanto velo
+     ne passa. Il fondo che si vede e' la scheda attraverso il vetro. */
+  --rame:240,180,138;    --rame-v:.08;     --rame-i:#E5B89E;
+  --bronzo:200,90,22;    --bronzo-v:.30;   --bronzo-i:#FFC7A2;
+  --argento:143,190,238; --argento-v:.25;  --argento-i:#D9E4EE;
+  --oro:255,179,0;       --oro-v:.30;      --oro-i:#FFE98C;
+  --luce:.05;
+  --gr1:#3987e5; --gr2:#d95926; --gr3:#199e70; --gr4:#c98500; --gr5:#d55181;
+  --shadow:0 1px 2px rgba(0,0,0,.45), 0 10px 24px -16px rgba(0,0,0,.7);
   --ff-d:"Barlow Condensed","Haettenschweiler","Arial Narrow",sans-serif;
   --ff-b:"IBM Plex Sans","Segoe UI",Helvetica,Arial,sans-serif;
   --ff-m:"IBM Plex Mono","SFMono-Regular",Consolas,monospace;
-}
-@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
-  --paper:#0C1310; --card:#151E1A; --ink:#E5ECE8; --ink2:#B2C1B9; --mute:#81948A;
-  --line:#26332D; --line2:#1E2924; --accent:#48AC81; --brass:#D0A24E;
-  --s1:#5CBE93; --s1b:#15332A; --sx:#9FB0BB; --s2:#80B3DD;
-  --avviso:#2B2917; --pkline:#2C3A34;
-  --rame:#2A1E17; --rame-i:#E5B89E; --bronzo:#552714; --bronzo-i:#FFC7A2;
-  --argento:#2E3D4B; --argento-i:#D9E4EE; --oro:#584209; --oro-i:#FFE98C;
-  --luce:.20;
-  --gr1:#3987e5; --gr2:#d95926; --gr3:#199e70; --gr4:#c98500; --gr5:#d55181;
-  --shadow:0 1px 2px rgba(0,0,0,.45), 0 10px 24px -16px rgba(0,0,0,.7);
-}}
-:root[data-theme="dark"]{
-  --paper:#0C1310; --card:#151E1A; --ink:#E5ECE8; --ink2:#B2C1B9; --mute:#81948A;
-  --line:#26332D; --line2:#1E2924; --accent:#48AC81; --brass:#D0A24E;
-  --s1:#5CBE93; --s1b:#15332A; --sx:#9FB0BB; --s2:#80B3DD;
-  --avviso:#2B2917; --pkline:#2C3A34;
-  --rame:#2A1E17; --rame-i:#E5B89E; --bronzo:#552714; --bronzo-i:#FFC7A2;
-  --argento:#2E3D4B; --argento-i:#D9E4EE; --oro:#584209; --oro-i:#FFE98C;
-  --luce:.20;
-  --gr1:#3987e5; --gr2:#d95926; --gr3:#199e70; --gr4:#c98500; --gr5:#d55181;
-  --shadow:0 1px 2px rgba(0,0,0,.45), 0 10px 24px -16px rgba(0,0,0,.7);
 }
 
 *{box-sizing:border-box}
@@ -181,20 +168,20 @@ tr.leader td.nome::after{
 }
 /* i punti sono una scala di metalli: 1 rame, 2 bronzo, 3 argento, 6 oro.
    Le classi le scrive pagina.py (e la diretta quando i punti si muovono). */
-/* Ogni medaglia dichiara il suo fondo e il suo inchiostro; la luce sopra e'
-   una regola sola per tutte e quattro. Cosi' cambiando un metallo il riflesso
-   lo segue da solo, invece di essere una sfumatura dipinta a mano quattro volte.
-   La quantita' di luce (--luce) e' piu' bassa di notte: sul fondo scuro un
-   riflesso pieno sbianca la casella invece di farla brillare. */
-.pick.m-rame{--fondo:var(--rame); --inchiostro:var(--rame-i)}
-.pick.m-bronzo{--fondo:var(--bronzo); --inchiostro:var(--bronzo-i)}
-.pick.m-argento{--fondo:var(--argento); --inchiostro:var(--argento-i)}
-.pick.m-oro{--fondo:var(--oro); --inchiostro:var(--oro-i)}
+/* Ogni medaglia dichiara la sua tinta, il suo velo e il suo inchiostro; il
+   fondo e il bordo escono da una regola sola per tutte e quattro. Il fondo e'
+   trasparente: la casella e' la scheda vista attraverso un vetro colorato, non
+   un rettangolo incollato sopra. Il riflesso resta un accenno (--luce), perche'
+   la lucidatura di prima faceva sembrare le caselle di plastica. */
+.pick.m-rame{--tinta:var(--rame); --velo:var(--rame-v); --inchiostro:var(--rame-i)}
+.pick.m-bronzo{--tinta:var(--bronzo); --velo:var(--bronzo-v); --inchiostro:var(--bronzo-i)}
+.pick.m-argento{--tinta:var(--argento); --velo:var(--argento-v); --inchiostro:var(--argento-i)}
+.pick.m-oro{--tinta:var(--oro); --velo:var(--oro-v); --inchiostro:var(--oro-i)}
 .pick[class*="m-"]{
   background:linear-gradient(160deg,
-    rgba(255,255,255,var(--luce)) 0%, rgba(255,255,255,0) 52%), var(--fondo);
-  box-shadow:inset 0 0 0 1.2px var(--inchiostro),
-             inset 0 1px 0 rgba(255,255,255,calc(var(--luce) * .7));
+    rgba(255,255,255,var(--luce)) 0%, rgba(255,255,255,0) 52%),
+    rgba(var(--tinta), var(--velo));
+  box-shadow:inset 0 0 0 1px rgba(var(--tinta), calc(var(--velo) + .20));
 }
 /* Dentro una medaglia scrive tutto con l'inchiostro di quel metallo. Il grigio
    di prima, sopra questi fondi, diventava illeggibile: sull'oro di notte il

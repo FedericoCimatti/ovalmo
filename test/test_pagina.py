@@ -355,14 +355,29 @@ def test_il_ritratto_e_le_icone_stanno_nella_pagina():
 
 def test_i_colori_del_sito_non_sono_cambiati():
     """La foto non doveva portarsi dietro un'estetica nuova: il verde, l'ottone e
-    la carta sono quelli di prima."""
+    la carta sono quelli della sera, gli unici che il sito ha."""
     import os
 
     with open(os.path.join(QUI, "template.html"), encoding="utf-8") as f:
         modello = f.read()
-    for colore in ("--accent:#0F6E4C", "--brass:#96701C", "--paper:#EDF0EC",   # chiaro
-                   "--accent:#48AC81", "--brass:#D0A24E", "--paper:#0C1310"):  # scuro
+    for colore in ("--accent:#48AC81", "--brass:#D0A24E", "--paper:#0C1310"):
         assert colore in modello, f"colore cambiato o sparito: {colore}"
+
+
+def test_il_sito_e_sempre_quello_della_sera():
+    """Un tema solo: niente chiaro, e niente che segua l'ora del telefono.
+
+    Se tornasse un blocco prefers-color-scheme, meta' delle persone vedrebbero
+    di nuovo la pagina bianca a mezzogiorno."""
+    import os
+
+    with open(os.path.join(QUI, "template.html"), encoding="utf-8") as f:
+        modello = f.read()
+    assert "prefers-color-scheme" not in modello
+    assert 'data-theme' not in modello
+    assert "color-scheme:dark" in modello
+    assert modello.count("--paper:") == 1
+    assert modello.count('<meta name="theme-color"') == 1
 
 
 # -------------------------------------------- il venerdi' sera non chiude niente
@@ -482,11 +497,21 @@ def test_i_quattro_metalli_hanno_un_colore_nel_modello():
     with open(os.path.join(QUI, "template.html"), encoding="utf-8") as f:
         modello = f.read()
     for metallo in ("rame", "bronzo", "argento", "oro"):
-        # ogni medaglia dichiara fondo e inchiostro; la luce sopra e' una regola sola
-        assert f".pick.m-{metallo}{{--fondo:var(--{metallo}); --inchiostro:var(--{metallo}-i)}}" in modello
+        # ogni medaglia dichiara tinta, velo e inchiostro; fondo e bordo escono
+        # da una regola sola, che li fa entrambi trasparenti
+        assert (f".pick.m-{metallo}{{--tinta:var(--{metallo}); "
+                f"--velo:var(--{metallo}-v); --inchiostro:var(--{metallo}-i)}}") in modello
         assert f"--{metallo}-i:" in modello
-    assert 'rgba(255,255,255,var(--luce))' in modello
-    assert modello.count("--luce:") == 3        # chiaro, scuro, e il terzo blocco del tema
+        assert f"--{metallo}-v:" in modello
+    assert "rgba(var(--tinta), var(--velo))" in modello
+    assert "rgba(var(--tinta), calc(var(--velo) + .20))" in modello
+    assert modello.count("--luce:") == 1        # un tema solo, un riflesso solo
+    # I veli non sono a occhio: con questi quattro il metallo piu' vicino a un
+    # altro resta a 11.5 di distanza e il nome peggio piazzato (l'oro) legge a
+    # 6.15 di contrasto. Alzarli avvicina i metalli e abbassa i nomi.
+    for metallo, velo in (("rame", ".08"), ("bronzo", ".30"),
+                          ("argento", ".25"), ("oro", ".30")):
+        assert f"--{metallo}-v:{velo};" in modello
     # la corona sta solo sull'oro, ed e' una maschera: prende il colore del tema
     assert ".pick.m-oro::before" in modello
     assert modello.count("::before{\n  content:\"\"; position:absolute; top:-7px") == 1
