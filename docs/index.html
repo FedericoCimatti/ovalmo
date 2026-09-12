@@ -311,12 +311,22 @@ details.g[open] > summary{border-bottom:1px solid var(--line)}
 #andamento .tacca{fill:var(--mute); font-family:var(--ff-m); font-size:11px}
 #andamento .linea{fill:none; stroke-width:2; stroke-linejoin:round; stroke-linecap:round}
 #andamento .punta{stroke:var(--card); stroke-width:2}
-#andamento .mirino{stroke:var(--mute); stroke-width:1; stroke-dasharray:3 3}
+/* Il mirino e' un elemento SVG, e su un SVG l'attributo hidden non serve a
+   niente: non esiste la proprieta' .hidden che lo riscriva, e la regola
+   [hidden] dell'HTML non arriva fin qui. Risultato: una riga tratteggiata
+   piantata sul grafico per sempre, dove l'avevi lasciata. Si accende e si
+   spegne con una classe, che sull'SVG funziona. */
+#andamento .mirino{stroke:var(--mute); stroke-width:1; stroke-dasharray:3 3; display:none}
+#andamento .mirino.acceso{display:inline}
 .bolla{
   position:absolute; top:0; transform:translateX(-50%); pointer-events:none;
   background:var(--paper); border:1px solid var(--line); border-radius:9px;
   padding:7px 10px; box-shadow:var(--shadow); font-size:12.5px; line-height:1.5;
   display:flex; flex-direction:column; white-space:nowrap}
+/* Senza questa riga la locandina non se ne va piu': il display qui sopra batte
+   l'attributo hidden, e il JavaScript che la nasconde non ottiene niente.
+   Stessa trappola del pallino della diretta, vedi .live[hidden]. */
+.bolla[hidden]{display:none}
 .bolla > b{font-family:var(--ff-m); font-size:11px; color:var(--mute);
   letter-spacing:.04em; margin-bottom:3px}
 .bolla span{display:flex; justify-content:space-between; gap:14px; color:var(--ink2)}
@@ -422,7 +432,7 @@ details.g[open] > summary{border-bottom:1px solid var(--line)}
           <svg id="andamento" data-cfg="{&quot;xs&quot;: [34.0, 370.0, 706.0], &quot;giornate&quot;: [2, 3, 4], &quot;ymax&quot;: 25, &quot;y0&quot;: 310, &quot;dentroY&quot;: 294, &quot;serie&quot;: {&quot;Berta&quot;: [9, 20, 20], &quot;Super Gulp&quot;: [8, 15, 16], &quot;Lenzuolo&quot;: [8, 13, 14], &quot;Just Lele&quot;: [7, 17, 18], &quot;Lippi&quot;: [12, 22, 23]}, &quot;giocatori&quot;: [&quot;Berta&quot;, &quot;Super Gulp&quot;, &quot;Lenzuolo&quot;, &quot;Just Lele&quot;, &quot;Lippi&quot;]}" viewBox="0 0 720 340" role="img"
                aria-label="Punti accumulati da ogni giocatore, giornata per giornata">
             <line class="griglia" x1="34" y1="310.0" x2="706" y2="310.0"/><text class="tacca" x="26" y="314.0" text-anchor="end">0</text><line class="griglia" x1="34" y1="251.2" x2="706" y2="251.2"/><text class="tacca" x="26" y="255.2" text-anchor="end">5</text><line class="griglia" x1="34" y1="192.4" x2="706" y2="192.4"/><text class="tacca" x="26" y="196.4" text-anchor="end">10</text><line class="griglia" x1="34" y1="133.6" x2="706" y2="133.6"/><text class="tacca" x="26" y="137.6" text-anchor="end">15</text><line class="griglia" x1="34" y1="74.8" x2="706" y2="74.8"/><text class="tacca" x="26" y="78.8" text-anchor="end">20</text><line class="griglia" x1="34" y1="16.0" x2="706" y2="16.0"/><text class="tacca" x="26" y="20.0" text-anchor="end">25</text><text class="tacca" x="34.0" y="330" text-anchor="middle">2</text><text class="tacca" x="370.0" y="330" text-anchor="middle">3</text><text class="tacca" x="706.0" y="330" text-anchor="middle">4</text><polyline class="linea" data-chi="Berta" points="34.0,204.2 370.0,74.8 706.0,74.8" stroke="var(--gr1)"/><circle class="punta" data-chi="Berta" cx="706.0" cy="74.8" r="4.5" fill="var(--gr1)"/><polyline class="linea" data-chi="Super Gulp" points="34.0,215.9 370.0,133.6 706.0,121.8" stroke="var(--gr2)"/><circle class="punta" data-chi="Super Gulp" cx="706.0" cy="121.8" r="4.5" fill="var(--gr2)"/><polyline class="linea" data-chi="Lenzuolo" points="34.0,215.9 370.0,157.1 706.0,145.4" stroke="var(--gr3)"/><circle class="punta" data-chi="Lenzuolo" cx="706.0" cy="145.4" r="4.5" fill="var(--gr3)"/><polyline class="linea" data-chi="Just Lele" points="34.0,227.7 370.0,110.1 706.0,98.3" stroke="var(--gr4)"/><circle class="punta" data-chi="Just Lele" cx="706.0" cy="98.3" r="4.5" fill="var(--gr4)"/><polyline class="linea" data-chi="Lippi" points="34.0,168.9 370.0,51.3 706.0,39.5" stroke="var(--gr5)"/><circle class="punta" data-chi="Lippi" cx="706.0" cy="39.5" r="4.5" fill="var(--gr5)"/>
-            <line class="mirino" x1="0" y1="16" x2="0" y2="310" hidden/>
+            <line class="mirino" x1="0" y1="16" x2="0" y2="310"/>
           </svg>
           <div class="bolla" id="bolla" hidden></div>
         </div>
@@ -436,6 +446,9 @@ details.g[open] > summary{border-bottom:1px solid var(--line)}
   if(!svg || !bolla) return;
   function config(){ try { return JSON.parse(svg.dataset.cfg) } catch(e){ return null } }
   var mirino = svg.querySelector('.mirino');
+  // quanto si puo' sbordare dal riquadro e contare lo stesso, in unita' del
+  // disegno (che e' largo 720): un dito non e' preciso al pixel
+  var LARGO = 14, SOTTO_ASSE = 30;
 
   function vicino(G, px){
     var quale = 0, minimo = Infinity;
@@ -450,11 +463,24 @@ details.g[open] > summary{border-bottom:1px solid var(--line)}
     var G = config();
     if(!G) return;
     var r = svg.getBoundingClientRect();
-    var px = (ev.clientX - r.left) / r.width * svg.viewBox.baseVal.width;
+    var vb = svg.viewBox.baseVal;
+    var px = (ev.clientX - r.left) / r.width * vb.width;
+    var py = (ev.clientY - r.top) / r.height * vb.height;
+    // Solo dentro il disegno. Il riquadro va dal primo all'ultimo punto e dalla
+    // tacca piu' alta all'asse, piu' la striscia dei numeri delle giornate
+    // sotto: li' il cursore sta ancora su una giornata. Nel bianco intorno no,
+    // e una locandina che resta aperta dove non c'e' niente da leggere copre
+    // il grafico invece di spiegarlo.
+    var cima = G.y0 - G.dentroY;
+    if(px < G.xs[0] - LARGO || px > G.xs[G.xs.length - 1] + LARGO ||
+       py < cima - LARGO || py > G.y0 + SOTTO_ASSE){
+      nascondi();
+      return;
+    }
     var i = vicino(G, px);
     mirino.setAttribute('x1', G.xs[i]);
     mirino.setAttribute('x2', G.xs[i]);
-    mirino.hidden = false;
+    mirino.classList.add('acceso');
     var righe = G.giocatori.map(function(p){
       return {chi: p, pt: G.serie[p][i]};
     }).sort(function(a, b){ return b.pt - a.pt });
@@ -464,7 +490,7 @@ details.g[open] > summary{border-bottom:1px solid var(--line)}
     bolla.style.left = Math.min(Math.max(G.xs[i] / svg.viewBox.baseVal.width * 100, 12), 88) + '%';
   }
 
-  function nascondi(){ mirino.hidden = true; bolla.hidden = true }
+  function nascondi(){ mirino.classList.remove('acceso'); bolla.hidden = true }
 
   svg.addEventListener('pointermove', mostra);
   svg.addEventListener('pointerdown', mostra);
@@ -510,7 +536,7 @@ details.g[open] > summary{border-bottom:1px solid var(--line)}
         <article class="match" data-mid="G02-09"><header><div class="meta"><span class="num">09</span><span class="ris">0&ndash;4 <span class="sg sg-2">2</span></span></div><h3>Lecce <span class="v">&ndash;</span> Roma</h3></header><div class="picks"><div class="pick m-rame" data-chi="Berta"><span class="who">Berta</span><span class="sg sg-2">2</span><span class="sc">0&ndash;3</span><span class="pts">1</span></div><div class="pick m-rame" data-chi="Super Gulp"><span class="who">Super Gulp</span><span class="sg sg-2">2</span><span class="sc">0&ndash;3</span><span class="pts">1</span></div><div class="pick" data-chi="Lenzuolo"><span class="who">Lenzuolo</span><span class="sg sg-x">X</span><span class="sc">2&ndash;2</span><span class="pts">0</span></div><div class="pick m-rame" data-chi="Just Lele"><span class="who">Just Lele</span><span class="sg sg-2">2</span><span class="sc">1&ndash;4</span><span class="pts">1</span></div><div class="pick m-rame" data-chi="Lippi"><span class="who">Lippi</span><span class="sg sg-2">2</span><span class="sc">0&ndash;2</span><span class="pts">1</span></div></div></article>
         <article class="match" data-mid="G02-10"><header><div class="meta"><span class="num">10</span><span class="ris">1&ndash;0 <span class="sg sg-1">1</span></span></div><h3>Atalanta <span class="v">&ndash;</span> Bologna</h3></header><div class="picks"><div class="pick m-rame" data-chi="Berta"><span class="who">Berta</span><span class="sg sg-1">1</span><span class="sc">2&ndash;1</span><span class="pts">1</span></div><div class="pick m-rame" data-chi="Super Gulp"><span class="who">Super Gulp</span><span class="sg sg-1">1</span><span class="sc">2&ndash;1</span><span class="pts">1</span></div><div class="pick m-rame" data-chi="Lenzuolo"><span class="who">Lenzuolo</span><span class="sg sg-1">1</span><span class="sc">3&ndash;0</span><span class="pts">1</span></div><div class="pick m-rame" data-chi="Just Lele"><span class="who">Just Lele</span><span class="sg sg-1">1</span><span class="sc">2&ndash;1</span><span class="pts">1</span></div><div class="pick m-rame" data-chi="Lippi"><span class="who">Lippi</span><span class="sg sg-1">1</span><span class="sc">2&ndash;1</span><span class="pts">1</span></div></div></article></div></details></div></section>
 
-  <p class="fine">Dati aggiornati il 12/09/2026 alle 14:19<span id="controllato"></span></p>
+  <p class="fine">Dati aggiornati il 12/09/2026 alle 14:27<span id="controllato"></span></p>
 </div>
 
 <script>(function(){
@@ -530,7 +556,7 @@ details.g[open] > summary{border-bottom:1px solid var(--line)}
     (vecchie.length === 1 ? ' e finita' : ' sono finite') + ' da un pezzo ma il risultato non e ancora arrivato: l\'aggiornamento automatico potrebbe essersi fermato. I dati qui sotto sono gli ultimi buoni.';
   box.hidden = false;
 })();(function(){
-  var MIA = "Dati aggiornati il 12/09/2026 alle 14:19";
+  var MIA = "Dati aggiornati il 12/09/2026 alle 14:27";
   var OGNI = 5 * 60 * 1000;
   function stoCompilando(){
     var f = document.getElementById('schedina');
