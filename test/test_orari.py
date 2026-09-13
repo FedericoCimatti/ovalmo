@@ -80,3 +80,45 @@ def test_la_copertura_guarda_la_prima_partita_non_la_prima_in_elenco():
 
 def test_quando_restituisce_sempre_un_orario_con_fuso():
     assert orari.quando("05/09/2026", "18:00").tzinfo is not None
+
+
+# ------------------------------------------------ l'ordine vero, quello del campo
+SPOSTATE = [["12/09/2026", "15:00", "Genoa", "Frosinone"],      # 1
+            ["13/09/2026", "20:45", "Sassuolo", "Juventus"],    # 2, posticipo
+            ["12/09/2026", "20:45", "Atalanta", "Cagliari"],    # 3, spostata qui dopo
+            ["12/09/2026", "18:00", "Lazio", "Milan"]]          # 4
+
+
+def test_le_partite_si_rimettono_in_ordine_di_campo():
+    """Il calendario salvato non cambia mai ordine, gli orari si spostano di
+    continuo: Atalanta-Cagliari si gioca prima di Sassuolo-Juventus ma sta
+    scritta dopo. Si riordinano i numeri, non le righe."""
+    assert orari.ordine_cronologico(SPOSTATE) == [1, 4, 3, 2]
+
+
+def test_riordinare_non_sposta_le_righe():
+    """Il numero e' il nome della partita: dietro al 3 deve restare l'Atalanta."""
+    prima = [list(r) for r in SPOSTATE]
+    ordine = orari.ordine_cronologico(SPOSTATE)
+    assert SPOSTATE == prima
+    assert SPOSTATE[ordine[2] - 1][2] == "Atalanta"
+
+
+def test_si_possono_ordinare_solo_le_prime():
+    """Se la giornata ha piu' partite di quante ne gioca il gruppo, le altre
+    restano fuori: non entrano dalla porta di servizio dell'ordinamento."""
+    assert orari.ordine_cronologico(SPOSTATE, 2) == [1, 2]
+
+
+def test_senza_orario_si_gioca_all_inizio_del_giorno():
+    cal = [["13/09/2026", "18:00", "Como", "Parma"],
+           ["13/09/2026", "", "Torino", "Roma"]]
+    assert orari.ordine_cronologico(cal) == [2, 1]
+
+
+def test_a_parita_di_orario_vince_il_numero_piu_basso():
+    """Due partite alla stessa ora non devono ballare da un giro all'altro."""
+    cal = [["13/09/2026", "15:00", "Como", "Parma"],
+           ["13/09/2026", "15:00", "Torino", "Roma"],
+           ["13/09/2026", "15:00", "Lecce", "Monza"]]
+    assert orari.ordine_cronologico(cal) == [1, 2, 3]

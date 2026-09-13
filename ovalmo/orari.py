@@ -57,6 +57,26 @@ def calcio_dinizio(partite):
     return min(quando(p[0], p[1]) for p in partite)
 
 
+def ordine_cronologico(partite, quante=None):
+    """I numeri delle partite, dalla prima che si gioca all'ultima.
+
+    Il calendario tiene le partite nell'ordine in cui sono arrivate la prima
+    volta e non le sposta mai piu': la posizione E' il nome della partita
+    (G04-05 e' la quinta riga, e li' dentro stanno i pronostici di quella
+    partita). Gli orari pero' si spostano di continuo, fra anticipi, posticipi
+    e rinvii, e dopo un po' l'elenco salvato non e' piu' l'ordine del campo.
+
+    Questa funzione riordina soltanto per mostrarle: restituisce i numeri, non
+    le partite, cosi' chi la usa tiene ogni riga attaccata al suo posto.
+
+    Una partita senza orario vale mezzanotte (come in quando()), quindi si
+    mette all'inizio del suo giorno. A parita' di orario vince il numero piu'
+    basso, cosi' l'ordine non balla da un giro all'altro.
+    """
+    numeri = range(1, (len(partite) if quante is None else min(quante, len(partite))) + 1)
+    return sorted(numeri, key=lambda n: (quando(partite[n - 1][0], partite[n - 1][1]), n))
+
+
 def inizi(calendario):
     """{giornata: primo calcio d'inizio} per tutto il calendario."""
     return {g: calcio_dinizio(partite) for g, partite in calendario.items()}

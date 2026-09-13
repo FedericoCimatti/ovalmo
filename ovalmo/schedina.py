@@ -81,7 +81,9 @@ def blocco(dati, adesso=None, endpoint=None, modulo_google=None, in_corso=None):
 
     partite = []
     righe = []
-    for n in range(1, len(calendario[g]) + 1):
+    # in ordine di campo: la chiave (P05) resta attaccata alla sua riga del
+    # calendario, si sposta soltanto il posto in cui la si vede
+    for n in orari.ordine_cronologico(calendario[g]):
         data, ora, casa, osp = calendario[g][n - 1]
         chiave = f"P{n:02d}"
         partite.append({"k": chiave, "n": f"{casa} - {osp}"})

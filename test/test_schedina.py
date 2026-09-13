@@ -232,3 +232,15 @@ def test_sparisce_anche_l_invito_dentro_la_schedina():
     trovarsi ne' l'una ne' l'altro."""
     html = schedina.blocco(DATI, adesso=PRIMA, endpoint=ENDPOINT)
     assert "['modulo', 'invito']" in html
+
+
+def test_il_modulo_elenca_le_partite_in_ordine_di_campo():
+    """Chi compila le vede nell'ordine in cui si giocano, ma ogni riga resta
+    legata alla sua casella (P03 e' sempre la terza riga del calendario):
+    altrimenti i pronostici finirebbero sotto la partita sbagliata."""
+    dati = dict(DATI, calendario={"7": [["10/10/2026", "20:45", "Inter", "Milan"],
+                                        ["12/10/2026", "20:45", "Napoli", "Roma"],
+                                        ["11/10/2026", "15:00", "Lazio", "Torino"]]})
+    html = schedina.blocco(dati, adesso=PRIMA, endpoint=ENDPOINT)
+    righe = re.findall(r'data-p="(P\d\d)"><div><b>([^<]+?) &ndash;', html)
+    assert righe == [("P01", "Inter"), ("P03", "Lazio"), ("P02", "Napoli")]

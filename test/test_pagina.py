@@ -515,3 +515,52 @@ def test_i_quattro_metalli_hanno_un_colore_nel_modello():
     # la corona sta solo sull'oro, ed e' una maschera: prende il colore del tema
     assert ".pick.m-oro::before" in modello
     assert modello.count("::before{\n  content:\"\"; position:absolute; top:-7px") == 1
+
+
+# ------------------------------------------ le partite si vedono in ordine di campo
+SPOSTATE = {
+    "players": ["Berta", "Lippi"],
+    "partite_per_giornata": 4,
+    "calendario": {"4": [["12/09/2026", "15:00", "Genoa", "Frosinone"],
+                         ["13/09/2026", "20:45", "Sassuolo", "Juventus"],
+                         ["12/09/2026", "20:45", "Atalanta", "Cagliari"],
+                         ["12/09/2026", "18:00", "Lazio", "Milan"]]},
+    "risultati": {"G04-01": [2, 1]},
+    "pronostici": {"G04-01": {"Berta": ["1", 2, 1], "Lippi": ["1", 1, 0]},
+                   "G04-03": {"Berta": ["1", 2, 0], "Lippi": ["X", 1, 1]}},
+    "consegne": {"4": {"Berta": "11/09/2026 18:00", "Lippi": "11/09/2026 19:00"}},
+}
+IN_GIORNATA = orari.quando("12/09/2026", "17:00")
+
+
+def _schede(html):
+    """[(numero mostrato, mid, padrone di casa)] nell'ordine in cui si vedono."""
+    pezzo = html[html.index("La schedina"):]
+    return re.findall(r'data-mid="(G\d\d-\d\d)".*?<span class="num">(\d\d)</span>'
+                      r'.*?<h3>([^<]+?) <span', pezzo, re.S)
+
+
+def test_le_partite_si_vedono_in_ordine_di_campo():
+    """Atalanta-Cagliari si gioca il 12 alle 20:45, Sassuolo-Juventus il giorno
+    dopo: nel calendario salvato pero' l'Atalanta viene dopo, perche' quell'ordine
+    e' stato fissato all'import e non si tocca piu'. Sulla pagina comanda l'orario."""
+    schede = _schede(genera(SPOSTATE, IN_GIORNATA))
+    assert [casa for _, _, casa in schede] == ["Genoa", "Lazio", "Atalanta", "Sassuolo"]
+
+
+def test_il_numero_della_scheda_conta_quello_che_si_vede():
+    """Numeri che saltano (01, 04, 03, 02) sembrano un errore. Il nome vero
+    della partita resta nel data-mid, dove guardano la diretta e l'Excel."""
+    schede = _schede(genera(SPOSTATE, IN_GIORNATA))
+    assert [n for _, n, _ in schede] == ["01", "02", "03", "04"]
+    assert [mid for mid, _, _ in schede] == ["G04-01", "G04-04", "G04-03", "G04-02"]
+
+
+def test_riordinare_non_sposta_i_pronostici():
+    """Il pericolo vero: se l'ordine spostasse anche le righe, i pronostici di
+    G04-03 finirebbero sotto un'altra partita."""
+    html = genera(SPOSTATE, IN_GIORNATA)
+    carta = html[html.index('data-mid="G04-03"'):]
+    carta = carta[:carta.index("</article>")]
+    assert "Atalanta" in carta
+    assert "2&ndash;0" in carta and "1&ndash;1" in carta        # i suoi due pronostici

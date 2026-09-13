@@ -203,7 +203,10 @@ def genera(dati, template, adesso=None, aggiornato=None):
     def carte(g):
         nascosta = coperta.get(g, False)
         out = []
-        for m in range(1, min(per_giornata, len(calendario[g])) + 1):
+        # in ordine di campo, non di archivio: il numero della scheda conta le
+        # partite come si vedono, mentre il nome vero (G04-05) resta nel
+        # data-mid, che e' quello a cui guardano la diretta e l'Excel
+        for posto, m in enumerate(orari.ordine_cronologico(calendario[g], per_giornata), start=1):
             mid = id_partita(g, m)
             data, ora, casa, osp = calendario[g][m - 1]
             picks = pronostici.get(mid) or {}
@@ -239,7 +242,7 @@ def genera(dati, template, adesso=None, aggiornato=None):
             out.append(
                 f'<article class="match" data-mid="{mid}"'
                 + (f' data-coperta="{g}"' if nascosta else '') + '><header>'
-                f'<div class="meta"><span class="num">{m:02d}</span>{esito}</div>'
+                f'<div class="meta"><span class="num">{posto:02d}</span>{esito}</div>'
                 f'<h3>{E(casa)} <span class="v">&ndash;</span> {E(osp)}</h3></header>'
                 + f'<div class="picks">{"".join(celle)}</div></article>')
         return out
