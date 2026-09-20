@@ -1,7 +1,7 @@
 /**
  * Trofeo Ovalmo - lo script che vive dentro Google.
  *
- * Fa due cose, e nessuna delle due potrebbe farla il sito da solo, perche'
+ * Fa tre cose, e nessuna delle tre potrebbe farla il sito da solo, perche'
  * GitHub Pages sa soltanto mostrare pagine:
  *
  *   RICEVE i pronostici mandati dalla pagina (doPost) e li scrive nel foglio
@@ -12,9 +12,17 @@
  *   risultati e i NOMI di chi ha gia' consegnato: mai il contenuto di una
  *   schedina, che resta coperto fino al calcio d'inizio come sempre.
  *
- * Il token di football-data non sta qui dentro: sta nelle proprieta' del
- * progetto (Impostazioni progetto > Proprieta' script > FD_TOKEN), cosi' non
- * finisce ne' su GitHub ne' sotto gli occhi di chi apre questo file.
+ *   SVEGLIA IL SITO ogni cinque minuti (svegliaIlSito). GitHub ha una sua
+ *   pianificazione, ma non la rispetta: ne chiedevamo 180 giri al giorno e ne
+ *   faceva partire cinque, con due o tre ore di buco in mezzo. Risultato: il
+ *   venerdi' i pronostici si svelavano cinquanta minuti dopo il calcio
+ *   d'inizio invece che subito. Le sveglie di Google invece partono davvero,
+ *   e un giro chiesto a mano GitHub lo esegue sempre.
+ *
+ * I due token non stanno qui dentro: stanno nelle proprieta' del progetto
+ * (Impostazioni progetto > Proprieta' script), cosi' non finiscono ne' su
+ * GitHub ne' sotto gli occhi di chi apre questo file. Servono FD_TOKEN, per
+ * football-data, e GH_TOKEN, per svegliare il sito.
  *
  * COME SI INSTALLA (una volta sola):
  *   1. vai su script.google.com e crea un progetto nuovo
@@ -27,10 +35,19 @@
  *      - Esegui come: me stesso
  *      - Chi ha accesso: Chiunque
  *   6. copia l'indirizzo: va scritto in dati/stagione.json, endpoint_pronostici
+ *   7. per la sveglia: crea su GitHub un token (Settings > Developer settings >
+ *      Personal access tokens > Fine-grained), dandogli accesso al solo
+ *      repository "ovalmo" e il solo permesso "Actions: Read and write".
+ *      Mettilo nelle Proprieta' script come GH_TOKEN
+ *   8. sempre qui: icona dell'orologio (Attivazioni) > Aggiungi attivazione >
+ *      funzione "svegliaIlSito", origine "A tempo", "Timer a minuti",
+ *      "Ogni 5 minuti"
  *
- * ATTENZIONE: modificare il codice non basta. La distribuzione resta ferma
- * alla versione vecchia finche' non fai Distribuisci > Gestisci distribuzioni >
- * matita > Versione: Nuova versione > Distribuisci.
+ * ATTENZIONE: modificare il codice non basta perche' cambi quello che la
+ * PAGINA vede. La distribuzione resta ferma alla versione vecchia finche' non
+ * fai Distribuisci > Gestisci distribuzioni > matita > Versione: Nuova
+ * versione > Distribuisci. (La sveglia no: le attivazioni a tempo eseguono
+ * sempre il codice salvato, quindi per quella basta salvare.)
  */
 
 // nome del giocatore -> il suo codice personale a quattro cifre.
@@ -195,4 +212,63 @@ function risposta(oggetto) {
   return ContentService
     .createTextOutput(JSON.stringify(oggetto))
     .setMimeType(ContentService.MimeType.JSON);
+}
+
+
+// ===========================================================================
+// SVEGLIARE IL SITO
+// ===========================================================================
+
+var GH_REPO = 'FedericoCimatti/ovalmo';
+// il nome del FILE del workflow, non il titolo che si legge nella scheda Actions
+var GH_WORKFLOW = 'aggiorna.yml';
+var GH_RAMO = 'main';
+// dalle 9 all'una di notte, ora italiana: nel mezzo non si gioca e non si
+// consegna, e un giro a vuoto alle quattro del mattino non serve a nessuno
+var SVEGLIA_DA = 9, SVEGLIA_A = 1;
+
+/**
+ * Chiede a GitHub di rigenerare il sito. La chiama l'attivazione a tempo.
+ *
+ * E' una richiesta esplicita, non una pianificazione: quelle GitHub le esegue
+ * sempre. E' lo stesso pulsante "Run workflow" della scheda Actions.
+ *
+ * Il token puo' fare una cosa sola, su questo solo repository: far partire i
+ * giri. Non legge il codice, non lo modifica, non vede gli altri segreti.
+ */
+function svegliaIlSito() {
+  var ora = Number(Utilities.formatDate(new Date(), 'Europe/Rome', 'H'));
+  if (!(ora >= SVEGLIA_DA || ora <= SVEGLIA_A)) return;
+
+  var token = PropertiesService.getScriptProperties().getProperty('GH_TOKEN');
+  // senza token non fa niente e non si lamenta: il resto dello script (i
+  // pronostici, la diretta) deve continuare a funzionare comunque
+  if (!token) return;
+
+  var url = 'https://api.github.com/repos/' + GH_REPO +
+            '/actions/workflows/' + GH_WORKFLOW + '/dispatches';
+  var risp = UrlFetchApp.fetch(url, {
+    method: 'post',
+    contentType: 'application/json',
+    headers: {Authorization: 'Bearer ' + token, Accept: 'application/vnd.github+json'},
+    payload: JSON.stringify({ref: GH_RAMO}),
+    muteHttpExceptions: true
+  });
+
+  var codice = risp.getResponseCode();
+  if (codice === 204) return;          // 204 = accettato, e' l'esito giusto
+
+  // Un token scaduto, revocato o senza il permesso giusto da' 401, 403 o 404
+  // (GitHub risponde 404 anche quando il token non basta, per non far sapere
+  // a un estraneo che il repository esiste). Sono guasti che non passano da
+  // soli: meglio fermarsi, cosi' Google manda la mail di errore e si scopre
+  // subito invece che dopo settimane di sito fermo.
+  if (codice === 401 || codice === 403 || codice === 404) {
+    throw new Error('GitHub ha rifiutato la sveglia (' + codice + '): controlla GH_TOKEN ' +
+                    'nelle Proprieta script, e che abbia il permesso Actions sul repository ' +
+                    GH_REPO + '. Risposta: ' + risp.getContentText().slice(0, 300));
+  }
+  // tutto il resto (500, timeout, GitHub che fa i capricci) passa da solo:
+  // fra cinque minuti ci riprova
+  console.warn('sveglia non riuscita, riprovo al prossimo giro: ' + codice);
 }

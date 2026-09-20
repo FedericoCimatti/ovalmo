@@ -1,20 +1,32 @@
 name: Aggiorna il sito
 
-# Ogni cinque minuti, dalle 11 all'una di notte italiane (il cron di GitHub e' in
-# UTC, quindi d'inverno la finestra scivola di un'ora: e' voluto, meglio un
-# giro in piu' la mattina che uno in meno la sera). Di notte non succede niente.
+# CHI FA PARTIRE QUESTO GIRO, DAVVERO
 #
-# Cinque minuti e' il minimo che GitHub accetta, e serve chiederne tanti perche'
-# ne salta parecchi quando ha traffico: il 7 settembre, chiedendone uno all'ora,
-# ne sono partiti tre su quindici. Chiedendone dodici all'ora si arriva sempre
-# vicini al risultato appena e' definitivo.
+# Non il cron qui sotto. Il cron chiede un giro ogni cinque minuti - 180 al
+# giorno - e GitHub ne fa partire cinque o sei, con due o tre ore di buco in
+# mezzo. Non e' un sospetto: il 20 settembre 2026 abbiamo contato quindici
+# giorni di fila, mai piu' di sette giri al giorno. Chiederne di piu' non
+# aiuta, e chiederne di meno neanche: il 7 settembre, con uno all'ora, ne
+# partivano tre su quindici.
+#
+# Si vedeva dove faceva male: il venerdi' i pronostici degli altri si svelavano
+# cinquanta minuti dopo il calcio d'inizio, perche' svelarli richiede di
+# rigenerare la pagina e la pagina non veniva rigenerata.
+#
+# Adesso a chiamare e' lo script dentro Google (svegliaIlSito, in
+# google/ricevi_pronostici.gs): le sveglie di Google partono davvero, e un
+# giro chiesto esplicitamente via API GitHub lo esegue sempre. Il cron resta
+# come rete di sicurezza, per il giorno in cui il token scade o Google fa i
+# capricci: cinque giri al giorno sono pochi, ma sono meglio di zero.
 #
 # Non e' spreco: un giro che non ha niente da fare dura una quindicina di
 # secondi, non produce nessun commit, e sui repository pubblici i minuti di
 # calcolo sono gratis e illimitati. Le chiamate a football-data restano una per
-# giro, cioe' 170 al giorno su un limite di 14.400.
+# giro, cioe' meno di 300 al giorno su un limite di 14.400.
 #
-# "workflow_dispatch" e' il pulsante per lanciarlo a mano dalla scheda Actions.
+# "workflow_dispatch" e' sia il pulsante per lanciarlo a mano dalla scheda
+# Actions, sia la porta da cui entra la sveglia di Google: se sparisce, il
+# sito torna a muoversi cinque volte al giorno.
 on:
   schedule:
     - cron: '*/5 9-23 * * *'

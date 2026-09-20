@@ -3,7 +3,7 @@
 Gioco di pronostici sulla Serie A fra cinque amici, con un sito che si aggiorna
 da solo: **https://federicocimatti.github.io/ovalmo/**
 
-Nessuno deve lanciare niente. Un'automazione di GitHub gira ogni ora, prende i
+Nessuno deve lanciare niente. Ogni cinque minuti un'automazione prende i
 risultati e i pronostici, ricalcola e ripubblica la pagina solo se e' cambiato
 qualcosa.
 
@@ -116,17 +116,32 @@ Le cause probabili, in ordine di frequenza:
 4. **Token scaduto o piano cambiato** su football-data.org.
 5. **API momentaneamente giu'.** Non fare niente: il giro dopo recupera.
 
+### Chi fa partire il giro
+
+Lo script dentro Google, ogni cinque minuti (`svegliaIlSito` in
+`google/ricevi_pronostici.gs`). **Non** la pianificazione di GitHub: quella
+chiede 180 giri al giorno e ne ottiene cinque, con due o tre ore di buco in
+mezzo - misurato su quindici giorni. Un giro chiesto esplicitamente via API
+invece GitHub lo esegue sempre, ed e' quello che fa la sveglia. Il cron nel
+workflow resta come rete di sicurezza per quando il token scade.
+
+Se il sito torna a muoversi cinque volte al giorno, la sveglia e' rotta: le
+Attivazioni nel progetto Google dicono perche', e Google manda una mail quando
+una fallisce.
+
 ### Rilanciare a mano
 
 Scheda **Actions > Aggiorna il sito > Run workflow**. E' lo stesso identico giro
-di quelli automatici.
+di quelli automatici, ed e' anche la stessa porta che usa la sveglia.
 
 ### Attenzione, una volta all'anno
 
 GitHub **disattiva i workflow schedulati dopo 60 giorni** senza attivita' su un
 repository pubblico. A stagione finita, dopo un paio di mesi di pausa estiva, il
 sito si ferma: arriva una mail da GitHub e si riattiva con un clic dalla scheda
-Actions. Non e' un guasto.
+Actions. Non e' un guasto. (La sveglia da Google non e' una pianificazione di
+GitHub e questa regola non la tocca, ma il token che usa **scade**: se e' stato
+creato con una data di scadenza, va rifatto prima di quella.)
 
 ## Lavorare in locale
 

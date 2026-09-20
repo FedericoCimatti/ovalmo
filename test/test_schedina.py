@@ -63,6 +63,50 @@ def test_nel_repository_non_ci_sono_codici_veri():
     assert "codice" not in html or "io.codice" in html
 
 
+def test_nel_repository_non_ci_sono_nemmeno_token():
+    """Lo script in Google usa due chiavi, una per football-data e una per
+    svegliare il sito. Vivono nelle Proprieta' script, mai qui: questo file
+    e' pubblico."""
+    import os
+    qui = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+    with open(os.path.join(qui, "google", "ricevi_pronostici.gs"), encoding="utf-8") as f:
+        script = f.read()
+    for forma in (r"ghp_\w+", r"github_pat_\w+", r"gho_\w+"):
+        assert not re.search(forma, script), f"c'e' un token vero nel file: {forma}"
+    # e i due token si leggono da li', non da una costante scritta a mano
+    for chiave in ("FD_TOKEN", "GH_TOKEN"):
+        assert f"getProperty('{chiave}')" in script
+
+
+def test_lo_script_di_google_e_sintatticamente_sano():
+    """Stesso controllo che facciamo sul JavaScript generato: un apostrofo non
+    protetto dentro una stringa rompe tutto il file, e questo file non lo
+    esegue nessun test - vive dentro Google."""
+    import os
+    from controllo_js import controlla
+    qui = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+    with open(os.path.join(qui, "google", "ricevi_pronostici.gs"), encoding="utf-8") as f:
+        assert controlla(f.read()) > 0
+
+
+def test_la_sveglia_chiede_il_workflow_che_esiste_davvero():
+    """Il nome del file del workflow sta scritto a mano dentro lo script di
+    Google: se un giorno lo si rinomina qui, la sveglia comincia a prendere 404
+    e il sito torna a muoversi cinque volte al giorno senza che nessuno capisca
+    perche'."""
+    import os
+    qui = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+    with open(os.path.join(qui, "google", "ricevi_pronostici.gs"), encoding="utf-8") as f:
+        script = f.read()
+    nome = re.search(r"GH_WORKFLOW = '([^']+)'", script).group(1)
+    assert os.path.exists(os.path.join(qui, ".github", "workflows", nome))
+    ramo = re.search(r"GH_RAMO = '([^']+)'", script).group(1)
+    assert ramo == "main"
+    # e il workflow deve accettare di essere lanciato a mano, o la sveglia suona a vuoto
+    with open(os.path.join(qui, ".github", "workflows", nome), encoding="utf-8") as f:
+        assert "workflow_dispatch:" in f.read()
+
+
 def test_senza_endpoint_si_ripiega_sul_modulo_google():
     html = schedina.blocco(DATI, adesso=PRIMA, endpoint="", modulo_google="https://forms.gle/x")
     assert "https://forms.gle/x" in html
