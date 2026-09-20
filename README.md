@@ -19,10 +19,11 @@ che raddoppiavano chi indovinava da solo. Sono stati tolti del tutto, anche
 dalle giornate gia' giocate.)
 
 **Le medaglie** colorano la casella e non cambiano i punti: **oro** il risultato
-esatto che nessun altro dei cinque aveva preso, **argento** lo stesso risultato
-preso in compagnia, **bronzo** il solo segno giusto. Oro e argento valgono gli
-stessi 3 punti: il colore dice quanto era difficile, non quanto vale. La regola
-sta in `metallo()` dentro `ovalmo/punteggio.py`.
+esatto preso stando solo contro tutti, cioe' quando nessun altro dei cinque
+aveva nemmeno azzeccato il segno; **argento** lo stesso risultato esatto, ma con
+qualcun altro almeno sul segno giusto; **bronzo** il solo segno. Oro e argento
+valgono gli stessi 3 punti: il colore dice quanto era difficile, non quanto
+vale. La regola sta in `metallo()` dentro `ovalmo/punteggio.py`.
 
 Deadline al primo calcio d'inizio della giornata. A pari punti passa avanti chi
 ha piu' risultati esatti. "Re della giornata" e' chi fa piu' punti in una

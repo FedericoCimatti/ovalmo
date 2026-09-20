@@ -141,18 +141,18 @@ def _script(cfg):
   }
 
   // I punti sono quelli e basta: 3, 1 o 0. Quello che serve guardando tutti e
-  // cinque insieme e' soltanto la medaglia, cioe' se il risultato esatto lo ha
-  // preso una persona sola (oro) o piu' d'una (argento). Stessa regola di
-  // metallo() in punteggio.py.
+  // cinque insieme e' soltanto la medaglia: il risultato esatto vale oro se
+  // nessun altro stava nemmeno sul segno giusto, argento se qualcuno c'era.
+  // Stessa regola di metallo() in punteggio.py.
   function puntiPartita(picks, gol){
-    var fuori = {}, esatti = 0;
-    D.giocatori.forEach(function(g){ if(punti(picks[g], gol) === 3) esatti++ });
+    var fuori = {}, sulSegno = 0, giusto = segno(gol[0], gol[1]);
+    D.giocatori.forEach(function(g){ if(segnoDi(picks[g]) === giusto) sulSegno++ });
     D.giocatori.forEach(function(g){
       var p = punti(picks[g], gol);
       fuori[g] = {
         pt: p,
         esatto: p === 3,
-        metallo: p === 3 ? (esatti === 1 ? 'oro' : 'argento') : (p === 1 ? 'bronzo' : null)
+        metallo: p === 3 ? (sulSegno === 1 ? 'oro' : 'argento') : (p === 1 ? 'bronzo' : null)
       };
     });
     return fuori;

@@ -476,24 +476,29 @@ def test_i_punti_diventano_metalli():
     compagnia, bronzo il segno. Chi non ha preso niente non prende classe."""
     from ovalmo.pagina import medaglia
 
-    assert medaglia(3, 1) == "m-oro"        # esatto, e nessun altro
-    assert medaglia(3, 2) == "m-argento"    # esatto, ma in due
-    assert medaglia(1, 0) == "m-bronzo"     # solo il segno
+    assert medaglia(3, 1) == "m-oro"        # esatto, e nessun altro sul segno
+    assert medaglia(3, 2) == "m-argento"    # esatto, ma qualcuno era sul segno
+    assert medaglia(1, 1) == "m-bronzo"     # solo il segno
     assert medaglia(1, 3) == "m-bronzo"     # il segno resta bronzo comunque
     assert medaglia(0, 1) == "" and medaglia(None, 0) == ""
 
     dati = dict(DATI, pronostici={
-        # 3-0: solo Berta ha scritto 3-0 -> oro; Lippi prende il segno -> bronzo
-        "G07-01": {"Berta": ["1", 3, 0], "Lippi": ["1", 2, 0], "Lenzuolo": ["2", 0, 1]},
+        # 3-0: Berta ha scritto 3-0 e nessun altro e' sull'1 -> oro
+        "G07-01": {"Berta": ["1", 3, 0], "Lippi": ["X", 2, 2], "Lenzuolo": ["2", 0, 1]},
         # 1-1: Lippi e Lenzuolo hanno scritto tutti e due 1-1 -> argento a testa
         "G07-02": {"Berta": ["1", 2, 0], "Lippi": ["X", 1, 1], "Lenzuolo": ["X", 1, 1]},
     }, risultati={"G07-01": [3, 0], "G07-02": [1, 1]})
     html = genera(dati, DOPO)
     assert 'class="pick m-oro"' in html
-    assert 'class="pick m-argento"' in html
-    assert 'class="pick m-bronzo"' in html
     assert html.count('class="pick m-argento"') == 2
     assert "m-rame" not in html and "pk3" not in html
+
+    # e adesso la precisazione: basta che un altro sia sul segno e l'oro va via
+    quasi = dict(dati, pronostici={**dati["pronostici"],
+                 "G07-01": {"Berta": ["1", 3, 0], "Lippi": ["1", 2, 0], "Lenzuolo": ["2", 0, 1]}})
+    html = genera(quasi, DOPO)
+    assert 'class="pick m-oro"' not in html
+    assert 'class="pick m-bronzo"' in html          # Lippi, sul segno ma non sui gol
 
 
 def test_i_tre_metalli_hanno_un_colore_nel_modello():

@@ -6,24 +6,36 @@ pronostico da solo; la medaglia guarda anche gli altri, ma serve soltanto a
 distinguere l'oro dall'argento, che valgono gli stessi 3 punti.
 """
 from ovalmo.punteggio import (ARGENTO, BRONZO, ORO, calcola, metallo, punti,
-                              quanti_esatti)
+                              quanti_sul_segno)
 
 TUTTI = ["Ada", "Bea", "Cid"]
 
 
-def test_chi_prende_il_risultato_esatto_da_solo_vince_l_oro():
+def test_l_oro_e_di_chi_sta_solo_contro_tutti():
+    """Ada ha scritto 2-1, e nessun altro aveva nemmeno visto giusto l'1."""
+    picks = {"Ada": ["1", 2, 1], "Bea": ["X", 1, 1], "Cid": ["2", 0, 1]}
+    sul_segno = quanti_sul_segno(picks, [2, 1], TUTTI)
+    assert sul_segno == 1
+    assert metallo(punti(picks["Ada"], [2, 1]), sul_segno) == ORO
+
+
+def test_basta_che_un_altro_sia_sul_segno_e_l_oro_diventa_argento():
+    """La precisazione che conta: Bea sbaglia i gol ma azzecca l'1, quindi Ada
+    non era sola sulla partita. Restano 3 punti, ma la medaglia e' argento."""
     picks = {"Ada": ["1", 2, 1], "Bea": ["1", 3, 0], "Cid": ["2", 0, 1]}
-    esatti = quanti_esatti(picks, [2, 1], TUTTI)
-    assert esatti == 1
-    assert metallo(punti(picks["Ada"], [2, 1]), esatti) == ORO
+    sul_segno = quanti_sul_segno(picks, [2, 1], TUTTI)
+    assert sul_segno == 2
+    assert punti(picks["Ada"], [2, 1]) == 3          # i punti non cambiano
+    assert metallo(punti(picks["Ada"], [2, 1]), sul_segno) == ARGENTO
+    assert metallo(punti(picks["Bea"], [2, 1]), sul_segno) == BRONZO
 
 
-def test_in_compagnia_lo_stesso_risultato_vale_argento():
+def test_in_due_sullo_stesso_risultato_e_argento_per_entrambi():
     picks = {"Ada": ["1", 2, 1], "Bea": ["1", 2, 1], "Cid": ["2", 0, 1]}
-    esatti = quanti_esatti(picks, [2, 1], TUTTI)
-    assert esatti == 2
-    assert metallo(punti(picks["Ada"], [2, 1]), esatti) == ARGENTO
-    assert metallo(punti(picks["Bea"], [2, 1]), esatti) == ARGENTO
+    sul_segno = quanti_sul_segno(picks, [2, 1], TUTTI)
+    assert sul_segno == 2
+    assert metallo(punti(picks["Ada"], [2, 1]), sul_segno) == ARGENTO
+    assert metallo(punti(picks["Bea"], [2, 1]), sul_segno) == ARGENTO
 
 
 def test_il_segno_da_solo_resta_bronzo():
@@ -32,28 +44,37 @@ def test_il_segno_da_solo_resta_bronzo():
     solo = {"Ada": ["1", 3, 0], "Bea": ["2", 0, 1], "Cid": ["X", 1, 1]}
     folla = {"Ada": ["1", 3, 0], "Bea": ["1", 4, 0], "Cid": ["1", 2, 0]}
     for picks in (solo, folla):
-        esatti = quanti_esatti(picks, [2, 1], TUTTI)
-        assert metallo(punti(picks["Ada"], [2, 1]), esatti) == BRONZO
+        sul_segno = quanti_sul_segno(picks, [2, 1], TUTTI)
+        assert metallo(punti(picks["Ada"], [2, 1]), sul_segno) == BRONZO
 
 
 def test_chi_sbaglia_non_prende_niente():
     picks = {"Ada": ["X", 1, 1], "Bea": ["1", 2, 1], "Cid": None}
-    esatti = quanti_esatti(picks, [2, 1], TUTTI)
-    assert metallo(punti(picks["Ada"], [2, 1]), esatti) is None
-    assert metallo(punti(picks["Cid"], [2, 1]), esatti) is None
+    sul_segno = quanti_sul_segno(picks, [2, 1], TUTTI)
+    assert metallo(punti(picks["Ada"], [2, 1]), sul_segno) is None
+    assert metallo(punti(picks["Cid"], [2, 1]), sul_segno) is None
 
 
 def test_chi_non_manda_non_toglie_l_oro_a_nessuno():
-    """Chi non ha scritto niente non ha preso nessun risultato esatto, quindi
-    non fa compagnia a chi lo ha preso."""
+    """Chi non ha scritto niente non ha scelto nessun segno, quindi non fa
+    compagnia a chi ha indovinato."""
     picks = {"Ada": ["1", 2, 1]}
-    assert quanti_esatti(picks, [2, 1], TUTTI) == 1
+    assert quanti_sul_segno(picks, [2, 1], TUTTI) == 1
     assert metallo(punti(picks["Ada"], [2, 1]), 1) == ORO
+
+
+def test_conta_il_segno_anche_quando_e_solo_dedotto():
+    """Chi scrive solo i gol, senza la lettera, ha scelto un segno lo stesso:
+    3-0 e' un 1, e toglie l'oro a chi ha azzeccato il 2-1."""
+    picks = {"Ada": ["1", 2, 1], "Bea": [None, 3, 0], "Cid": ["2", 0, 1]}
+    sul_segno = quanti_sul_segno(picks, [2, 1], TUTTI)
+    assert sul_segno == 2
+    assert metallo(punti(picks["Ada"], [2, 1]), sul_segno) == ARGENTO
 
 
 def test_senza_risultato_non_ci_sono_medaglie():
     picks = {"Ada": ["1", 2, 1], "Bea": ["1", 2, 1]}
-    assert quanti_esatti(picks, None, TUTTI) == 0
+    assert quanti_sul_segno(picks, None, TUTTI) == 0
 
 
 # ------------------------------------------------- i punti non si moltiplicano

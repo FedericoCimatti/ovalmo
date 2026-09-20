@@ -153,7 +153,7 @@ def test_la_diretta_distingue_oro_e_argento_come_la_pagina():
     casella cambierebbe colore al primo aggiornamento del sito."""
     html = diretta.blocco(DATI, adesso=DURANTE, endpoint=ENDPOINT)
     assert "function puntiPartita(" in html
-    assert "esatti === 1 ? 'oro' : 'argento'" in html
+    assert "sulSegno === 1 ? 'oro' : 'argento'" in html
     assert "coraggio" not in cfg(html)
 
 

@@ -17,7 +17,7 @@ import json
 from . import diretta, grafico, orari, schedina
 from .dati import id_partita
 from .punteggio import (ARGENTO, BRONZO, ORO, calcola, metallo, punti,
-                        quanti_esatti, re_della_giornata, segno, segno_pronosticato)
+                        quanti_sul_segno, re_della_giornata, segno, segno_pronosticato)
 
 MODULO = "https://forms.gle/vuZK5rm6N8b8Z2Zc7"
 # indirizzo pubblico della pagina: serve all'anteprima del link su WhatsApp.
@@ -42,9 +42,9 @@ E = html.escape
 MEDAGLIE = {ORO: "m-oro", ARGENTO: "m-argento", BRONZO: "m-bronzo"}
 
 
-def medaglia(punti_suoi, esatti_nella_partita):
+def medaglia(punti_suoi, quanti_avevano_il_segno):
     """La classe della casella. Stringa vuota se non ha preso niente."""
-    return MEDAGLIE.get(metallo(punti_suoi, esatti_nella_partita), "")
+    return MEDAGLIE.get(metallo(punti_suoi, quanti_avevano_il_segno), "")
 
 
 def _giorn(n):
@@ -208,16 +208,16 @@ def genera(dati, template, adesso=None, aggiornato=None):
             ris = risultati.get(mid)
             esito = (f'<span class="ris">{ris[0]}&ndash;{ris[1]} {chip(segno(*ris))}</span>' if ris
                      else f'<span class="ora">{quando_si_gioca(data, ora, adesso)}</span>')
-            # quanti hanno preso il risultato esatto qui dentro: e' cio' che
-            # separa l'oro dall'argento, e si sa solo guardando tutta la partita
-            esatti_qui = quanti_esatti(picks, ris, giocatori) if ris else 0
+            # quanti avevano azzeccato il segno di questa partita: e' cio' che
+            # separa l'oro dall'argento, e si sa solo guardando tutti e cinque
+            sul_segno = quanti_sul_segno(picks, ris, giocatori) if ris else 0
             celle = []
             for p_ in giocatori:
                 pr = picks.get(p_)
                 s = segno_pronosticato(pr)
                 _, ph, pa = (pr or [None, None, None])
                 pts = punti(pr, ris) if ris else None
-                colore = medaglia(pts, esatti_qui) if ris else ""
+                colore = medaglia(pts, sul_segno) if ris else ""
                 klass = (" " + colore) if colore else ""
                 if s is None:
                     klass += " attesa-p"

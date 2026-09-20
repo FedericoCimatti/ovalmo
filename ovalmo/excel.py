@@ -471,7 +471,7 @@ def genera(DATA, OUT):
     s(cf["A36"], b=True, sz=12, fg=NAVY); cf["A36"] = "ESEMPIO - Milan-Venezia finisce 2-1"
     for j, h in enumerate(["Giocatore", "Segno", "Gol C", "Gol O", "Punti", "Perche'"]):
         s(cf.cell(row=37, column=1+j, value=h), b=True, sz=9, fg=WHITE, bg=NAVY2, al="center", box=BOX)
-    for i, row in enumerate([("Berta", "1", 2, 1, 3, "risultato esatto: sul sito la casella e' oro, era l'unico"),
+    for i, row in enumerate([("Berta", "1", 2, 1, 3, "risultato esatto: sul sito la casella e' argento"),
                              ("Super Gulp", "1", 3, 0, 1, "solo il segno: casella bronzo"),
                              ("Lenzuolo", "1", None, None, 1, "solo il segno, senza punteggio: bronzo anche lui"),
                              ("Just Lele", "X", 1, 1, 0, "segno sbagliato"),
@@ -484,8 +484,9 @@ def genera(DATA, OUT):
             elif j == 5: s(c, sz=9, fg=MUTE, it=True, box=BOX)
             else: s(c, b=True, sz=9, bg=PCOL[i], box=BOX)
     s(cf["A43"], sz=8, fg=MUTE, it=True)
-    cf["A43"] = ("I colori delle caselle sul sito non cambiano i punti: oro e argento valgono "
-                 "gli stessi 3, e dicono solo se il risultato esatto lo aveva preso qualcun altro.")
+    cf["A43"] = ("I colori delle caselle sul sito non cambiano i punti. Qui Berta e' argento e non oro "
+                 "perche' altri due erano sull'1: l'oro va a chi prende il risultato esatto quando nessun "
+                 "altro aveva nemmeno azzeccato il segno.")
 
     s(cf["A45"], sz=8, fg=MUTE, it=True)
     cf["A45"] = ("Il file si allunga da solo: quando esce il calendario di una nuova giornata "

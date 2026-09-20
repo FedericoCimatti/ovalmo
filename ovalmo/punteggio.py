@@ -11,11 +11,14 @@ Nient'altro: i punti non si moltiplicano mai. Una partita vale al massimo 3.
 LE MEDAGLIE
   Il colore della casella non e' una seconda regola di punteggio, e' un modo
   di raccontare gli stessi punti:
-    oro      risultato esatto, e nessun altro dei cinque l'aveva preso
-    argento  risultato esatto, ma in compagnia
+    oro      risultato esatto, e nessun altro dei cinque aveva nemmeno
+             azzeccato il segno: solo contro tutti
+    argento  risultato esatto, ma qualcun altro era almeno sul segno giusto
     bronzo   solo il segno giusto
     niente   niente
   Oro e argento valgono gli stessi 3 punti: cambia solo quanto era difficile.
+  Per l'oro non basta essere l'unico ad aver scritto quel punteggio: se un
+  altro aveva visto giusto l'esito, la partita non era una scommessa solitaria.
   Per questo l'oro si decide guardando tutta la partita, mentre i punti si
   decidono guardando un pronostico solo.
 
@@ -81,27 +84,34 @@ def punteggio_scritto(pronostico):
     return None if casa is None or ospite is None else (casa, ospite)
 
 
-def quanti_esatti(picks, risultato, giocatori=None):
-    """Quanti, in questa partita, hanno preso il risultato esatto.
+def quanti_sul_segno(picks, risultato, giocatori=None):
+    """Quanti, in questa partita, avevano scelto il segno che e' poi uscito.
 
     E' l'unica cosa che serve sapere degli altri, e serve solo a distinguere
-    l'oro dall'argento.
+    l'oro dall'argento. Si conta il segno e non il punteggio: chi aveva visto
+    giusto l'esito, anche sbagliando i gol, toglie all'altro la solitudine.
+    Chi non ha mandato niente non ha scelto nessun segno, quindi non conta.
     """
     if not risultato:
         return 0
     giocatori = list(giocatori if giocatori is not None else picks)
-    return sum(1 for p in giocatori if punti(picks.get(p), risultato) == 3)
+    giusto = segno(*risultato)
+    return sum(1 for p in giocatori if segno_pronosticato(picks.get(p)) == giusto)
 
 
-def metallo(punti_suoi, esatti_nella_partita):
+def metallo(punti_suoi, quanti_avevano_il_segno):
     """La medaglia di un pronostico, o None se non ha preso niente.
 
     Sta qui e non nella pagina perche' la stessa risposta la devono dare in
     tre: la pagina quando si genera, la diretta mentre le partite vanno, e
     chiunque venga dopo. Una regola sola, scritta una volta sola.
+
+    Chi prende il risultato esatto sta per forza anche sul segno giusto,
+    quindi quel conto per lui vale almeno 1: se vale esattamente 1, vuol dire
+    che era solo.
     """
     if punti_suoi == 3:
-        return ORO if esatti_nella_partita == 1 else ARGENTO
+        return ORO if quanti_avevano_il_segno == 1 else ARGENTO
     return BRONZO if punti_suoi == 1 else None
 
 
