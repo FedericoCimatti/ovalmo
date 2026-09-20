@@ -99,24 +99,22 @@ def test_i_conti_in_diretta_coincidono_con_quelli_veri():
     totali calcolati da Python piu' i punti delle partite ancora aperte. Quando
     il giro orario scrivera' quei risultati, i due numeri devono coincidere,
     altrimenti la classifica "salterebbe" a ogni aggiornamento."""
-    from ovalmo.punteggio import calcola, punti_partita
+    from ovalmo.punteggio import calcola, punti
 
     in_corso = orari.quando("10/10/2026", "21:30")
     d = cfg(diretta.blocco(DATI, adesso=in_corso, endpoint=ENDPOINT))
     gol = [2, 1]        # com'e' finita davvero Inter-Milan
 
-    # quello che farebbe la diretta nel browser: base + i punti di adesso,
-    # punti coraggio compresi (siamo in giornata 7, la regola e' in vigore)
-    adesso_g = punti_partita(d["picks"]["G07-01"], gol, 7, DATI["players"])
-    live = {g: d["base"][g]["pt"] + adesso_g[g] for g in DATI["players"]}
+    # quello che farebbe la diretta nel browser: base + i punti di adesso
+    picks = d["picks"]["G07-01"]
+    live = {g: d["base"][g]["pt"] + punti(picks.get(g), gol) for g in DATI["players"]}
 
     # quello che fara' Python quando il risultato sara' scritto nel JSON
     dopo = dict(DATI, risultati={"G07-01": gol})
     vero = {g: calcola(dopo)["stats"][g]["pt"] for g in DATI["players"]}
 
-    # Berta aveva scritto 2-1 e nessun altro: risultato esatto da solo, 6
-    assert live == vero == {"Berta": 6, "Lippi": 0}
-    assert d["coraggioDa"] == 5
+    # Berta aveva scritto 2-1: risultato esatto, 3 punti e non uno di piu'
+    assert live == vero == {"Berta": 3, "Lippi": 0}
 
 
 def test_c_e_la_prova_di_vita_in_fondo_alla_pagina():
@@ -149,17 +147,14 @@ def test_la_diretta_usa_le_stesse_parole_del_generatore():
         assert pezzo in js, pezzo
 
 
-def test_la_diretta_sa_da_che_giornata_valgono_i_punti_coraggio():
-    """La regola dei punti coraggio e' scritta due volte: in punteggio.py per i conti
-    veri e dentro la diretta per quelli in corso. Se si tocca una, va toccata
-    l'altra - e almeno la giornata di partenza qui viene dalla stessa costante,
-    non da un numero ricopiato a mano."""
-    from ovalmo.punteggio import CORAGGIO_DA
-
+def test_la_diretta_distingue_oro_e_argento_come_la_pagina():
+    """La regola dell'oro e' scritta due volte: in metallo() per i conti veri e
+    dentro la diretta per quelli in corso. Devono dire la stessa cosa, o una
+    casella cambierebbe colore al primo aggiornamento del sito."""
     html = diretta.blocco(DATI, adesso=DURANTE, endpoint=ENDPOINT)
     assert "function puntiPartita(" in html
-    assert "giornata >= D.coraggioDa" in html
-    assert cfg(html)["coraggioDa"] == CORAGGIO_DA
+    assert "esatti === 1 ? 'oro' : 'argento'" in html
+    assert "coraggio" not in cfg(html)
 
 
 def test_la_diretta_colora_le_caselle_con_gli_stessi_metalli_della_pagina():
@@ -169,5 +164,6 @@ def test_la_diretta_colora_le_caselle_con_gli_stessi_metalli_della_pagina():
     from ovalmo.pagina import MEDAGLIE
 
     html = diretta.blocco(DATI, adesso=DURANTE, endpoint=ENDPOINT, medaglie=MEDAGLIE)
-    assert cfg(html)["medaglie"] == {str(k): v for k, v in MEDAGLIE.items()}
-    assert "D.medaglie[valore]" in html
+    assert cfg(html)["medaglie"] == MEDAGLIE == {"oro": "m-oro", "argento": "m-argento",
+                                                 "bronzo": "m-bronzo"}
+    assert "D.medaglie[metallo]" in html

@@ -32,8 +32,9 @@
   --avviso:#2B2917; --pkline:#2C3A34;
   /* Le medaglie non sono colori pieni ma vetri colorati: di ognuna si dichiara
      la tinta (in numeri, perche' serve a farne anche il bordo) e quanto velo
-     ne passa. Il fondo che si vede e' la scheda attraverso il vetro. */
-  --rame:240,180,138;    --rame-v:.08;     --rame-i:#E5B89E;
+     ne passa. Il fondo che si vede e' la scheda attraverso il vetro.
+     Sono tre come le medaglie vere: il quarto metallo che c'era prima serviva
+     ai punti coraggio, che non esistono piu'. */
   --bronzo:200,90,22;    --bronzo-v:.30;   --bronzo-i:#FFC7A2;
   --argento:143,190,238; --argento-v:.25;  --argento-i:#D9E4EE;
   --oro:255,179,0;       --oro-v:.30;      --oro-i:#FFE98C;
@@ -166,14 +167,15 @@ tr.leader td.nome::after{
   display:flex; flex-direction:column; align-items:center; gap:3px;
   padding:8px 2px 7px; border-radius:4px; background:transparent; position:relative;
 }
-/* i punti sono una scala di metalli: 1 rame, 2 bronzo, 3 argento, 6 oro.
-   Le classi le scrive pagina.py (e la diretta quando i punti si muovono). */
+/* Tre medaglie come quelle vere: bronzo il segno, argento il risultato esatto
+   preso in compagnia, oro il risultato esatto preso da soli. Oro e argento
+   valgono gli stessi 3 punti: il colore dice quanto era difficile, non quanto
+   vale. Le classi le scrive pagina.py (e la diretta, quando i punti si muovono). */
 /* Ogni medaglia dichiara la sua tinta, il suo velo e il suo inchiostro; il
-   fondo e il bordo escono da una regola sola per tutte e quattro. Il fondo e'
+   fondo e il bordo escono da una regola sola per tutte e tre. Il fondo e'
    trasparente: la casella e' la scheda vista attraverso un vetro colorato, non
    un rettangolo incollato sopra. Il riflesso resta un accenno (--luce), perche'
    la lucidatura di prima faceva sembrare le caselle di plastica. */
-.pick.m-rame{--tinta:var(--rame); --velo:var(--rame-v); --inchiostro:var(--rame-i)}
 .pick.m-bronzo{--tinta:var(--bronzo); --velo:var(--bronzo-v); --inchiostro:var(--bronzo-i)}
 .pick.m-argento{--tinta:var(--argento); --velo:var(--argento-v); --inchiostro:var(--argento-i)}
 .pick.m-oro{--tinta:var(--oro); --velo:var(--oro-v); --inchiostro:var(--oro-i)}
@@ -188,8 +190,9 @@ tr.leader td.nome::after{
    nome stava a 1.85 di contrasto, dove la soglia e' 4.5. */
 .pick[class*="m-"] .who{color:var(--inchiostro)}
 .pick[class*="m-"] .sc{color:var(--inchiostro)}
-/* la corona: il 6 e' il caso piu' raro del gioco, si vede da lontano.
-   E' una maschera, non un'immagine: prende il colore dell'oro del tema. */
+/* la corona: il risultato esatto preso da soli e' il caso piu' raro del gioco,
+   si vede da lontano. E' una maschera, non un'immagine: prende il colore
+   dell'oro del tema. */
 .pick.m-oro::before{
   content:""; position:absolute; top:-7px; left:50%; width:16px; height:11px;
   transform:translateX(-50%); background:var(--oro-i);
@@ -206,7 +209,6 @@ tr.leader td.nome::after{
   font-family:var(--ff-d); font-weight:700; font-size:15px; line-height:1;
   color:var(--mute); margin-top:1px;
 }
-.pick.m-rame .pts{color:var(--rame-i)}
 .pick.m-bronzo .pts{color:var(--bronzo-i)}
 .pick.m-argento .pts{color:var(--argento-i)}
 .pick.m-oro .pts{color:var(--oro-i)}

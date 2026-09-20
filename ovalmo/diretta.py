@@ -29,7 +29,7 @@ import json
 
 from . import orari, squadre
 from .dati import id_partita
-from .punteggio import CORAGGIO_DA, calcola
+from .punteggio import calcola
 
 # ogni quanto la pagina richiede notizie, in secondi: fitto mentre si gioca,
 # piu' rado quando c'e' solo da vedere chi ha consegnato
@@ -97,7 +97,6 @@ def blocco(dati, conti=None, adesso=None, endpoint=None, medaglie=None):
         "partite": da_seguire,
         "picks": picks,
         "squadre": mappa,
-        "coraggioDa": CORAGGIO_DA,
         "medaglie": medaglie or {},
     }, ensure_ascii=False)
     return "<script>" + _script(cfg) + "</script>"
@@ -141,22 +140,20 @@ def _script(cfg):
     return segnoDi(pronostico) === segno(gol[0], gol[1]) ? 1 : 0;
   }
 
-  // il punto coraggio: chi ha indovinato da solo vale doppio, dalla giornata
-  // D.coraggioDa in poi. Stessa regola di punti_partita in punteggio.py.
-  function puntiPartita(picks, gol, giornata){
-    var quantiSegno = {}, quantiPunteggio = {}, fuori = {};
+  // I punti sono quelli e basta: 3, 1 o 0. Quello che serve guardando tutti e
+  // cinque insieme e' soltanto la medaglia, cioe' se il risultato esatto lo ha
+  // preso una persona sola (oro) o piu' d'una (argento). Stessa regola di
+  // metallo() in punteggio.py.
+  function puntiPartita(picks, gol){
+    var fuori = {}, esatti = 0;
+    D.giocatori.forEach(function(g){ if(punti(picks[g], gol) === 3) esatti++ });
     D.giocatori.forEach(function(g){
-      var sg = segnoDi(picks[g]);
-      if(sg) quantiSegno[sg] = (quantiSegno[sg] || 0) + 1;
-      var pg = punteggioDi(picks[g]);
-      if(pg) quantiPunteggio[pg] = (quantiPunteggio[pg] || 0) + 1;
-    });
-    var raddoppia = giornata >= D.coraggioDa;
-    D.giocatori.forEach(function(g){
-      var base = punti(picks[g], gol), valore = base;
-      if(base === 3 && raddoppia && quantiPunteggio[punteggioDi(picks[g])] === 1) valore = 6;
-      else if(base === 1 && raddoppia && quantiSegno[segnoDi(picks[g])] === 1) valore = 2;
-      fuori[g] = {pt: valore, esatto: base === 3};
+      var p = punti(picks[g], gol);
+      fuori[g] = {
+        pt: p,
+        esatto: p === 3,
+        metallo: p === 3 ? (esatti === 1 ? 'oro' : 'argento') : (p === 1 ? 'bronzo' : null)
+      };
     });
     return fuori;
   }
@@ -182,11 +179,11 @@ def _script(cfg):
       disegnaPartita(mid, viva);
       var picks = D.picks[mid];
       if(!picks) return;
-      var conto = puntiPartita(picks, viva.gol, a.g);
+      var conto = puntiPartita(picks, viva.gol);
       D.giocatori.forEach(function(g){
         extra[g] += conto[g].pt;
         if(conto[g].esatto) esatti[g]++;
-        disegnaPunto(mid, g, conto[g].pt);
+        disegnaPunto(mid, g, conto[g].pt, conto[g].metallo);
       });
     });
 
@@ -211,12 +208,12 @@ def _script(cfg):
     vecchio.replaceWith(nuovo);
   }
 
-  function disegnaPunto(mid, chi, valore){
+  function disegnaPunto(mid, chi, valore, metallo){
     var cella = document.querySelector('[data-mid="' + mid + '"] [data-chi="' + chi + '"]');
     if(!cella) return;
-    Object.keys(D.medaglie).forEach(function(p){ cella.classList.remove(D.medaglie[p]) });
-    var metallo = D.medaglie[valore];                 // 1 rame, 2 bronzo, 3 argento, 6 oro
-    if(metallo) cella.classList.add(metallo);
+    Object.keys(D.medaglie).forEach(function(m){ cella.classList.remove(D.medaglie[m]) });
+    var classe = D.medaglie[metallo];                 // bronzo, argento, oro
+    if(classe) cella.classList.add(classe);
     var pts = cella.querySelector('.pts');
     if(!pts){ pts = document.createElement('span'); pts.className = 'pts'; cella.appendChild(pts) }
     pts.textContent = valore;

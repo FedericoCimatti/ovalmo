@@ -22,7 +22,6 @@ from openpyxl.chart.marker import Marker
 from openpyxl.formatting.rule import CellIsRule, DataBarRule, ColorScaleRule
 
 # le regole di gioco stanno in un posto solo: qui si leggono, non si riscrivono
-from .punteggio import CORAGGIO_DA, CORAGGIO_ESATTO as SOL_ESATTO, CORAGGIO_SEGNO as SOL_SEGNO
 
 
 def genera(DATA, OUT):
@@ -148,10 +147,10 @@ def genera(DATA, OUT):
         cl.cell(row=r, column=2, value=f"=Config!$A${6+i}")
         cl.cell(row=r, column=3, value=f"=SUM(Punti!${pc}${R0}:${pc}${RN})")
         colonna = f"Punti!${pc}${R0}:${pc}${RN}"
-        # i segni giusti sono quattro casi: 1 e 3 di sempre, 2 e 6 dei punti coraggio
+        # un segno giusto vale 1 o 3: sono i due casi in cui ha azzeccato l'esito
         cl.cell(row=r, column=4, value="=" + "+".join(
-            f"COUNTIF({colonna},Config!$D${d})" for d in (7, 6, 10, 9)))
-        cl.cell(row=r, column=5, value=f"=COUNTIF({colonna},Config!$D$6)+COUNTIF({colonna},Config!$D$9)")
+            f"COUNTIF({colonna},Config!$D${d})" for d in (7, 6)))
+        cl.cell(row=r, column=5, value=f"=COUNTIF({colonna},Config!$D$6)")
         cl.cell(row=r, column=6, value=f'=SUMPRODUCT(((Pronostici!${sc}${R0}:${sc}${RN}<>"")+(Pronostici!${hc}${R0}:${hc}${RN}<>""))*1>0)')
         cl.cell(row=r, column=7, value=f'=IF($L$6=0,0,$C{r}/$L$6)')
         cl.cell(row=r, column=8, value=f'=SUMPRODUCT((${mc}${MR0}:${mc}${MRN}=$H${MR0}:$H${MRN})*($H${MR0}:$H${MRN}>0)*({MB}="Completata"))')
@@ -365,23 +364,19 @@ def genera(DATA, OUT):
     widths(pn, {"A": 9, "B": 8, "C": 28})
     band(pn, "A1:H1", "A1", "H1", bg=NAVY, fg=WHITE, txt="  PUNTI PER PARTITA - tutto calcolato, non scrivere qui", sz=11, h=22)
     s(pn["J1"], sz=8, fg=MUTE, it=True)
-    pn["J1"] = ("servizio: a sinistra il segno effettivo (dichiarato, o dedotto dal punteggio), "
-                "a destra il punteggio scritto. Servono a vedere chi era da solo.")
+    pn["J1"] = "servizio: il segno effettivo di ognuno, dichiarato o dedotto dal punteggio."
     for col, h in zip("ABC", ["ID", "G.", "Partita"]):
         s(pn[f"{col}2"], b=True, sz=9, fg=WHITE, bg=NAVY2, al="center", box=BOX); pn[f"{col}2"] = h
-    # colonne di servizio: i segni effettivi in un blocco, i punteggi scritti in
-    # un altro. Devono stare attaccate, perche' le formule ci contano dentro con
-    # un COUNTIF per sapere se qualcun altro aveva scelto la stessa cosa.
+    # colonne di servizio: il segno effettivo di ognuno, cioe' quello dichiarato
+    # oppure dedotto dal punteggio scritto. Il blocco dei punteggi che stava qui
+    # accanto serviva solo a sapere chi era da solo, per i punti coraggio: quella
+    # regola non c'e' piu' e le colonne se ne sono andate con lei.
     HS = 10             # prima colonna dei segni
-    HP = HS + NP + 1    # prima colonna dei punteggi
-    SEGNI = f"${CL(HS)}{{r}}:${CL(HS+NP-1)}{{r}}"
-    PUNTEGGI = f"${CL(HP)}{{r}}:${CL(HP+NP-1)}{{r}}"
     for i in range(NP):
         s(pn.cell(row=2, column=4+i, value=f"=Config!$A${6+i}"), b=True, sz=9, fg=NAVY, bg=PCOL[i], al="center", box=BOX)
         pn.column_dimensions[CL(4+i)].width = 12
-        for c0 in (HS, HP):
-            s(pn.cell(row=2, column=c0+i, value=f"=Config!$A${6+i}"), b=True, sz=8, fg=MUTE, bg=PANEL2, al="center")
-            pn.column_dimensions[CL(c0+i)].width = 9
+        s(pn.cell(row=2, column=HS+i, value=f"=Config!$A${6+i}"), b=True, sz=8, fg=MUTE, bg=PANEL2, al="center")
+        pn.column_dimensions[CL(HS+i)].width = 9
 
     r = R0
     for k, g in enumerate(GIORNATE):
@@ -390,36 +385,25 @@ def genera(DATA, OUT):
             pn.cell(row=r, column=1, value=f"=Partite!$A{r}")
             pn.cell(row=r, column=2, value=f"=Partite!$B{r}")
             pn.cell(row=r, column=3, value=f'=IF(Partite!$E{r}="","",Partite!$E{r}&"  -  "&Partite!$F{r})')
-            segni, punteggi = SEGNI.format(r=r), PUNTEGGI.format(r=r)
-            # il punto coraggio vale solo dalla giornata scritta in Config
-            da_solo = f'$B{r}>=Config!$D$17'
             for i in range(NP):
                 sc, hc, ac = CL(5+i*3), CL(6+i*3), CL(7+i*3)
-                hp, pp = CL(HS+i), CL(HP+i)
+                hp = CL(HS+i)
                 pn.cell(row=r, column=HS+i, value=(
                     f'=IF(Pronostici!${sc}{r}<>"",UPPER(Pronostici!${sc}{r}),'
                     f'IF(OR(Pronostici!${hc}{r}="",Pronostici!${ac}{r}=""),"",'
                     f'IF(Pronostici!${hc}{r}>Pronostici!${ac}{r},"1",'
                     f'IF(Pronostici!${hc}{r}=Pronostici!${ac}{r},"X","2"))))'))
-                pn.cell(row=r, column=HP+i, value=(
-                    f'=IF(OR(Pronostici!${hc}{r}="",Pronostici!${ac}{r}=""),"",'
-                    # " a " e non "-": con "2-1" il COUNTIF di Excel potrebbe
-                    # leggere una data e non trovare piu' nessuno
-                    f'Pronostici!${hc}{r}&" a "&Pronostici!${ac}{r})'))
                 pn.cell(row=r, column=4+i, value=(
                     f'=IF(Partite!$K{r}<>"Giocata","",'
                     f'IF(AND(Pronostici!${hc}{r}<>"",Pronostici!${ac}{r}<>"",'
                     f'Pronostici!${hc}{r}=Partite!$G{r},Pronostici!${ac}{r}=Partite!$H{r}),'
-                    f'IF(AND({da_solo},COUNTIF({punteggi},${pp}{r})=1),Config!$D$9,Config!$D$6),'
-                    f'IF(AND(${hp}{r}<>"",${hp}{r}=Partite!$I{r}),'
-                    f'IF(AND({da_solo},COUNTIF({segni},${hp}{r})=1),Config!$D$10,Config!$D$7),'
-                    f'Config!$D$8)))'))
+                    f'Config!$D$6,'
+                    f'IF(AND(${hp}{r}<>"",${hp}{r}=Partite!$I{r}),Config!$D$7,Config!$D$8)))'))
             for col in range(1, 9):
                 s(pn.cell(row=r, column=col), b=(col >= 4), sz=10, fg=MUTE if col == 1 else INK,
                   al="left" if col == 3 else "center", bg=bg, box=BOX)
             for i in range(NP):
-                for c0 in (HS, HP):
-                    s(pn.cell(row=r, column=c0+i), sz=8, fg=MUTE, al="center", bg=PANEL2)
+                s(pn.cell(row=r, column=HS+i), sz=8, fg=MUTE, al="center", bg=PANEL2)
             r += 1
     pn.freeze_panes = "D3"
     for i in range(NP):
@@ -427,7 +411,7 @@ def genera(DATA, OUT):
         pn.conditional_formatting.add(f"{col}{R0}:{col}{RN}",
             CellIsRule(operator="greaterThanOrEqual", formula=["3"], fill=PatternFill("solid", fgColor=GREEN)))
         pn.conditional_formatting.add(f"{col}{R0}:{col}{RN}",
-            CellIsRule(operator="between", formula=["1", "2"], fill=PatternFill("solid", fgColor=AMBER)))
+            CellIsRule(operator="equal", formula=["1"], fill=PatternFill("solid", fgColor=AMBER)))
 
     # =========================================================== CONFIG
     cf = wb.create_sheet("Config")
@@ -447,19 +431,16 @@ def genera(DATA, OUT):
     s(cf["D5"], b=True, sz=9, fg=WHITE, bg=NAVY2, al="center", box=BOX); cf["D5"] = "Punti"
     for i, (lab, val) in enumerate([("Risultato esatto (segno + gol)", 3),
                                     ("Solo segno 1X2 corretto", 1),
-                                    ("Sbagliato o pronostico mancante", 0),
-                                    ("CORAGGIO - risultato esatto, e nessun altro lo aveva scritto", SOL_ESATTO),
-                                    ("CORAGGIO - segno giusto, e nessun altro lo aveva scelto", SOL_SEGNO)]):
+                                    ("Sbagliato o pronostico mancante", 0)]):
         s(cf.cell(row=6+i, column=3, value=lab), sz=10, bg=WHITE if i % 2 == 0 else PANEL, box=BOX)
         inp(cf.cell(row=6+i, column=4, value=val), sz=11)
-    s(cf["C11"], sz=8, fg=MUTE, it=True)
-    cf["C11"] = "Il risultato esatto non si somma al segno. Gli ultimi due sono i punti coraggio: chi indovina da solo prende il doppio."
+    s(cf["C9"], sz=8, fg=MUTE, it=True)
+    cf["C9"] = "Il risultato esatto non si somma al segno. Non c'e' nient'altro: i punti non si moltiplicano mai."
 
     s(cf["C13"], b=True, sz=12, fg=NAVY); cf["C13"] = "PARAMETRI"
     for i, (lab, val) in enumerate([("Stagione", "Serie A 2026/27"),
                                     ("Prima giornata in gioco", GIORNATE[0]),
-                                    ("Partite per giornata", MPG),
-                                    ("I punti coraggio valgono dalla giornata", CORAGGIO_DA)]):
+                                    ("Partite per giornata", MPG)]):
         s(cf.cell(row=14+i, column=3, value=lab), sz=10, bg=WHITE if i % 2 == 0 else PANEL, box=BOX)
         inp(cf.cell(row=14+i, column=4, value=val))
 
@@ -468,9 +449,8 @@ def genera(DATA, OUT):
      "1.  Pronostici entro il primo fischio della giornata: dopo non valgono piu'.",
      "2.  Chi non manda i pronostici prende 0 su quella giornata, che conta comunque.",
      "3.  Si puo' dare solo il segno 1/X/2: vale 1 punto se corretto, senza bonus risultato.",
-     f"4.  Punti coraggio, dalla giornata {CORAGGIO_DA}: chi indovina da solo vale doppio, {SOL_SEGNO} il segno e {SOL_ESATTO} il risultato esatto.",
-     "5.  Parita' in classifica generale: passa avanti chi ha piu' risultati esatti.",
-     "6.  Re della giornata = chi fa piu' punti in quella giornata (solo giornate complete).",
+     "4.  Parita' in classifica generale: passa avanti chi ha piu' risultati esatti.",
+     "5.  Re della giornata = chi fa piu' punti in quella giornata (solo giornate complete).",
     ]):
         c = cf.cell(row=21+i, column=1, value=t); s(c, sz=10, bg=WHITE if i % 2 == 0 else PANEL)
         cf.merge_cells(start_row=21+i, start_column=1, end_row=21+i, end_column=4)
@@ -491,9 +471,9 @@ def genera(DATA, OUT):
     s(cf["A36"], b=True, sz=12, fg=NAVY); cf["A36"] = "ESEMPIO - Milan-Venezia finisce 2-1"
     for j, h in enumerate(["Giocatore", "Segno", "Gol C", "Gol O", "Punti", "Perche'"]):
         s(cf.cell(row=37, column=1+j, value=h), b=True, sz=9, fg=WHITE, bg=NAVY2, al="center", box=BOX)
-    for i, row in enumerate([("Berta", "1", 2, 1, SOL_ESATTO, "risultato esatto, e nessun altro aveva scritto 2-1"),
-                             ("Super Gulp", "1", 3, 0, 1, "segno giusto, ma l'1 lo avevano in tre"),
-                             ("Lenzuolo", "1", None, None, 1, "solo il segno, giusto ma in compagnia"),
+    for i, row in enumerate([("Berta", "1", 2, 1, 3, "risultato esatto: sul sito la casella e' oro, era l'unico"),
+                             ("Super Gulp", "1", 3, 0, 1, "solo il segno: casella bronzo"),
+                             ("Lenzuolo", "1", None, None, 1, "solo il segno, senza punteggio: bronzo anche lui"),
                              ("Just Lele", "X", 1, 1, 0, "segno sbagliato"),
                              ("Lippi", None, None, None, 0, "non ha mandato nulla")]):
         for j, v in enumerate(row):
@@ -504,8 +484,8 @@ def genera(DATA, OUT):
             elif j == 5: s(c, sz=9, fg=MUTE, it=True, box=BOX)
             else: s(c, b=True, sz=9, bg=PCOL[i], box=BOX)
     s(cf["A43"], sz=8, fg=MUTE, it=True)
-    cf["A43"] = (f"Esempio dalla giornata {CORAGGIO_DA} in poi. Se il segno giusto lo avesse scelto una "
-                 f"persona sola, a lei varrebbe {SOL_SEGNO} punti invece di 1.")
+    cf["A43"] = ("I colori delle caselle sul sito non cambiano i punti: oro e argento valgono "
+                 "gli stessi 3, e dicono solo se il risultato esatto lo aveva preso qualcun altro.")
 
     s(cf["A45"], sz=8, fg=MUTE, it=True)
     cf["A45"] = ("Il file si allunga da solo: quando esce il calendario di una nuova giornata "

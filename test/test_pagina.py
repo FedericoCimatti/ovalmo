@@ -116,9 +116,8 @@ def test_nessun_segnaposto_rimasto():
 def test_classifica_in_cima_alla_pagina():
     dati = dict(DATI, risultati={"G07-01": [3, 0], "G07-02": [1, 1]})
     html = genera(dati, DOPO)
-    # Berta indovina tutti e due i risultati esatti, e in tutti e due e' l'unica
-    # ad averli scritti: siamo in giornata 7, quindi 6 + 6
-    assert "in testa Berta con 12 punti" in html
+    # Berta indovina tutti e due i risultati esatti: 3 + 3, e non un punto di piu'
+    assert "in testa Berta con 6 punti" in html
 
 
 def test_le_giornate_in_archivio_sono_tutte_chiuse():
@@ -316,9 +315,8 @@ def test_se_la_giornata_dopo_e_vicina_il_modulo_si_apre_lo_stesso():
     assert 'id="chisei"' in html
 
 
-def test_i_punti_coraggio_si_vedono_nelle_caselle():
-    """Un 6 e un 2 nelle caselle. La riga che li spiegava sotto la classifica
-    non c'e' piu': a dirlo sono il numero e il colore della casella."""
+def test_nelle_caselle_non_compaiono_piu_di_tre_punti():
+    """Il caso che prima valeva 6 e quello che valeva 2: adesso 3 e 1."""
     dati = dict(DATI, pronostici={
         # Inter-Milan finisce 3-0: Berta ha scritto proprio 3-0 e nessun altro
         "G07-01": {"Berta": ["1", 3, 0], "Lippi": ["1", 2, 0], "Lenzuolo": ["1", 1, 0]},
@@ -326,8 +324,10 @@ def test_i_punti_coraggio_si_vedono_nelle_caselle():
         "G07-02": {"Berta": ["1", 2, 0], "Lippi": ["2", 0, 1], "Lenzuolo": ["X", 2, 2]},
     }, risultati={"G07-01": [3, 0], "G07-02": [1, 1]})
     html = genera(dati, DOPO)
-    assert '<span class="pts">6</span>' in html      # esatto, e da solo
-    assert '<span class="pts">2</span>' in html      # segno giusto, e da solo
+    assert '<span class="pts">3</span>' in html
+    assert '<span class="pts">1</span>' in html
+    for troppo in (2, 4, 5, 6):
+        assert f'<span class="pts">{troppo}</span>' not in html
     assert "chi indovina da solo vale doppio" not in html
 
 
@@ -472,31 +472,36 @@ def test_il_numero_non_resta_da_solo_in_fondo_alla_riga():
 
 
 def test_i_punti_diventano_metalli():
-    """1 rame, 2 bronzo, 3 argento, 6 oro: la casella prende la classe del suo
-    metallo, e chi non ha preso niente non prende nessuna classe."""
+    """Oro il risultato esatto preso da soli, argento lo stesso preso in
+    compagnia, bronzo il segno. Chi non ha preso niente non prende classe."""
     from ovalmo.pagina import medaglia
 
-    assert (medaglia(1), medaglia(2), medaglia(3), medaglia(6)) == (
-        "m-rame", "m-bronzo", "m-argento", "m-oro")
-    assert medaglia(0) == "" and medaglia(None) == ""
+    assert medaglia(3, 1) == "m-oro"        # esatto, e nessun altro
+    assert medaglia(3, 2) == "m-argento"    # esatto, ma in due
+    assert medaglia(1, 0) == "m-bronzo"     # solo il segno
+    assert medaglia(1, 3) == "m-bronzo"     # il segno resta bronzo comunque
+    assert medaglia(0, 1) == "" and medaglia(None, 0) == ""
 
     dati = dict(DATI, pronostici={
+        # 3-0: solo Berta ha scritto 3-0 -> oro; Lippi prende il segno -> bronzo
         "G07-01": {"Berta": ["1", 3, 0], "Lippi": ["1", 2, 0], "Lenzuolo": ["2", 0, 1]},
-        "G07-02": {"Berta": ["1", 2, 0], "Lippi": ["2", 0, 1], "Lenzuolo": ["X", 2, 2]},
+        # 1-1: Lippi e Lenzuolo hanno scritto tutti e due 1-1 -> argento a testa
+        "G07-02": {"Berta": ["1", 2, 0], "Lippi": ["X", 1, 1], "Lenzuolo": ["X", 1, 1]},
     }, risultati={"G07-01": [3, 0], "G07-02": [1, 1]})
     html = genera(dati, DOPO)
-    assert 'class="pick m-oro"' in html          # esatto da solo
-    assert 'class="pick m-rame"' in html         # segno in compagnia
-    assert 'class="pick m-bronzo"' in html       # segno da solo
-    assert "pk3" not in html and "pk2" not in html
+    assert 'class="pick m-oro"' in html
+    assert 'class="pick m-argento"' in html
+    assert 'class="pick m-bronzo"' in html
+    assert html.count('class="pick m-argento"') == 2
+    assert "m-rame" not in html and "pk3" not in html
 
 
-def test_i_quattro_metalli_hanno_un_colore_nel_modello():
+def test_i_tre_metalli_hanno_un_colore_nel_modello():
     import os
 
     with open(os.path.join(QUI, "template.html"), encoding="utf-8") as f:
         modello = f.read()
-    for metallo in ("rame", "bronzo", "argento", "oro"):
+    for metallo in ("bronzo", "argento", "oro"):
         # ogni medaglia dichiara tinta, velo e inchiostro; fondo e bordo escono
         # da una regola sola, che li fa entrambi trasparenti
         assert (f".pick.m-{metallo}{{--tinta:var(--{metallo}); "
@@ -506,12 +511,13 @@ def test_i_quattro_metalli_hanno_un_colore_nel_modello():
     assert "rgba(var(--tinta), var(--velo))" in modello
     assert "rgba(var(--tinta), calc(var(--velo) + .20))" in modello
     assert modello.count("--luce:") == 1        # un tema solo, un riflesso solo
-    # I veli non sono a occhio: con questi quattro il metallo piu' vicino a un
-    # altro resta a 11.5 di distanza e il nome peggio piazzato (l'oro) legge a
-    # 6.15 di contrasto. Alzarli avvicina i metalli e abbassa i nomi.
-    for metallo, velo in (("rame", ".08"), ("bronzo", ".30"),
-                          ("argento", ".25"), ("oro", ".30")):
+    # I veli non sono a occhio: il metallo piu' vicino a un altro resta a 11.5
+    # di distanza e il nome peggio piazzato (l'oro) legge a 6.15 di contrasto.
+    # Alzarli avvicina i metalli fra loro e abbassa i nomi.
+    for metallo, velo in (("bronzo", ".30"), ("argento", ".25"), ("oro", ".30")):
         assert f"--{metallo}-v:{velo};" in modello
+    # il rame era il quarto metallo dei punti coraggio: se ne e' andato con loro
+    assert "--rame" not in modello and "m-rame" not in modello
     # la corona sta solo sull'oro, ed e' una maschera: prende il colore del tema
     assert ".pick.m-oro::before" in modello
     assert modello.count("::before{\n  content:\"\"; position:absolute; top:-7px") == 1

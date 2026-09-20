@@ -6,17 +6,18 @@ Regole:
   1 punto  solo il segno giusto (NON si somma ai 3)
   0 punti  segno sbagliato, oppure pronostico non inviato
 
-I PUNTI CORAGGIO, dalla giornata 5 in poi
-  Chi indovina da solo vale il doppio:
-    6 punti  risultato esatto che nessun altro dei cinque aveva scritto
-    2 punti  segno giusto che nessun altro dei cinque aveva scelto
-  "Da solo" si guarda dentro la singola partita, e solo fra chi ha mandato:
-  per i 2 punti conta il segno (1, X o 2), per i 6 punti il punteggio scritto.
-  Chi non manda non ha scelto niente, quindi non fa compagnia a nessuno.
+Nient'altro: i punti non si moltiplicano mai. Una partita vale al massimo 3.
 
-  Vale dalla giornata CORAGGIO_DA: le giornate precedenti restano com'erano,
-  perche' la regola e' arrivata a giornata 4 gia' cominciata e i punti gia'
-  assegnati non si toccano.
+LE MEDAGLIE
+  Il colore della casella non e' una seconda regola di punteggio, e' un modo
+  di raccontare gli stessi punti:
+    oro      risultato esatto, e nessun altro dei cinque l'aveva preso
+    argento  risultato esatto, ma in compagnia
+    bronzo   solo il segno giusto
+    niente   niente
+  Oro e argento valgono gli stessi 3 punti: cambia solo quanto era difficile.
+  Per questo l'oro si decide guardando tutta la partita, mentre i punti si
+  decidono guardando un pronostico solo.
 
 In classifica, a pari punti passa avanti chi ha piu' risultati esatti.
 "Re della giornata" = chi ha fatto piu' punti in quella giornata.
@@ -27,10 +28,14 @@ da non rompere.
 """
 from .dati import id_partita
 
-# la prima giornata in cui il punto coraggio vale, e quanto vale
-CORAGGIO_DA = 5
-CORAGGIO_ESATTO = 6
-CORAGGIO_SEGNO = 2
+# quanto puo' valere al massimo una partita: serve al grafico, che deve
+# lasciare in alto lo spazio per i punti che le partite in corso possono
+# ancora dare
+MASSIMO_PER_PARTITA = 3
+
+# i nomi delle medaglie. Qui stanno i nomi, non i colori: il foglio di stile
+# decide come sono fatte, questo file decide chi se le merita
+ORO, ARGENTO, BRONZO = "oro", "argento", "bronzo"
 
 
 def segno(gol_casa, gol_ospite):
@@ -55,10 +60,11 @@ def segno_pronosticato(pronostico):
 
 
 def punti(pronostico, risultato):
-    """Punti di un singolo pronostico, senza guardare cosa hanno fatto gli altri.
+    """Punti di un pronostico: 3, 1 o 0.
 
-    E' il punteggio base: 3, 1 o 0. Il raddoppio dei punti coraggio si decide in
-    `punti_partita`, che e' l'unico posto che vede tutti e cinque insieme.
+    Non guarda cosa hanno fatto gli altri, e non deve: i punti dipendono solo
+    dal proprio pronostico e dal risultato. Chi ha scelto cosa conta per le
+    medaglie, non per il punteggio.
     """
     if not risultato:
         return 0
@@ -75,40 +81,28 @@ def punteggio_scritto(pronostico):
     return None if casa is None or ospite is None else (casa, ospite)
 
 
-def punti_partita(picks, risultato, giornata, giocatori=None):
-    """{giocatore: punti} per una partita, punti coraggio compresi.
+def quanti_esatti(picks, risultato, giocatori=None):
+    """Quanti, in questa partita, hanno preso il risultato esatto.
 
-    E' l'unico posto dove si decide chi era da solo: la pagina, la diretta e il
-    file Excel devono dare lo stesso numero, e l'unico modo di esserne sicuri e'
-    che ci sia una sola regola scritta una volta sola.
-
-    picks      {giocatore: pronostico} di quella partita
-    giornata   serve solo a sapere se il punto coraggio e' gia' in vigore
+    E' l'unica cosa che serve sapere degli altri, e serve solo a distinguere
+    l'oro dall'argento.
     """
-    giocatori = list(giocatori if giocatori is not None else picks)
     if not risultato:
-        return {p: 0 for p in giocatori}
+        return 0
+    giocatori = list(giocatori if giocatori is not None else picks)
+    return sum(1 for p in giocatori if punti(picks.get(p), risultato) == 3)
 
-    raddoppia = giornata >= CORAGGIO_DA
-    quanti_segno, quanti_punteggio = {}, {}
-    for p in giocatori:
-        sg = segno_pronosticato(picks.get(p))
-        if sg:
-            quanti_segno[sg] = quanti_segno.get(sg, 0) + 1
-        pg = punteggio_scritto(picks.get(p))
-        if pg:
-            quanti_punteggio[pg] = quanti_punteggio.get(pg, 0) + 1
 
-    fuori = {}
-    for p in giocatori:
-        pronostico = picks.get(p)
-        base = punti(pronostico, risultato)
-        if base == 3 and raddoppia and quanti_punteggio[punteggio_scritto(pronostico)] == 1:
-            base = CORAGGIO_ESATTO
-        elif base == 1 and raddoppia and quanti_segno[segno_pronosticato(pronostico)] == 1:
-            base = CORAGGIO_SEGNO
-        fuori[p] = base
-    return fuori
+def metallo(punti_suoi, esatti_nella_partita):
+    """La medaglia di un pronostico, o None se non ha preso niente.
+
+    Sta qui e non nella pagina perche' la stessa risposta la devono dare in
+    tre: la pagina quando si genera, la diretta mentre le partite vanno, e
+    chiunque venga dopo. Una regola sola, scritta una volta sola.
+    """
+    if punti_suoi == 3:
+        return ORO if esatti_nella_partita == 1 else ARGENTO
+    return BRONZO if punti_suoi == 1 else None
 
 
 def calcola(dati):
@@ -142,18 +136,15 @@ def calcola(dati):
                 continue
             giocate_g[g] += 1
             picks = pronostici.get(mid) or {}
-            valori = punti_partita(picks, risultato, g, giocatori)
             for p in giocatori:
-                # segni ed esatti si contano sul punteggio base: il punto coraggio
-                # raddoppia i punti, non trasforma un segno in un risultato esatto
-                base = punti(picks.get(p), risultato)
-                if base == 3:
+                suoi = punti(picks.get(p), risultato)
+                if suoi == 3:
                     stats[p]["esatti"] += 1
                     stats[p]["segni"] += 1
-                elif base == 1:
+                elif suoi == 1:
                     stats[p]["segni"] += 1
-                stats[p]["pt"] += valori[p]
-                per_g[g][p] += valori[p]
+                stats[p]["pt"] += suoi
+                per_g[g][p] += suoi
 
     ordine = sorted(giocatori, key=lambda p: (-stats[p]["pt"], -stats[p]["esatti"], p))
     pos = {}

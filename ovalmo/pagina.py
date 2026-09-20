@@ -16,8 +16,8 @@ import json
 
 from . import diretta, grafico, orari, schedina
 from .dati import id_partita
-from .punteggio import (CORAGGIO_ESATTO, CORAGGIO_SEGNO, calcola, punti_partita,
-                        re_della_giornata, segno, segno_pronosticato)
+from .punteggio import (ARGENTO, BRONZO, ORO, calcola, metallo, punti,
+                        quanti_esatti, re_della_giornata, segno, segno_pronosticato)
 
 MODULO = "https://forms.gle/vuZK5rm6N8b8Z2Zc7"
 # indirizzo pubblico della pagina: serve all'anteprima del link su WhatsApp.
@@ -36,20 +36,15 @@ GIORNI_DI_UNA_GIORNATA = 5
 
 E = html.escape
 
-# I punti diventano un metallo: la casella si colora di quello. I nomi delle
-# classi vivono nel foglio di stile, i valori qui arrivano da punteggio.py, cosi'
-# cambiando quanto vale un punto coraggio non resta una medaglia orfana.
-MEDAGLIE = {
-    1: "m-rame",
-    CORAGGIO_SEGNO: "m-bronzo",
-    3: "m-argento",
-    CORAGGIO_ESATTO: "m-oro",
-}
+# Dal nome della medaglia alla classe del foglio di stile. Chi se la merita lo
+# dice punteggio.py: qui si traduce soltanto, cosi' non esiste una seconda
+# versione della regola che possa allontanarsi dalla prima.
+MEDAGLIE = {ORO: "m-oro", ARGENTO: "m-argento", BRONZO: "m-bronzo"}
 
 
-def medaglia(punti):
-    """La classe della casella per quei punti. Stringa vuota se non ha preso niente."""
-    return MEDAGLIE.get(punti or 0, "")
+def medaglia(punti_suoi, esatti_nella_partita):
+    """La classe della casella. Stringa vuota se non ha preso niente."""
+    return MEDAGLIE.get(metallo(punti_suoi, esatti_nella_partita), "")
 
 
 def _giorn(n):
@@ -213,16 +208,17 @@ def genera(dati, template, adesso=None, aggiornato=None):
             ris = risultati.get(mid)
             esito = (f'<span class="ris">{ris[0]}&ndash;{ris[1]} {chip(segno(*ris))}</span>' if ris
                      else f'<span class="ora">{quando_si_gioca(data, ora, adesso)}</span>')
-            # i punti li fa punteggio.py, anche qui: il punto coraggio si puo'
-            # decidere solo guardando tutti e cinque insieme
-            valori = punti_partita(picks, ris, g, giocatori) if ris else {}
+            # quanti hanno preso il risultato esatto qui dentro: e' cio' che
+            # separa l'oro dall'argento, e si sa solo guardando tutta la partita
+            esatti_qui = quanti_esatti(picks, ris, giocatori) if ris else 0
             celle = []
             for p_ in giocatori:
                 pr = picks.get(p_)
                 s = segno_pronosticato(pr)
                 _, ph, pa = (pr or [None, None, None])
-                pts = valori.get(p_) if ris else None
-                klass = (" " + medaglia(pts)) if medaglia(pts) else ""
+                pts = punti(pr, ris) if ris else None
+                colore = medaglia(pts, esatti_qui) if ris else ""
+                klass = (" " + colore) if colore else ""
                 if s is None:
                     klass += " attesa-p"
                 if nascosta:

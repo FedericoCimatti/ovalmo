@@ -43,18 +43,18 @@ def test_l_excel_si_genera_e_si_riapre_senza_formule_rotte(tmp_path):
 
 
 def test_l_excel_si_rifa_anche_quando_cambiano_solo_le_regole(tmp_path, monkeypatch):
-    """Il 12 settembre 2026 e' cambiato il modo di contare i punti a risultati
-    fermi: senza questo, il file da scaricare sarebbe rimasto alle regole
-    vecchie fino al primo gol della settimana dopo."""
+    """E' successo due volte, il 12 e il 20 settembre 2026: le regole sono
+    cambiate a risultati fermi. Senza questo, il file da scaricare sarebbe
+    rimasto a quelle vecchie fino al primo gol della settimana dopo."""
     uniti = dati.unisci(*dati.carica())
     prima = aggiorna.impronta_excel(uniti)
 
     regola = tmp_path / "punteggio.py"
-    regola.write_text("CORAGGIO_DA = 5\n", encoding="utf-8")
+    regola.write_text("ESATTO = 3\n", encoding="utf-8")
     monkeypatch.setattr(aggiorna, "FILE_DELLE_REGOLE", [str(regola)])
     assert aggiorna.impronta_excel(uniti) != prima
 
-    regola.write_text("CORAGGIO_DA = 9\n", encoding="utf-8")
+    regola.write_text("ESATTO = 9\n", encoding="utf-8")
     dopo = aggiorna.impronta_excel(uniti)
-    regola.write_text("CORAGGIO_DA = 5\n", encoding="utf-8")
+    regola.write_text("ESATTO = 3\n", encoding="utf-8")
     assert aggiorna.impronta_excel(uniti) != dopo

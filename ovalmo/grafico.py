@@ -26,6 +26,10 @@ DUE COSE DA SAPERE SE UN GIORNO LO SI TOCCA
 import html
 import json
 
+# quanti punti puo' ancora fruttare una partita aperta: quanto vale al massimo
+# una partita, e quel numero e' una regola del gioco, quindi sta in punteggio.py
+from .punteggio import MASSIMO_PER_PARTITA
+
 E = html.escape
 
 # tavolozza categoriale validata (blu, arancio, acqua, giallo, magenta):
@@ -34,9 +38,7 @@ COLORI = ["--gr1", "--gr2", "--gr3", "--gr4", "--gr5"]
 
 LARGHEZZA, ALTEZZA = 720, 340
 SOPRA, SOTTO, SINISTRA, DESTRA = 16, 30, 34, 14
-# quanti punti puo' ancora fruttare una partita ancora aperta: 6, cioe' il
-# risultato esatto indovinato da solo (vedi punteggio.CORAGGIO_DA)
-MASSIMO_PER_PARTITA = 6
+
 
 
 def _passo(ymax):

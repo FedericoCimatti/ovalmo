@@ -13,13 +13,16 @@ qualcosa.
 - **1 punto** solo il segno giusto (non si somma ai 3)
 - **0 punti** segno sbagliato, o pronostico non mandato
 
-**I punti coraggio, dalla giornata 5**: chi indovina da solo vale il doppio.
-**6 punti** per un risultato esatto che nessun altro aveva scritto, **2 punti**
-per un segno che nessun altro aveva scelto. Si guarda partita per partita, e
-solo fra chi ha mandato la schedina; chi non manda non fa compagnia a nessuno.
-Vale dalla giornata 5 perche' la regola e' arrivata a giornata 4 gia'
-cominciata, e i punti gia' assegnati non si toccano: la giornata da cui parte e'
-`CORAGGIO_DA` in `ovalmo/punteggio.py`.
+Non c'e' nient'altro: i punti non si moltiplicano mai, e una partita vale al
+massimo 3. (Fra il 12 e il 20 settembre 2026 sono esistiti i "punti coraggio",
+che raddoppiavano chi indovinava da solo. Sono stati tolti del tutto, anche
+dalle giornate gia' giocate.)
+
+**Le medaglie** colorano la casella e non cambiano i punti: **oro** il risultato
+esatto che nessun altro dei cinque aveva preso, **argento** lo stesso risultato
+preso in compagnia, **bronzo** il solo segno giusto. Oro e argento valgono gli
+stessi 3 punti: il colore dice quanto era difficile, non quanto vale. La regola
+sta in `metallo()` dentro `ovalmo/punteggio.py`.
 
 Deadline al primo calcio d'inizio della giornata. A pari punti passa avanti chi
 ha piu' risultati esatti. "Re della giornata" e' chi fa piu' punti in una
@@ -253,12 +256,13 @@ I conti veri restano in `punteggio.py`: la diretta parte dai totali gia'
 calcolati e somma soltanto le partite ancora aperte. E' quello che impedisce
 alla classifica in diretta di divergere da quella vera - c'e' un test apposta.
 
-L'unica regola che la diretta deve rifare per intero e' il punto coraggio, perche'
-per sapere se uno era da solo servono i pronostici di tutti e cinque insieme.
-Quella regola quindi e' scritta due volte: `punti_partita` in `punteggio.py` e
-`puntiPartita` dentro `diretta.py`. **Se si tocca una, va toccata l'altra**; la
-giornata da cui parte viaggia dalla prima alla seconda come `coraggioDa`, cosi'
-almeno quel numero non e' ricopiato a mano.
+I punti la diretta li rifa' uno per uno, e le basta il pronostico di chi sta
+contando. L'unica cosa per cui deve guardare tutti e cinque insieme e' la
+medaglia: per sapere se il risultato esatto lo aveva preso una persona sola
+(oro) o piu' d'una (argento). Quella regola quindi e' scritta due volte:
+`metallo()` in `punteggio.py` e `puntiPartita` dentro `diretta.py`. **Se si
+tocca una, va toccata l'altra**; i nomi delle classi viaggiano dalla prima alla
+seconda nella configurazione, cosi' almeno quelli non sono ricopiati a mano.
 
 La pagina si porta dietro **tutte** le partite non ancora giocate con i loro
 orari, e quali seguire lo decide il browser mentre gira. Se lo decidesse il
