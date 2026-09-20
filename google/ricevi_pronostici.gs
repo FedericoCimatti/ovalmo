@@ -240,10 +240,19 @@ function svegliaIlSito() {
   var ora = Number(Utilities.formatDate(new Date(), 'Europe/Rome', 'H'));
   if (!(ora >= SVEGLIA_DA || ora <= SVEGLIA_A)) return;
 
-  var token = PropertiesService.getScriptProperties().getProperty('GH_TOKEN');
-  // senza token non fa niente e non si lamenta: il resto dello script (i
-  // pronostici, la diretta) deve continuare a funzionare comunque
-  if (!token) return;
+  var proprieta = PropertiesService.getScriptProperties();
+  var token = proprieta.getProperty('GH_TOKEN');
+  if (!token) {
+    // Senza token la sveglia non suona, ma non si ferma con un errore: il
+    // resto dello script (i pronostici, la diretta) deve continuare a
+    // funzionare comunque. Lo SCRIVE pero', perche' una funzione che parte,
+    // finisce subito e non dice niente e' impossibile da capire da fuori.
+    // Si stampano i NOMI delle proprieta', mai i valori: servono a scoprire
+    // un GH-TOKEN scritto col trattino sbagliato, e non sono segreti.
+    console.warn('manca GH_TOKEN nelle Proprieta script, la sveglia non fa niente. ' +
+                 'Qui dentro trovo: ' + (Object.keys(proprieta.getProperties()).join(', ') || 'niente'));
+    return;
+  }
 
   var url = 'https://api.github.com/repos/' + GH_REPO +
             '/actions/workflows/' + GH_WORKFLOW + '/dispatches';
