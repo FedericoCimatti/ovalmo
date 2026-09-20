@@ -16,8 +16,9 @@ name: Aggiorna il sito
 # Adesso a chiamare e' lo script dentro Google (svegliaIlSito, in
 # google/ricevi_pronostici.gs): le sveglie di Google partono davvero, e un
 # giro chiesto esplicitamente via API GitHub lo esegue sempre. Il cron resta
-# come rete di sicurezza, per il giorno in cui il token scade o Google fa i
-# capricci: cinque giri al giorno sono pochi, ma sono meglio di zero.
+# come rete di sicurezza, per il giorno in cui la sveglia tace - token
+# revocato, proprieta' cancellata, Google che fa i capricci: cinque giri al
+# giorno sono pochi, ma sono meglio di zero.
 #
 # Non e' spreco: un giro che non ha niente da fare dura una quindicina di
 # secondi, non produce nessun commit, e sui repository pubblici i minuti di

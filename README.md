@@ -123,7 +123,8 @@ Lo script dentro Google, ogni cinque minuti (`svegliaIlSito` in
 chiede 180 giri al giorno e ne ottiene cinque, con due o tre ore di buco in
 mezzo - misurato su quindici giorni. Un giro chiesto esplicitamente via API
 invece GitHub lo esegue sempre, ed e' quello che fa la sveglia. Il cron nel
-workflow resta come rete di sicurezza per quando il token scade.
+workflow resta come rete di sicurezza per quando la sveglia tace: cinque giri
+al giorno sono pochi, ma sono meglio di zero.
 
 Se il sito torna a muoversi cinque volte al giorno, la sveglia e' rotta: le
 Attivazioni nel progetto Google dicono perche', e Google manda una mail quando
@@ -140,8 +141,7 @@ GitHub **disattiva i workflow schedulati dopo 60 giorni** senza attivita' su un
 repository pubblico. A stagione finita, dopo un paio di mesi di pausa estiva, il
 sito si ferma: arriva una mail da GitHub e si riattiva con un clic dalla scheda
 Actions. Non e' un guasto. (La sveglia da Google non e' una pianificazione di
-GitHub e questa regola non la tocca, ma il token che usa **scade**: se e' stato
-creato con una data di scadenza, va rifatto prima di quella.)
+GitHub, quindi questa regola non la tocca, e il token che usa non ha scadenza.)
 
 ## Lavorare in locale
 
