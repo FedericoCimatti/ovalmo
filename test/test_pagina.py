@@ -263,14 +263,14 @@ def test_la_freschezza_si_controlla_subito_non_fra_cinque_minuti():
     assert coda.index("controlla();") < coda.index("setInterval(controlla")
 
 
-def test_l_invito_a_compilare_si_puo_nascondere():
-    """Serve un aggancio: chi ha gia' mandato non deve vedere ne' il pulsante
-    ne' la nota sotto."""
+def test_manda_i_tuoi_pronostici_compare_una_volta_sola():
+    """Il modulo sta sopra la schedina: sotto non ci deve essere un secondo
+    pulsante "Manda i tuoi pronostici" che rimanda a lui."""
     dati = dict(DATI, endpoint_pronostici="https://script.google.com/macros/s/ABC/exec")
     html = genera(dati, PRIMA)
-    assert '<div id="invito">' in html
-    dentro = html[html.index('<div id="invito">'):html.index("</div>", html.index('<div id="invito">'))]
-    assert "Manda i tuoi pronostici" in dentro and "direttamente in questa pagina" in dentro
+    assert html.count("Manda i tuoi pronostici") == 1
+    assert 'href="#modulo"' not in html
+    assert html.index('id="modulo"') < html.index("La schedina &mdash;")
 
 
 def test_mentre_si_gioca_il_modulo_e_chiuso():
@@ -437,18 +437,6 @@ def test_una_partita_fuori_dai_cinque_giorni_e_un_recupero_non_una_da_giocare():
     html = genera(dict(fuori, risultati=risultati), subito_dopo)
     assert "La schedina &mdash; giornata 8" in html            # il recupero non blocca
     assert "da recuperare" in html
-
-
-def test_mentre_si_gioca_sparisce_anche_l_invito_a_compilare():
-    """Il modulo e' chiuso durante la giornata: se l'invito restasse, chi lo
-    tocca finirebbe su una schermata che gli dice di riprovare dopo."""
-    dati = dict(WEEKEND, risultati={},
-                endpoint_pronostici="https://script.google.com/macros/s/ABC/exec")
-    prima = genera(dati, orari.quando("10/10/2026", "12:00"))     # non e' ancora cominciata
-    durante = genera(dati, orari.quando("10/10/2026", "21:30"))   # si gioca l'anticipo
-    assert 'id="invito"' in prima
-    assert 'id="invito"' not in durante
-    assert "La schedina &mdash; giornata 7" in durante            # la giornata resta in cima
 
 
 def test_senza_diretta_non_resta_un_pallino_sospeso():

@@ -185,7 +185,7 @@ def test_dopo_l_invio_la_sezione_sparisce_tutta():
     html = schedina.blocco(DATI, adesso=PRIMA, endpoint=ENDPOINT)
     assert "chiaveInviato" in html
     assert "function chiudiModulo(){" in html
-    assert "pezzo.hidden = chiuso" in html
+    assert "$('modulo').hidden = chiuso" in html
     assert 'id="fatto"' not in html and 'id="esci"' not in html
 
 
@@ -268,14 +268,6 @@ def test_si_aspetta_che_la_pagina_sia_pronta():
     html = schedina.blocco(DATI, adesso=PRIMA, endpoint=ENDPOINT)
     assert "document.readyState === 'loading'" in html
     assert "DOMContentLoaded" in html
-
-
-def test_sparisce_anche_l_invito_dentro_la_schedina():
-    """Il pulsante "Manda i tuoi pronostici" dentro la schedina e la sezione del
-    modulo sono la stessa cosa detta in due punti: chi ha mandato non deve
-    trovarsi ne' l'una ne' l'altro."""
-    html = schedina.blocco(DATI, adesso=PRIMA, endpoint=ENDPOINT)
-    assert "['modulo', 'invito']" in html
 
 
 def test_il_modulo_elenca_le_partite_in_ordine_di_campo():

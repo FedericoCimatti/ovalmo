@@ -306,15 +306,12 @@ def genera(dati, template, adesso=None, aggiornato=None):
         if coperta.get(g_feat):
             occhiello += (" Nessuno vede i pronostici degli altri: il segno di chi ha gi&agrave; mandato resta "
                           "coperto con una spunta e si svela al primo calcio d&rsquo;inizio.")
-        # Mentre si gioca il modulo e' chiuso: invitare a compilarlo manderebbe
-        # la gente a sbattere contro una schermata che dice di riprovare dopo.
-        invito = '' if si_gioca else (
-            f'<div id="invito"><a class="cta" href="#modulo">Manda i tuoi pronostici</a>'
-            '<p class="cta-note">Si compila qui sotto, direttamente in questa pagina.</p></div>')
         featured = (f'<h2>La schedina &mdash; giornata {g_feat}</h2>'
                     f'<p class="lede">{occhiello}</p>'
-                    + (invito
-                       if endpoint else
+                    # Col modulo dentro il sito niente pulsante qui: il modulo sta
+                    # gia' sopra questa sezione, e un secondo "Manda i tuoi
+                    # pronostici" sotto lo ripeteva per niente.
+                    + ('' if endpoint else
                        f'<a class="cta" href="{MODULO}" target="_blank" rel="noopener">Manda i tuoi pronostici</a>'
                        '<p class="cta-note">Nel modulo trovi le stesse dieci partite, nello stesso ordine. '
                        'Si risponde cos&igrave;: <strong>1 (2-1)</strong>.</p>')
